@@ -1,6 +1,8 @@
 Munee: Optimising Your Assets
 =============================
 
+---
+
 What is Munee?
 --------------
 
@@ -55,7 +57,7 @@ Usage Instructions
 Format your style so the href has all css files delimited by a comma (,).
 
 ```
-<link rel="stylesheet" type="text/css" href="/css/libs/bootstrap.min.css,/css/site.css" />
+<link rel="stylesheet" href="/css/libs/bootstrap.min.css,/css/site.css">
 ```
 
 **Minify CSS**
@@ -63,7 +65,7 @@ Format your style so the href has all css files delimited by a comma (,).
 Add the word 'minify' before the request to your files. (**Note: only add the word minify once**)
 
 ```
-<link rel="stylesheet" type="text/css" href="/minify/css/libs/bootstrap.min.css,/css/site.css" /> 
+<link rel="stylesheet" href="/minify/css/libs/bootstrap.min.css,/css/site.css" />
 ```
 
 **One Request For All JS**
@@ -71,7 +73,7 @@ Add the word 'minify' before the request to your files. (**Note: only add the wo
 Format your script tag so the src has all js files delimited by a comma (,).
 
 ```
-<script type="text/javascript" src="/js/libs/jquery-1.8.1.min.js,/js/libs/bootstrap.min.js,/js/site.js"></script>
+<script src="/js/libs/jquery-1.8.1.min.js,/js/libs/bootstrap.min.js,/js/site.js"></script>
 ```
 
 **Minify JS**
@@ -79,7 +81,7 @@ Format your script tag so the src has all js files delimited by a comma (,).
 Add the word 'minify' before the request to your files. (**Note: only add the word minify once**)
 
 ```
-<script type="text/javascript" src="/minify/js/libs/jquery-1.8.1.min.js,/js/libs/bootstrap.min.js,/js/site.js"></script>
+<script src="/minify/js/libs/jquery-1.8.1.min.js,/js/libs/bootstrap.min.js,/js/site.js"></script>
 ```
 
 Tips & Tricks

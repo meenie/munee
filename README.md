@@ -39,10 +39,12 @@ Installation Instructions
 + Open the .htaccess file in your webroot and paste in the following:
 
 ```
-# Munee - Only run CSS and LESS through the minify every time if calling a direct file.
+#### Munee .htaccess Code Start ####
+# Only run CSS and LESS through Munee every time if calling a direct file.
 RewriteCond %{REQUEST_FILENAME} !-f [OR]
 RewriteCond %{REQUEST_URI} \.(css|less)$
 RewriteRule ^(minify/)?(.*\.(css|less|js))$ munee/index.php?minify=$1&files=/$2&type=$3 [L,QSA]
+#### Munee .htaccess Code END ####
 ```
 
 Usage Instructions

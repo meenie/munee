@@ -37,6 +37,7 @@ Installation Instructions
 + Unzip the folder into your webroot
 + Make sure the `cache` folder inside of the top `munee` folder is server writable
 + Open the .htaccess file in your webroot and paste in the following:
+
 ```
 # Munee - Only run CSS and LESS through the minify every time if calling a direct file.
 RewriteCond %{REQUEST_FILENAME} !-f [OR]

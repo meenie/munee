@@ -50,11 +50,13 @@ modified.  If you are running the assets through minification, it will set the c
 to cache the files client side and then return a `304 Not Modified` if the files have not been
 modified since the last request.  This will save you a substantial amount of bandwidth.
 
-Installation Instructions
--------------------------
+[Composer](https://packagist.org/) Installation Instructions
+---------------------------------------
 
-1. Unzip the folder into your webroot or use `git submodule add git@github.com:meenie/munee.git`
-1. Make sure the `cache` folder inside of the top `munee` folder is server writable
+1. Add the following to your `require` attribute inside composer.json: `"meenie/munee": "dev-master"`
+1. Run `php composer.phar install`
+1. Create a php file that is web-accessible (ex: `webroot/munee.php`), include Munee's bootstrap
+file and echos out `munee\Dispatcher::run(new munee\Request())`.
 1. Open the .htaccess file in your webroot and paste in the following:
 
 ```
@@ -62,9 +64,25 @@ Installation Instructions
 # Only run CSS and LESS through Munee every time if calling a direct file.
 RewriteCond %{REQUEST_FILENAME} !-f [OR]
 RewriteCond %{REQUEST_URI} \.(css|less)$
-RewriteRule ^(minify/)?(.*\.(css|less|js))$ munee/index.php?minify=$1&files=/$2&type=$3 [L,QSA]
+RewriteRule ^(minify/)?(.*\.(css|less|js))$ munee.php?minify=$1&files=/$2&type=$3 [L,QSA]
 #### Munee .htaccess Code END ####
 ```
+
+Download Installation Instructions
+------------------------------------------
+
+1. [Download the Munee Library](https://github.com/meenie/munee/archive/master.zip)
+1. Unzip the file into your webroot
+1. Make sure the `cache` folder inside of the top `munee` folder is server writable
+1. Open the .htaccess file in your webroot and paste in the following:
+    ```
+    #### Munee .htaccess Code Start ####
+    # Only run CSS and LESS through Munee every time if calling a direct file.
+    RewriteCond %{REQUEST_FILENAME} !-f [OR]
+    RewriteCond %{REQUEST_URI} \.(css|less)$
+    RewriteRule ^(minify/)?(.*\.(css|less|js))$ munee/index.php?minify=$1&files=/$2&type=$3 [L,QSA]
+    #### Munee .htaccess Code END ####
+    ```
 
 Usage Instructions
 ------------------

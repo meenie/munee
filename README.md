@@ -6,37 +6,54 @@ Munee: Optimising Your Assets
 What is Munee?
 --------------
 
-I've created this library to easily run all CSS through [lessphp](http://leafo.net/lessphp/)
+A PHP5.3 library to easily run all CSS through [lessphp](http://leafo.net/lessphp/)
 ([LESS](http://lesscss.org/)) and when the project goes live, all CSS and JS are minified and cached
-for lightening fast requests from a page.  One thing to note, if you are requesting just one JS file,
-it will not run it through the Munee Library.  It will just serve that straight up from Apache
-(Might as well not have to do more than you need to).  If you are requesting multiple JS files it
-will put them together into one request and cache the result.  It will also make sure and check the
-cache is newer than each of those requested files so you don't have any caching issues.  As for CSS,
-it will always run them through the Munee Library because it needs to compile them with lessphp and
-then cache the result. With the newest version of lessphp, it will make sure and rebuild the
-compiled CSS if any of the files have changed (including any files you have included within the CSS
-files themselves - yay!).
+for lightening fast requests from a page.  No need to change how you include your assets in your
+templates.  Just drop the `munee` folder into your webroot, paste a couple of `RewriteRule`'s in
+your `.htaccess` file and you are on your way.
 
 Why the name Munee?
 -------------------
 
 The reason I chose the name Munee is because it sounds like 'Money' which is another word for
-'Assets' and what this library deals with.  Also, I needed a top level uniquely named Namespace
+'Assets' and what this library optimises.  Also, I needed a top level uniquely named Namespace
 for the library.
+
+Requirements
+------------
++ PHP5.3+
++ `RewriteEngine` turned on inside a `.htaccess` file (Or in the Apache Config file)
+
+What Happens When?
+------------------
+
+**For CSS**
+
+The `RewriteRule`  will always run CSS through the Munee Library because the library
+needs to compile the CSS with lessphp and then cache the result. With the newest version of lessphp,
+Munee will make sure and rebuild the compiled CSS if any of the files have changed (including any
+files you have `@import` within the CSS files themselves - Yay!!).
+
+**For JavaScript**
+
+If you are requesting just one JavaScript file (`<script src="/js/libs/jquery-1.8.1.min.js"></script>`),
+the `RewriteRule` will not run it through the Munee Library.  It will just serve the file straight from your web server.
+Might as well not have php do more than it has to.  If you are requesting multiple JS files (or minifying),
+Munee will put them together into one request and cache the result.  It will also make sure and check the
+cache is newer than each of those requested files so you don't have any caching issues.
 
 Note on Caching
 ---------------
 
-Munee caches asset request server side and will overwrite that cache if it finds an asset has been
+Munee caches asset requests server side and will overwrite that cache if it finds an asset has been
 modified.  If you are running the assets through minification, it will set the correct headers
 to cache the files client side and then return a `304 Not Modified` if the files have not been
-modified since the last request.
+modified since the last request.  This will save you a substantial amount of bandwidth.
 
 Installation Instructions
 -------------------------
 
-+ Unzip the folder into your webroot
++ Unzip the folder into your webroot or use `git submodule add git@github.com:meenie/munee.git`
 + Make sure the `cache` folder inside of the top `munee` folder is server writable
 + Open the .htaccess file in your webroot and paste in the following:
 
@@ -91,3 +108,11 @@ Tips & Tricks
 
 If you want to run your assets through the minifier without having to prefix the URLs with
 '/minify' then just add '?minify=true' to the end of the request.
+
+**Minimising JavaScript Errors When Minified**
+
+Make sure and use curly brackets for block statements (`if`, `while`, `switch`, etc) and
+terminate lines with a semicolon.  When the JavaScript is minified, it will put all of your code on
+one line.  If you have left out some brackets for an `if` statement, it will include reset of your
+code inside that `if` statement and cause a lot of problems.  As long as you follow decent coding
+standards, you will not have a problem.

@@ -12,7 +12,12 @@
         }
     ],
     "require": {
-        "php": ">=5.3.0"
+        "php": ">=5.3.0",
+        "composer/installers": "*"
     },
-    "target-dir": "../../"
+    "extra": {
+        "installer-paths": {
+            "{$name}": ["meenie/munee"]
+        }
+    }
 }

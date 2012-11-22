@@ -46,11 +46,11 @@ class Js extends Asset
             }
             $ret = '';
             foreach ($files as $file) {
-                $file = $this->_webroot . $file;
+                $file = WEBROOT . $file;
                 if (! file_exists($file)) {
                     throw new AssetNotFoundException('File could not be found: ' . $file);
                 }
-                $filename = str_replace($this->_webroot, '', $file);
+                $filename = str_replace(WEBROOT, '', $file);
                 $ret .= "/*!\n";
                 $ret .= " *\n";
                 $ret .= " * Content from file: {$filename}\n";
@@ -94,7 +94,7 @@ class Js extends Asset
         }
         $hashFileLastModified = filemtime($hashFile);
         foreach ($this->_request->files as $file) {
-            $file = $this->_webroot . $file;
+            $file = WEBROOT . $file;
             if (! file_exists($file) || filemtime($file) > $hashFileLastModified) {
                 return false;
             }

@@ -40,7 +40,7 @@ class Css extends Asset
         }
         $ret = '';
         foreach ($files as $file) {
-            $file = $this->_webroot . $file;
+            $file = WEBROOT . $file;
             if (! file_exists($file)) {
                 throw new AssetNotFoundException('File could not be found: ' . $file);
             }

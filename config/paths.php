@@ -10,6 +10,8 @@
 define('DS' , DIRECTORY_SEPARATOR);
 // Current working directory alias
 define('CWD', dirname(__DIR__));
+// Define Webroot
+define('WEBROOT', dirname(dirname($_SERVER['SCRIPT_FILENAME'])));
 // Define libraries path
 define('LIBS', CWD . DS . 'libs');
 // Define vendors path

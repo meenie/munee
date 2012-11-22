@@ -51,7 +51,6 @@ abstract class Asset
     {
         $this->_createDir(CACHE);
         $this->_request = $request;
-        $this->_webroot = dirname(CWD);
     }
 
     /**

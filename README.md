@@ -76,6 +76,7 @@ Download Installation Instructions
 1. Unzip the file into your webroot
 1. Make sure the `cache` folder inside of the top `munee` folder is server writable
 1. Open the .htaccess file in your webroot and paste in the following:
+
 ```
 #### Munee .htaccess Code Start ####
 # Only run CSS and LESS through Munee every time if calling a direct file.

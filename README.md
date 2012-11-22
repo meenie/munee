@@ -53,9 +53,9 @@ modified since the last request.  This will save you a substantial amount of ban
 Installation Instructions
 -------------------------
 
-+ Unzip the folder into your webroot or use `git submodule add git@github.com:meenie/munee.git`
-+ Make sure the `cache` folder inside of the top `munee` folder is server writable
-+ Open the .htaccess file in your webroot and paste in the following:
+1. Unzip the folder into your webroot or use `git submodule add git@github.com:meenie/munee.git`
+1. Make sure the `cache` folder inside of the top `munee` folder is server writable
+1. Open the .htaccess file in your webroot and paste in the following:
 
 ```
 #### Munee .htaccess Code Start ####
@@ -113,6 +113,6 @@ If you want to run your assets through the minifier without having to prefix the
 
 Make sure and use curly brackets for block statements (`if`, `while`, `switch`, etc) and
 terminate lines with a semicolon.  When the JavaScript is minified, it will put all of your code on
-one line.  If you have left out some brackets for an `if` statement, it will include reset of your
+one line.  If you have left out some brackets for an `if` statement, it will include the rest of your
 code inside that `if` statement and cause a lot of problems.  As long as you follow decent coding
 standards, you will not have a problem.

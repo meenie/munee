@@ -19,6 +19,6 @@
     "require": {
         "php": ">=5.3.0",
         "leafo/lessphp": "v0.3.8",
-        "tedivm/jshrink": "dev-master"
+        "tedivm/jshrink": "v0.5.1"
     }
 }

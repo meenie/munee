@@ -54,7 +54,6 @@ modified since the last request.  This will save you a substantial amount of ban
 ---------------------------------------
 
 1. Add the following to your `require` attribute inside composer.json: `"meenie/munee": "dev-master"`
-    You will also need `"minimum-stability": "dev"` as one of the required libraries is not tagged properly.
 2. Run `php composer.phar install`
 3. Make sure the `cache` folder inside `vendor/meenie/munee` is writable
 4. Create a file called `munee.php` that is web accessible and paste in the following (*Update to the correct path*):

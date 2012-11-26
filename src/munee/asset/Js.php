@@ -10,6 +10,7 @@ namespace munee\asset;
 
 use \munee\Asset;
 use \munee\asset\AssetNotFoundException;
+use \JShrink\Minifier;
 
 /**
  * Handles JS
@@ -78,7 +79,7 @@ class Js extends Asset
      */
     protected function _jsMinify($content)
     {
-        return \jshrink\JShrink::minify($content);
+        return Minifier::minify($content);
     }
 
     /**

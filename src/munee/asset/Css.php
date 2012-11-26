@@ -50,7 +50,7 @@ class Css extends Asset
             } else {
                 $cache = $file;
             }
-            $less = new \lessphp\lessc();
+            $less = new \lessc();
             $newCache = $less->cachedCompile($cache);
             if (! is_array($cache) || $newCache['updated'] > $cache['updated']) {
                 file_put_contents($hashedFile, serialize($newCache));

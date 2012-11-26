@@ -13,11 +13,12 @@
     ],
     "autoload": {
         "psr-0": {
-            "munee": "libs/"
+            "munee": "src/"
         }
     },
     "require": {
         "php": ">=5.3.0",
-        "leafo/lessphp": "v0.3.8"
+        "leafo/lessphp": "v0.3.8",
+        "tedivm/jshrink": "dev-master"
     }
 }

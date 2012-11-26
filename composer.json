@@ -11,6 +11,11 @@
             "role": "Developer"
         }
     ],
+    "autoload": {
+        "psr-0": {
+            "munee": "libs/"
+        }
+    },
     "require": {
         "php": ">=5.3.0",
         "leafo/lessphp": "v0.3.8"

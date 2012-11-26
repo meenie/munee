@@ -4,7 +4,6 @@
     "keywords": ["php","less","optimizing","css","javascript","lessphp"],
     "homepage": "http://mun.ee",
     "license": "MIT",
-    "minimum-stability": "dev",
     "authors": [
         {
             "name": "Cody Lundquist",

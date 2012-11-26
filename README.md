@@ -54,37 +54,25 @@ modified since the last request.  This will save you a substantial amount of ban
 ---------------------------------------
 
 1. Add the following to your `require` attribute inside composer.json: `"meenie/munee": "dev-master"`
-1. Run `php composer.phar install`
-1. Make sure the `cache` folder inside of the top `munee` folder is server writable
-1. Create a php file that is web-accessible (ex: `webroot/munee.php`), include Munee's bootstrap
-file and echos out `munee\Dispatcher::run(new munee\Request())`.
-1. Open the .htaccess file in your webroot and paste in the following:
+    You will also need `"minimum-stability": "dev"` as one of the required libraries is not tagged properly.
+2. Run `php composer.phar install`
+3. Make sure the `cache` folder inside `vendor/meenie/munee` is writable
+4. Create a file called `munee.php` that is web accessible and paste in the following (*Update to the correct path*):
 
-```
-#### Munee .htaccess Code Start ####
-# Only run CSS and LESS through Munee every time if calling a direct file.
-RewriteCond %{REQUEST_FILENAME} !-f [OR]
-RewriteCond %{REQUEST_URI} \.(css|less)$
-RewriteRule ^(minify/)?(.*\.(css|less|js))$ munee.php?minify=$1&files=/$2&type=$3 [L,QSA]
-#### Munee .htaccess Code END ####
-```
+        // Include the composer autoload file
+        require '/path/to/composer/autoload.php';
 
-Download Installation Instructions
-------------------------------------------
+        // Echo out the response
+        echo \munee\Dispatcher::run(new munee\Request());
 
-1. [Download the Munee Library](https://github.com/meenie/munee/archive/master.zip)
-1. Unzip the file into your webroot
-1. Make sure the `cache` folder inside of the top `munee` folder is server writable
-1. Open the .htaccess file in your webroot and paste in the following:
+5. Open the .htaccess file in your webroot and paste in the following:
 
-```
-#### Munee .htaccess Code Start ####
-# Only run CSS and LESS through Munee every time if calling a direct file.
-RewriteCond %{REQUEST_FILENAME} !-f [OR]
-RewriteCond %{REQUEST_URI} \.(css|less)$
-RewriteRule ^(minify/)?(.*\.(css|less|js))$ munee/index.php?minify=$1&files=/$2&type=$3 [L,QSA]
-#### Munee .htaccess Code END ####
-```
+        #### Munee .htaccess Code Start ####
+        # Only run CSS and LESS through Munee every time if calling a direct file.
+        RewriteCond %{REQUEST_FILENAME} !-f [OR]
+        RewriteCond %{REQUEST_URI} \.(css|less)$
+        RewriteRule ^(minify/)?(.*\.(css|less|js))$ munee.php?minify=$1&files=/$2&type=$3 [L,QSA]
+        #### Munee .htaccess Code END ####
 
 Usage Instructions
 ------------------

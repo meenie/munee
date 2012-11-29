@@ -21,6 +21,7 @@ for the library.
 
 Requirements
 ------------
+
 + PHP5.3+
 + `RewriteEngine` turned on inside a `.htaccess` file (Or in the Apache Config file)
 
@@ -53,13 +54,22 @@ modified since the last request.  This will save you a substantial amount of ban
 [Composer](https://packagist.org/) Installation Instructions
 ---------------------------------------
 
-1. Add the following to your `require` attribute inside composer.json: `"meenie/munee": "1.0.0"`
+1. Create a file called: `composer`.json and add the following:
+
+        {
+            "minimum-stability": "dev",
+            "require": {
+                "meenie/munee": "1.0.0"
+            }
+        }
+
+2. Run `curl -s http://getcomposer.org/installer | php`
 2. Run `php composer.phar install`
 3. Make sure the `cache` folder inside `vendor/meenie/munee` is writable
 4. Create a file called `munee.php` that is web accessible and paste in the following (**Update to the correct path**):
 
         // Include the composer autoload file
-        require '/path/to/composer/autoload.php';
+        require 'vendor/autoload.php';
 
         // Echo out the response
         echo \munee\Dispatcher::run(new munee\Request());
@@ -80,33 +90,25 @@ Usage Instructions
 
 Format your style so the href has all css files delimited by a comma (,).
 
-```
-<link rel="stylesheet" href="/css/libs/bootstrap.min.css,/css/site.css">
-```
+    <link rel="stylesheet" href="/css/libs/bootstrap.min.css,/css/site.css">
 
 **Minify CSS**
 
 Add the word 'minify' before the request to your files. (**Note: only add the word minify once**)
 
-```
-<link rel="stylesheet" href="/minify/css/libs/bootstrap.min.css,/css/site.css" />
-```
+    <link rel="stylesheet" href="/minify/css/libs/bootstrap.min.css,/css/site.css" />
 
 **One Request For All JS**
 
 Format your script tag so the src has all js files delimited by a comma (,).
 
-```
-<script src="/js/libs/jquery-1.8.1.min.js,/js/libs/bootstrap.min.js,/js/site.js"></script>
-```
+    <script src="/js/libs/jquery-1.8.1.min.js,/js/libs/bootstrap.min.js,/js/site.js"></script>
 
 **Minify JS**
 
 Add the word 'minify' before the request to your files. (**Note: only add the word minify once**)
 
-```
-<script src="/minify/js/libs/jquery-1.8.1.min.js,/js/libs/bootstrap.min.js,/js/site.js"></script>
-```
+    <script src="/minify/js/libs/jquery-1.8.1.min.js,/js/libs/bootstrap.min.js,/js/site.js"></script>
 
 Tips & Tricks
 -------------

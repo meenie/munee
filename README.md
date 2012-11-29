@@ -9,8 +9,7 @@ What is Munee?
 A PHP5.3 library to easily run all CSS through [lessphp](http://leafo.net/lessphp/)
 ([LESS](http://lesscss.org/)) and when the project goes live, all CSS and JS are minified and cached
 for lightening fast requests from a page.  No need to change how you include your assets in your
-templates.  Just drop the `munee` folder into your webroot, paste a couple of `RewriteRule`'s in
-your `.htaccess` file and you are on your way.
+templates. Just follow the couple of installation instructions below and you are ready to go!
 
 Why the name Munee?
 -------------------

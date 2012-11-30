@@ -8,7 +8,7 @@
 
 namespace munee\asset;
 
-use \munee\Asset;
+use \munee\AssetBase;
 use \munee\asset\AssetNotFoundException;
 
 /**
@@ -16,7 +16,7 @@ use \munee\asset\AssetNotFoundException;
  *
  * @author Cody Lundquist
  */
-class Css extends Asset
+class Css extends AssetBase
 {
     /**
      * @var string

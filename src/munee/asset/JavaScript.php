@@ -8,16 +8,16 @@
 
 namespace munee\asset;
 
-use \munee\Asset;
+use \munee\AssetBase;
 use \munee\asset\AssetNotFoundException;
 use \JShrink\Minifier;
 
 /**
- * Handles JS
+ * Handles JavaScript
  *
  * @author Cody Lundquist
  */
-class Js extends Asset
+class JavaScript extends AssetBase
 {
     /**
      * @var string

@@ -8,27 +8,29 @@
 
 namespace munee;
 
-use munee\Response;
+use munee\asset\AssetNotFoundException;
 
 class Dispatcher
 {
-    public static function run(\munee\Request $request)
+    /**
+     * @param Request $Request
+     *
+     * @return string
+     *
+     * @throws AssetNotFoundException
+     * @throws ErrorException
+     */
+    public static function run(Request $Request)
     {
-        static::_setPaths();
-        $response = new Response($request);
-
-        return $response->render();
-    }
-
-    protected static function _setPaths()
-    {
-        // DIRECTORY_SEPARATOR alias
-        define('DS' , DIRECTORY_SEPARATOR);
-        // Current working directory alias
-        define('MUNEE_FOLDER', dirname(dirname(__DIR__)));
-        // Define Webroot
-        defined('WEBROOT') || define('WEBROOT', $_SERVER['DOCUMENT_ROOT']);
-        // Define the cache path
-        define('CACHE', MUNEE_FOLDER . DS . 'cache');
+        try {
+            $response = new Response($Request);
+            return $response->render();
+        } catch (AssetNotFoundException $e) {
+            header("HTTP/1.0 404 Not Found");
+            header("Status: 404 Not Found");
+            return 'Error: ' . $e->getMessage();
+        } catch (ErrorException $e) {
+            return 'Error: ' . $e->getMessage();
+        }
     }
 }

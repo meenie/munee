@@ -15,7 +15,7 @@ use munee\ErrorException;
  *
  * @author Cody Lundquist
  */
-abstract class Asset
+abstract class AssetBase
 {
     /**
      * @var integer
@@ -45,12 +45,12 @@ abstract class Asset
     /**
      * Constructor
      *
-     * @param Request $request
+     * @param Request $Request
      */
-    public function __construct(\munee\Request $request)
+    public function __construct(Request $Request)
     {
         $this->_createDir(CACHE);
-        $this->_request = $request;
+        $this->_request = $Request;
     }
 
     /**

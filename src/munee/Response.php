@@ -10,6 +10,8 @@ namespace munee;
 
 /**
  * Munee Response Class
+ *
+ * @author Cody Lundquist
  */
 class Response
 {

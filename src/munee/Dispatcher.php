@@ -8,6 +8,11 @@
 
 namespace munee;
 
+/**
+ * The outermost layer of Munee that wraps everything in a Try/Catch block and also instantiates the Render Class
+ *
+ * @author Cody Lundquist
+ */
 class Dispatcher
 {
     /**
@@ -24,6 +29,7 @@ class Dispatcher
     {
         try {
             $Response = new Response($Request);
+
             return $Response->render();
         } catch (asset\NotFoundException $e) {
             header("HTTP/1.0 404 Not Found");

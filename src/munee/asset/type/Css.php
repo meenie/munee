@@ -6,10 +6,12 @@
  * @license http://opensource.org/licenses/mit-license.php
  */
 
-namespace munee\asset;
+namespace munee\asset\type;
 
-use \munee\asset\Base;
-use \munee\asset\NotFoundException;
+use munee\Request;
+use munee\asset\Base;
+use munee\asset\NotFoundException;
+use lessc;
 
 /**
  * Handles CSS
@@ -25,7 +27,7 @@ class Css extends Base
      * 
      * @throws NotFoundException
      */
-    public function __construct(\munee\Request $Request)
+    public function __construct(Request $Request)
     {
         parent::__construct($Request);
         
@@ -44,7 +46,7 @@ class Css extends Base
             } else {
                 $cache = $file;
             }
-            $less = new \lessc();
+            $less = new lessc();
             $newCache = $less->cachedCompile($cache);
             if (! is_array($cache) || $newCache['updated'] > $cache['updated']) {
                 file_put_contents($hashedFile, serialize($newCache));

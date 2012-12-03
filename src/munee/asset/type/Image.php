@@ -6,10 +6,11 @@
  * @license http://opensource.org/licenses/mit-license.php
  */
 
-namespace munee\asset;
+namespace munee\asset\type;
 
-use \munee\asset\Base;
-use \munee\asset\NotFoundException;
+use munee\Request;
+use munee\asset\Base;
+use munee\asset\NotFoundException;
 
 /**
  * Handles Images
@@ -25,7 +26,7 @@ class Image extends Base
      *
      * @throws NotFoundException
      */
-    public function __construct(\munee\Request $Request)
+    public function __construct(Request $Request)
     {
         parent::__construct($Request);
 

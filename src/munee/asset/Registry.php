@@ -8,9 +8,15 @@
 
 namespace munee\asset;
 
-use \munee\ErrorException;
-use \Closure;
+use munee\ErrorException;
+use munee\Request;
+use Closure;
 
+/**
+ * Registers extensions against a Closure which will instantiate the an Asset Type handler
+ *
+ * @author Cody Lundquist
+ */
 class Registry
 {
     /**
@@ -19,7 +25,7 @@ class Registry
     protected static $registry = array();
 
     /**
-     * Add a new resolver to the registry array.
+     * Register a resolver with a list of extensions
      *
      * @param string|array $extensions
      * @param Closure $resolve
@@ -28,7 +34,6 @@ class Registry
     {
         static::$registry[] = compact('extensions', 'resolve');
     }
-
 
     /**
      * Return the AssetClass based on the file extension in the Request Class
@@ -39,7 +44,7 @@ class Registry
      *
      * @throws ErrorException
      */
-    public static function getClass(\munee\Request $Request)
+    public static function getClass(Request $Request)
     {
         foreach (static::$registry as $registered) {
             if (in_array($Request->ext, (array) $registered['extensions'])) {

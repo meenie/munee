@@ -9,9 +9,11 @@
 namespace munee\asset;
 
 use munee\ErrorException;
+use munee\Request;
 
 /**
- * Asset Class - All Asset Classes extend this one and have to implement the abstract method.
+ * Base Asset Class
+ * All Asset Types need to extend this and implement the getHeaders() method.
  *
  * @author Cody Lundquist
  */
@@ -37,7 +39,7 @@ abstract class Base
      *
      * @param \munee\Request $Request
      */
-    public function __construct(\munee\Request $Request)
+    public function __construct(Request $Request)
     {
         $this->_createDir(CACHE);
         $this->_request = $Request;
@@ -89,8 +91,7 @@ abstract class Base
     protected function _createDir($dir)
     {
         if (! is_dir($dir) && ! mkdir($dir, 0777, true)) {
-            throw new ErrorException(
-                'The follow directory could not be made, please create it: ' . $dir);
+            throw new ErrorException("The follow directory could not be made, please create it: {$dir}");
         }
 
         return true;

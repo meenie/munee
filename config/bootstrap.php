@@ -1,6 +1,6 @@
 <?php
 
-use \munee\asset\Registry;
+use munee\asset\Registry;
 
 // DIRECTORY_SEPARATOR alias
 define('DS' , DIRECTORY_SEPARATOR);
@@ -15,7 +15,7 @@ define('CACHE', MUNEE_FOLDER . DS . 'cache');
  * Register the CSS Asset Class with the extensions .css and .less
  */
 Registry::register(array('css', 'less'), function (\munee\Request $Request) {
-    $Css = new \munee\asset\Css($Request);
+    $Css = new \munee\asset\type\Css($Request);
 
     return $Css;
 });
@@ -24,7 +24,7 @@ Registry::register(array('css', 'less'), function (\munee\Request $Request) {
  * Register the JavaScript Asset Class with the extension .js
  */
 Registry::register('js', function (\munee\Request $Request) {
-    $JavaScript = new \munee\asset\JavaScript($Request);
+    $JavaScript = new \munee\asset\type\JavaScript($Request);
 
     return $JavaScript;
 });
@@ -34,7 +34,7 @@ Registry::register('js', function (\munee\Request $Request) {
  */
 Registry::register(array('jpg', 'jpeg', 'gif', 'png'), function (\munee\Request $Request) {
     $Request->minify = true;
-    $Image = new \munee\asset\Image($Request);
+    $Image = new \munee\asset\type\Image($Request);
 
     return $Image;
 });

@@ -20,10 +20,6 @@ class Request
     /**
      * @var string
      */
-    public $type;
-    /**
-     * @var string
-     */
     public $ext;
     /**
      * @var bool
@@ -40,7 +36,7 @@ class Request
     public function __construct()
     {
         try {
-            // Fixing a legacy issue
+            // Handling legacy code
             if (isset($_GET['type'])) {
                 $_GET['ext'] = $_GET['type'];
             }

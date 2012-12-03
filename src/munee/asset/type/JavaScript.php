@@ -6,10 +6,12 @@
  * @license http://opensource.org/licenses/mit-license.php
  */
 
-namespace munee\asset;
+namespace munee\asset\type;
 
-use \munee\asset\Base;
-use \munee\asset\NotFoundException;
+use munee\Request;
+use munee\asset\Base;
+use munee\asset\NotFoundException;
+use JShrink\Minifier;
 
 /**
  * Handles JavaScript
@@ -30,7 +32,7 @@ class JavaScript extends Base
      *
      * @throws NotFoundException
      */
-    public function __construct(\munee\Request $Request)
+    public function __construct(Request $Request)
     {
         parent::__construct($Request);
 
@@ -80,7 +82,7 @@ class JavaScript extends Base
      */
     protected function _minify()
     {
-        $this->_content = \JShrink\Minifier::minify($this->_content);
+        $this->_content = Minifier::minify($this->_content);
     }
 
     /**

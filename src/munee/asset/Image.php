@@ -12,7 +12,7 @@ use \munee\asset\Base;
 use \munee\asset\NotFoundException;
 
 /**
- * Handles JavaScript
+ * Handles Images
  *
  * @author Cody Lundquist
  */
@@ -21,11 +21,14 @@ class Image extends Base
     /**
      * Generates the JS content based on the request
      *
-     * @return string
+     * @param \munee\Request $Request
+     *
      * @throws NotFoundException
      */
-    protected function _getContent()
+    public function __construct(\munee\Request $Request)
     {
+        parent::__construct($Request);
+
         $imageCacheDir = CACHE . DS . 'images';
         $this->_createDir($imageCacheDir);
 
@@ -34,15 +37,15 @@ class Image extends Base
         if (! file_exists($file)) {
             throw new NotFoundException('Image could not be found: ' . $file);
         }
-        $this->_lastModifiedDate = filemtime($file);
 
-        return file_get_contents($file);
+        $this->_lastModifiedDate = filemtime($file);
+        $this->_content = file_get_contents($file);
     }
 
     /**
-     * Set additional headers just for CSS
+     * Set additional headers just for an Image
      */
-    protected function _getHeaders()
+    public function getHeaders()
     {
         header("Content-Type: image/png");
     }

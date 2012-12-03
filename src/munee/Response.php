@@ -8,8 +8,6 @@
 
 namespace munee;
 
-use munee\asset\Registry;
-
 /**
  * Munee Response Class
  */
@@ -31,12 +29,64 @@ class Response
     }
 
     /**
-     * Instantiates the correct Asset Class and returns a response
+     * Instantiates the correct Asset Class, sets the correct headers, and returns a response.
+     * It will try and use Gzip to compress the content and save bandwidth
      *
      * @return string
      */
     public function render()
     {
-        return Registry::getClass($this->_request)->render();
+        $AssetClass = asset\Registry::getClass($this->_request);
+        $this->_setHeaders($AssetClass);
+
+        ob_start('ob_gzhandler') || ob_start();
+        echo $AssetClass;
+        ob_flush();
+
+        return ob_get_clean();
+    }
+
+    /**
+     * Set Headers for Response
+     * 
+     * @param object $AssetClass
+     *
+     * @throws ErrorException
+     */
+    protected function _setHeaders($AssetClass)
+    {
+        // Must be a Sub-Class of \munee\asset\Base
+        if (is_subclass_of($AssetClass, '\\asset\\Base')) {
+            throw new ErrorException(
+                get_class($AssetClass) . ' is not a sub class of \\munee\\asset\\Base'
+            );
+        }
+
+        if ($this->_request->minify) {
+            $lastModifiedDate = $AssetClass->getlastModifiedDate();
+            $eTag = md5($lastModifiedDate . $AssetClass->getContent());
+            $checkModifiedSince = isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ?
+                $_SERVER['HTTP_IF_MODIFIED_SINCE'] : false;
+            $checkETag = isset($_SERVER['HTTP_IF_NONE_MATCH']) ?
+                $_SERVER['HTTP_IF_NONE_MATCH'] : false;
+
+            if (
+                ($checkModifiedSince && strtotime($checkModifiedSince) == $lastModifiedDate) ||
+                $checkETag == $eTag
+            ) {
+                header("HTTP/1.1 304 Not Modified");
+                exit;
+            } else {
+                header("Last-Modified: " . gmdate("D, d M Y H:i:s", $lastModifiedDate) . " GMT");
+                header('Cache-Control: public');
+                header('ETag: ' . $eTag);
+            }
+        } else {
+            // Do not cache if not minified
+            header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
+            header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
+        }
+
+        $AssetClass->getHeaders();
     }
 }

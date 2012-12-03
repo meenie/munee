@@ -8,7 +8,7 @@
 
 namespace munee\asset;
 
-use \munee\Base;
+use \munee\asset\Base;
 use \munee\asset\NotFoundException;
 
 /**
@@ -21,16 +21,18 @@ class Css extends Base
     /**
      * Generates the CSS content based on the request
      *
-     * @return string
+     * @param \munee\Request $Request
+     * 
      * @throws NotFoundException
      */
-    protected function _getContent()
+    public function __construct(\munee\Request $Request)
     {
+        parent::__construct($Request);
+        
         $lessTmpDir = CACHE . DS . 'css';
         $this->_createDir($lessTmpDir);
 
         $files = (array) $this->_request->files;
-        $ret = '';
         foreach ($files as $file) {
             $file = WEBROOT . $file;
             if (! file_exists($file)) {
@@ -46,9 +48,9 @@ class Css extends Base
             $newCache = $less->cachedCompile($cache);
             if (! is_array($cache) || $newCache['updated'] > $cache['updated']) {
                 file_put_contents($hashedFile, serialize($newCache));
-                $ret .= $newCache['compiled'];
+                $this->_content .= $newCache['compiled'];
             } else {
-                $ret .= $cache['compiled'];
+                $this->_content .= $cache['compiled'];
             }
 
             if ($newCache['updated'] > $this->_lastModifiedDate) {
@@ -56,29 +58,22 @@ class Css extends Base
             }
         }
         if ($this->_request->minify) {
-            $ret = $this->_cssMinify($ret);
+            $this->_minify();
         }
-
-        return $ret;
     }
-
 
     /**
      * Set additional headers just for CSS
      */
-    protected function _getHeaders()
+    public function getHeaders()
     {
         header("Content-Type: text/css");
     }
 
     /**
      * Minifies the CSS
-     *
-     * @param $content
-     *
-     * @return mixed
      */
-    protected function _cssMinify($content)
+    protected function _minify()
     {
         $regexs = array(
             // Remove Comments
@@ -90,7 +85,7 @@ class Css extends Base
             '',
             '$1 .'
         );
-        $content = preg_replace($regexs, $replaces, $content);
+        $this->_content = preg_replace($regexs, $replaces, $this->_content);
         // Remove Tabs, Spaces, New Lines, and Unnecessary Space */
         $find = array(
             '{ ',
@@ -124,6 +119,6 @@ class Css extends Base
             ''
         );
 
-        return str_replace($find, $replace, $content);
+        $this->_content = str_replace($find, $replace, $this->_content);
     }
 }

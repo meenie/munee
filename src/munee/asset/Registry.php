@@ -26,7 +26,6 @@ class Registry
      */
     public static function register($extensions, Closure $resolve)
     {
-        $extensions = (array) $extensions;
         static::$registry[] = compact('extensions', 'resolve');
     }
 
@@ -43,11 +42,11 @@ class Registry
     public static function getClass(\munee\Request $Request)
     {
         foreach (static::$registry as $registered) {
-            if (in_array($Request->ext, $registered['extensions'])) {
+            if (in_array($Request->ext, (array) $registered['extensions'])) {
                 return $registered['resolve']($Request);
             }
         }
 
-        throw new ErrorException("The following Asset Type is not registered: {$Request->type}");
+        throw new ErrorException("The following extension is not handled: {$Request->ext}");
     }
 }

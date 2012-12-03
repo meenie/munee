@@ -33,11 +33,6 @@ abstract class Base
     protected $_request;
 
     /**
-     * @var string
-     */
-    protected $_webroot;
-
-    /**
      * Constructor
      *
      * @param \munee\Request $Request
@@ -49,65 +44,38 @@ abstract class Base
     }
 
     /**
-     * All Base Sub-Classes must create this method and return their content
+     * All Base Sub-Classes must create this method to set their additional headers
+     */
+    abstract public function getHeaders();
+
+    /**
+     * Magic Method so you can echo out a the Asset Class
      *
      * @return string
      */
-    abstract protected function _getContent();
-
-
-    /**
-     * All Base Sub-Classes must create this method to set their additional headers
-     */
-    abstract protected function _getHeaders();
-
-    /**
-     * Render out the asset's content
-     * Also set gzip Encoding to save some bandwidth (Only if the server can handle it)
-     * 
-     * @return string
-     */
-    public function render()
+    public function __toString()
     {
-        $content = $this->_getContent();
-        $this->_setHeaders();
-        ob_start('ob_gzhandler') || ob_start();
-        echo $content;
-        ob_flush();
-
-        return ob_get_clean();
+        return $this->_content;
     }
 
     /**
-     * Set Headers for Response
+     * Return the current content
+     *
+     * @return string
      */
-    protected function _setHeaders()
+    public function getContent()
     {
-        if (! $this->_request->minify) {
-            $eTag = md5($this->_lastModifiedDate . $this->_content);
-            $checkModifiedSince = isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ?
-                $_SERVER['HTTP_IF_MODIFIED_SINCE'] : false;
-            $checkETag = isset($_SERVER['HTTP_IF_NONE_MATCH']) ?
-                $_SERVER['HTTP_IF_NONE_MATCH'] : false;
+        return $this->__toString();
+    }
 
-            if (
-                ($checkModifiedSince && strtotime($checkModifiedSince) == $this->_lastModifiedDate) ||
-                $checkETag == $eTag
-            ) {
-                header("HTTP/1.1 304 Not Modified");
-                exit;
-            } else {
-                header("Last-Modified: " . gmdate("D, d M Y H:i:s", $this->_lastModifiedDate) . " GMT");
-                header('Cache-Control: public');
-                header('ETag: ' . $eTag);
-            }
-        } else {
-            // Do not cache if not minified
-            header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
-            header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
-        }
-
-        $this->_getHeaders();
+    /**
+     * Return a file's Last Modified Date.
+     *
+     * @return integer timestamp
+     */
+    public function getLastModifiedDate()
+    {
+        return $this->_lastModifiedDate;
     }
 
     /**

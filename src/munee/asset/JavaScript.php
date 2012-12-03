@@ -8,9 +8,8 @@
 
 namespace munee\asset;
 
-use \munee\Base;
+use \munee\asset\Base;
 use \munee\asset\NotFoundException;
-use \JShrink\Minifier;
 
 /**
  * Handles JavaScript
@@ -27,48 +26,49 @@ class JavaScript extends Base
     /**
      * Generates the JS content based on the request
      *
-     * @return string
+     * @param \munee\Request $Request
+     *
      * @throws NotFoundException
      */
-    protected function _getContent()
+    public function __construct(\munee\Request $Request)
     {
+        parent::__construct($Request);
+
         $this->_jsCacheDir = CACHE . DS . 'js';
         $this->_createDir($this->_jsCacheDir);
 
-        if (! $ret = $this->_checkJsCache()) {
+        if (! $this->_content = $this->_checkJsCache()) {
             $files = $this->_request->files;
             if (! is_array($files)) {
                 $files = array($files);
             }
-            $ret = '';
+            $this->_content = '';
             foreach ($files as $file) {
                 $file = WEBROOT . $file;
                 if (! file_exists($file)) {
                     throw new NotFoundException('File could not be found: ' . $file);
                 }
                 $filename = str_replace(WEBROOT, '', $file);
-                $ret .= "/*!\n";
-                $ret .= " *\n";
-                $ret .= " * Content from file: {$filename}\n";
-                $ret .= " *\n";
-                $ret .= " */\n\n";
-                $ret .= file_get_contents($file) . "\n";
+                $this->_content .= "/*!\n";
+                $this->_content .= " *\n";
+                $this->_content .= " * Content from file: {$filename}\n";
+                $this->_content .= " *\n";
+                $this->_content .= " */\n\n";
+                $this->_content .= file_get_contents($file) . "\n";
             }
             if ($this->_request->minify) {
-                $ret = $this->_jsMinify($ret);
+                $this->_minify();
             }
 
-            $this->_createJsCache($ret);
+            $this->_createJsCache($this->_content);
             $this->_lastModifiedDate = time();
         }
-
-        return $ret;
     }
 
     /**
      * Set additional headers just for CSS
      */
-    protected function _getHeaders()
+    public function getHeaders()
     {
         header("Content-Type: text/javascript");
     }
@@ -76,13 +76,11 @@ class JavaScript extends Base
     /**
      * Minifies the JavaScript
      *
-     * @param $content
-     *
      * @return string
      */
-    protected function _jsMinify($content)
+    protected function _minify()
     {
-        return Minifier::minify($content);
+        $this->_content = \JShrink\Minifier::minify($this->_content);
     }
 
     /**

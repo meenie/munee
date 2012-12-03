@@ -14,7 +14,8 @@
     "autoload": {
         "psr-0": {
             "munee": "src/"
-        }
+        },
+        "files": ["config/bootstrap.php"]
     },
     "require": {
         "php": ">=5.3.0",

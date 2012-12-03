@@ -10,4 +10,4 @@ namespace munee\asset;
 
 use munee\ErrorException;
 
-class AssetNotFoundException extends ErrorException {}
+class NotFoundException extends ErrorException {}

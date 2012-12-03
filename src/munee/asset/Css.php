@@ -8,41 +8,33 @@
 
 namespace munee\asset;
 
-use \munee\AssetBase;
-use \munee\asset\AssetNotFoundException;
+use \munee\Base;
+use \munee\asset\NotFoundException;
 
 /**
  * Handles CSS
  *
  * @author Cody Lundquist
  */
-class Css extends AssetBase
+class Css extends Base
 {
-    /**
-     * @var string
-     */
-    protected $_contentType = 'text/css';
-
     /**
      * Generates the CSS content based on the request
      *
      * @return string
-     * @throws AssetNotFoundException
+     * @throws NotFoundException
      */
     protected function _getContent()
     {
         $lessTmpDir = CACHE . DS . 'css';
         $this->_createDir($lessTmpDir);
 
-        $files = $this->_request->files;
-        if (! is_array($files)) {
-            $files = array($files);
-        }
+        $files = (array) $this->_request->files;
         $ret = '';
         foreach ($files as $file) {
             $file = WEBROOT . $file;
             if (! file_exists($file)) {
-                throw new AssetNotFoundException('File could not be found: ' . $file);
+                throw new NotFoundException('File could not be found: ' . $file);
             }
             $hashedFile = $lessTmpDir . DS . md5($file);
             if (file_exists($hashedFile)) {
@@ -68,6 +60,15 @@ class Css extends AssetBase
         }
 
         return $ret;
+    }
+
+
+    /**
+     * Set additional headers just for CSS
+     */
+    protected function _getHeaders()
+    {
+        header("Content-Type: text/css");
     }
 
     /**

@@ -1,4 +1,7 @@
 <?php
+
+use \munee\asset\Registry;
+
 // DIRECTORY_SEPARATOR alias
 define('DS' , DIRECTORY_SEPARATOR);
 // Config Folder
@@ -13,7 +16,7 @@ define('CACHE', MUNEE_FOLDER . DS . 'cache');
 /**
  * Register the CSS Asset Class
  */
-\munee\AssetRegistry::register('css', function (\munee\Request $Request) {
+Registry::register(array('css', 'less'), function (\munee\Request $Request) {
     $Css = new \munee\asset\Css($Request);
 
     return $Css;
@@ -22,8 +25,17 @@ define('CACHE', MUNEE_FOLDER . DS . 'cache');
 /**
  * Register the JavaScript Asset Class
  */
-\munee\AssetRegistry::register('js', function (\munee\Request $Request) {
+Registry::register('js', function (\munee\Request $Request) {
     $JavaScript = new \munee\asset\JavaScript($Request);
 
     return $JavaScript;
+});
+
+/**
+ * Register the Image Asset Class
+ */
+Registry::register(array('jpg', 'jpeg', 'gif', 'png'), function (\munee\Request $Request) {
+    $Image = new \munee\asset\Image($Request);
+
+    return $Image;
 });

@@ -8,7 +8,7 @@
 
 namespace munee;
 
-use munee\asset\AssetNotFoundException;
+use munee\asset\NotFoundException;
 
 class Dispatcher
 {
@@ -17,7 +17,7 @@ class Dispatcher
      *
      * @return string
      *
-     * @throws AssetNotFoundException
+     * @throws NotFoundException
      * @throws ErrorException
      */
     public static function run(Request $Request)
@@ -25,7 +25,7 @@ class Dispatcher
         try {
             $response = new Response($Request);
             return $response->render();
-        } catch (AssetNotFoundException $e) {
+        } catch (NotFoundException $e) {
             header("HTTP/1.0 404 Not Found");
             header("Status: 404 Not Found");
             return 'Error: ' . $e->getMessage();

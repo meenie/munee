@@ -8,6 +8,8 @@
 
 namespace munee;
 
+use munee\asset\Registry;
+
 /**
  * Munee Response Class
  */
@@ -35,6 +37,6 @@ class Response
      */
     public function render()
     {
-        return AssetRegistry::getAssetClass($this->_request)->render();
+        return Registry::getClass($this->_request)->render();
     }
 }

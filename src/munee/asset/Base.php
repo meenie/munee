@@ -6,7 +6,7 @@
  * @license http://opensource.org/licenses/mit-license.php
  */
 
-namespace munee;
+namespace munee\asset;
 
 use munee\ErrorException;
 
@@ -15,7 +15,7 @@ use munee\ErrorException;
  *
  * @author Cody Lundquist
  */
-abstract class AssetBase
+abstract class Base
 {
     /**
      * @var integer
@@ -28,12 +28,7 @@ abstract class AssetBase
     protected $_content;
 
     /**
-     * @var string
-     */
-    protected $_contentType;
-
-    /**
-     * @var array
+     * @var object
      */
     protected $_request;
 
@@ -45,20 +40,26 @@ abstract class AssetBase
     /**
      * Constructor
      *
-     * @param Request $Request
+     * @param \munee\Request $Request
      */
-    public function __construct(Request $Request)
+    public function __construct(\munee\Request $Request)
     {
         $this->_createDir(CACHE);
         $this->_request = $Request;
     }
 
     /**
-     * All Asset Sub-Classes must create this method and return their content
+     * All Base Sub-Classes must create this method and return their content
      *
      * @return string
      */
     abstract protected function _getContent();
+
+
+    /**
+     * All Base Sub-Classes must create this method to set their additional headers
+     */
+    abstract protected function _getHeaders();
 
     /**
      * Render out the asset's content
@@ -68,10 +69,10 @@ abstract class AssetBase
      */
     public function render()
     {
+        $content = $this->_getContent();
         $this->_setHeaders();
-
         ob_start('ob_gzhandler') || ob_start();
-        echo $this->_getContent();
+        echo $content;
         ob_flush();
 
         return ob_get_clean();
@@ -82,7 +83,7 @@ abstract class AssetBase
      */
     protected function _setHeaders()
     {
-        if ($this->_request->minify) {
+        if (! $this->_request->minify) {
             $eTag = md5($this->_lastModifiedDate . $this->_content);
             $checkModifiedSince = isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ?
                 $_SERVER['HTTP_IF_MODIFIED_SINCE'] : false;
@@ -106,7 +107,7 @@ abstract class AssetBase
             header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
         }
 
-        header("Content-Type: {$this->_contentType}");
+        $this->_getHeaders();
     }
 
     /**

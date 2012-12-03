@@ -8,8 +8,8 @@
 
 namespace munee\asset;
 
-use \munee\AssetBase;
-use \munee\asset\AssetNotFoundException;
+use \munee\Base;
+use \munee\asset\NotFoundException;
 use \JShrink\Minifier;
 
 /**
@@ -17,13 +17,8 @@ use \JShrink\Minifier;
  *
  * @author Cody Lundquist
  */
-class JavaScript extends AssetBase
+class JavaScript extends Base
 {
-    /**
-     * @var string
-     */
-    protected $_contentType = 'text/javascript';
-
     /**
      * @var string
      */
@@ -33,7 +28,7 @@ class JavaScript extends AssetBase
      * Generates the JS content based on the request
      *
      * @return string
-     * @throws AssetNotFoundException
+     * @throws NotFoundException
      */
     protected function _getContent()
     {
@@ -49,7 +44,7 @@ class JavaScript extends AssetBase
             foreach ($files as $file) {
                 $file = WEBROOT . $file;
                 if (! file_exists($file)) {
-                    throw new AssetNotFoundException('File could not be found: ' . $file);
+                    throw new NotFoundException('File could not be found: ' . $file);
                 }
                 $filename = str_replace(WEBROOT, '', $file);
                 $ret .= "/*!\n";
@@ -68,6 +63,14 @@ class JavaScript extends AssetBase
         }
 
         return $ret;
+    }
+
+    /**
+     * Set additional headers just for CSS
+     */
+    protected function _getHeaders()
+    {
+        header("Content-Type: text/javascript");
     }
 
     /**

@@ -79,7 +79,7 @@ modified since the last request.  This will save you a substantial amount of ban
         # Only run CSS and LESS through Munee every time if calling a direct file.
         RewriteCond %{REQUEST_FILENAME} !-f [OR]
         RewriteCond %{REQUEST_URI} \.(css|less)$
-        RewriteRule ^(minify/)?(.*\.(css|less|js))$ munee.php?minify=$1&files=/$2&type=$3 [L,QSA]
+        RewriteRule ^(minify/)?(.*\.(css|less|js))$ munee.php?minify=$1&files=/$2&ext=$3 [L,QSA]
         #### Munee .htaccess Code END ####
 
 Usage Instructions

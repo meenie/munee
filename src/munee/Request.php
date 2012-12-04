@@ -35,22 +35,17 @@ class Request
      */
     public function __construct()
     {
-        try {
-            // Handling legacy code
-            if (isset($_GET['type'])) {
-                $_GET['ext'] = $_GET['type'];
-            }
-
-            if (! isset($_GET['minify']) || empty($_GET['ext']) || empty($_GET['files'])) {
-                throw new ErrorException('Make sure you are using the correct .htaccess rules.');
-            }
-
-            $this->ext = $_GET['ext'];
-            $this->minify = ! empty($_GET['minify']);
-            $this->files = explode(',', $_GET['files']);
-        } catch (ErrorException $e) {
-            echo 'Error: ' . $e->getMessage();
-            exit;
+        // Handling legacy code
+        if (isset($_GET['type'])) {
+            $_GET['ext'] = $_GET['type'];
         }
+
+        if (! isset($_GET['minify']) || empty($_GET['ext']) || empty($_GET['files'])) {
+            throw new ErrorException('Make sure you are using the correct .htaccess rules.');
+        }
+
+        $this->ext = $_GET['ext'];
+        $this->minify = ! empty($_GET['minify']);
+        $this->files = explode(',', $_GET['files']);
     }
 }

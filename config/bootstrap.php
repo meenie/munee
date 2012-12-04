@@ -28,13 +28,3 @@ Registry::register('js', function (\munee\Request $Request) {
 
     return $JavaScript;
 });
-
-/**
- * Register the Image Asset Class with the extensions .jpg, .jpeg, .gif, and .png
- */
-Registry::register(array('jpg', 'jpeg', 'gif', 'png'), function (\munee\Request $Request) {
-    $Request->minify = true;
-    $Image = new \munee\asset\type\Image($Request);
-
-    return $Image;
-});

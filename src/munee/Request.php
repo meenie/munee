@@ -24,7 +24,7 @@ class Request
     /**
      * @var array
      */
-    public $get;
+    public $params;
     /**
      * @var array
      */
@@ -49,6 +49,6 @@ class Request
         unset($_GET['ext']);
         $this->files = explode(',', $_GET['files']);
         unset($_GET['files']);
-        $this->get = $_GET;
+        $this->params = $_GET;
     }
 }

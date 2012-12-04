@@ -8,8 +8,8 @@
 
 namespace munee\asset;
 
-use munee\ErrorException;
 use munee\Request;
+use munee\Utils;
 
 /**
  * Base Asset Class
@@ -46,7 +46,7 @@ abstract class Base
      */
     public function __construct(Request $Request)
     {
-        $this->_createDir(CACHE);
+        Utils::createDir(CACHE);
         $this->_request = $Request;
     }
 
@@ -94,22 +94,5 @@ abstract class Base
     public function getCacheClientSide()
     {
         return (boolean) $this->_cacheClientSide;
-    }
-
-    /**
-     * Creates directories
-     *
-     * @param $dir
-     *
-     * @return bool
-     * @throws ErrorException
-     */
-    protected function _createDir($dir)
-    {
-        if (! is_dir($dir) && ! mkdir($dir, 0777, true)) {
-            throw new ErrorException("The follow directory could not be made, please create it: {$dir}");
-        }
-
-        return true;
     }
 }

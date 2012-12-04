@@ -9,6 +9,7 @@
 namespace munee\asset\type;
 
 use munee\Request;
+use munee\Utils;
 use munee\asset\Base;
 use munee\asset\NotFoundException;
 use JShrink\Minifier;
@@ -37,7 +38,7 @@ class JavaScript extends Base
         parent::__construct($Request);
 
         $this->_jsCacheDir = CACHE . DS . 'js';
-        $this->_createDir($this->_jsCacheDir);
+        Utils::createDir($this->_jsCacheDir);
 
         if (! $this->_content = $this->_checkJsCache()) {
             $files = $this->_request->files;
@@ -59,7 +60,7 @@ class JavaScript extends Base
                 $this->_content .= file_get_contents($file) . "\n";
             }
 
-            if (! empty($this->_request->get['minify'])) {
+            if (! empty($this->_request->params['minify'])) {
                 $this->_minify();
             }
 

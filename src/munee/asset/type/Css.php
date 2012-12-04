@@ -9,6 +9,7 @@
 namespace munee\asset\type;
 
 use munee\Request;
+use munee\Utils;
 use munee\asset\Base;
 use munee\asset\NotFoundException;
 use lessc;
@@ -32,7 +33,7 @@ class Css extends Base
         parent::__construct($Request);
         
         $lessTmpDir = CACHE . DS . 'css';
-        $this->_createDir($lessTmpDir);
+        Utils::createDir($lessTmpDir);
 
         $files = (array) $this->_request->files;
         foreach ($files as $file) {
@@ -60,7 +61,7 @@ class Css extends Base
             }
         }
 
-        if (! empty($this->_request->get['minify'])) {
+        if (! empty($this->_request->params['minify'])) {
             $this->_minify();
         }
     }

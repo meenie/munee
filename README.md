@@ -75,10 +75,7 @@ modified since the last request.  This will save you a substantial amount of ban
 5. Open the .htaccess file in your webroot and paste in the following:
 
         #### Munee .htaccess Code Start ####
-        # Only run CSS/LESS and Images through Munee every time if calling a direct file.
-        RewriteCond %{REQUEST_FILENAME} !-f [OR]
-        RewriteCond %{REQUEST_URI} \.(css|less|jpg|jpeg|gif|png)$
-        RewriteRule ^(minify/)?(.*\.(css|less|jpg|jpeg|gif|png|js))$ munee.php?minify=$1&files=/$2&ext=$3 [L,QSA]
+        RewriteRule ^(.*\.(css|less|js|jpg|png|gif|jpeg))$ munee.php?files=/$1&ext=$2 [L,QSA]
         #### Munee .htaccess Code END ####
 
 Usage Instructions
@@ -92,9 +89,9 @@ Format your style so the href has all css files delimited by a comma (,).
 
 **Minify CSS**
 
-Add the word 'minify' before the request to your files. (**Note: only add the word minify once**)
+Add the word 'minify' before the request to your files.
 
-    <link rel="stylesheet" href="/minify/css/libs/bootstrap.min.css,/css/site.css" />
+    <link rel="stylesheet" href="/css/libs/bootstrap.min.css,/css/site.css?minify=true" />
 
 **One Request For All JS**
 
@@ -104,17 +101,12 @@ Format your script tag so the src has all js files delimited by a comma (,).
 
 **Minify JS**
 
-Add the word 'minify' before the request to your files. (**Note: only add the word minify once**)
+Add the word 'minify' before the request to your files.
 
-    <script src="/minify/js/libs/jquery-1.8.1.min.js,/js/libs/bootstrap.min.js,/js/site.js"></script>
+    <script src="/js/libs/jquery-1.8.1.min.js,/js/libs/bootstrap.min.js,/js/site.js?minify=true"></script>
 
 Tips & Tricks
 -------------
-
-**Minifying assets without prefixing the URL '/minify'.**
-
-If you want to run your assets through the minifier without having to prefix the URLs with
-'/minify' then just add '?minify=true' to the end of the request.
 
 **Minimising JavaScript Errors When Minified**
 

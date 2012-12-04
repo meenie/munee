@@ -22,9 +22,9 @@ class Request
      */
     public $ext;
     /**
-     * @var bool
+     * @var array
      */
-    public $minify;
+    public $get;
     /**
      * @var array
      */
@@ -35,17 +35,20 @@ class Request
      */
     public function __construct()
     {
-        // Handling legacy code
-        if (isset($_GET['type'])) {
-            $_GET['ext'] = $_GET['type'];
-        }
-
-        if (! isset($_GET['minify']) || empty($_GET['ext']) || empty($_GET['files'])) {
+        if (empty($_GET['ext']) || empty($_GET['files'])) {
             throw new ErrorException('Make sure you are using the correct .htaccess rules.');
         }
 
+        // Handle legacy code for minifying
+        if (preg_match('%^/minify/%', $_GET['files'])) {
+            $_GET['files'] = substr($_GET['files'], 7);
+            $_GET['minify'] = true;
+        }
+
         $this->ext = $_GET['ext'];
-        $this->minify = ! empty($_GET['minify']);
+        unset($_GET['ext']);
         $this->files = explode(',', $_GET['files']);
+        unset($_GET['files']);
+        $this->get = $_GET;
     }
 }

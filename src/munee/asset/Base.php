@@ -20,6 +20,11 @@ use munee\Request;
 abstract class Base
 {
     /**
+     * @var boolean
+     */
+    protected $_cacheClientSide = false;
+
+    /**
      * @var integer
      */
     protected $_lastModifiedDate = 0;
@@ -50,6 +55,7 @@ abstract class Base
      */
     abstract public function getHeaders();
 
+
     /**
      * Magic Method so you can echo out a the Asset Class
      *
@@ -78,6 +84,16 @@ abstract class Base
     public function getLastModifiedDate()
     {
         return $this->_lastModifiedDate;
+    }
+
+    /**
+     * Return true/false if a response should be cached client side
+     *
+     * @return boolean
+     */
+    public function getCacheClientSide()
+    {
+        return (boolean) $this->_cacheClientSide;
     }
 
     /**

@@ -58,7 +58,8 @@ class JavaScript extends Base
                 $this->_content .= " */\n\n";
                 $this->_content .= file_get_contents($file) . "\n";
             }
-            if ($this->_request->minify) {
+
+            if (! empty($this->_request->get['minify'])) {
                 $this->_minify();
             }
 
@@ -82,6 +83,8 @@ class JavaScript extends Base
      */
     protected function _minify()
     {
+        $this->_cacheClientSide = true;
+
         $this->_content = Minifier::minify($this->_content);
     }
 

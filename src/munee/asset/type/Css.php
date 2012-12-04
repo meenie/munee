@@ -59,7 +59,8 @@ class Css extends Base
                 $this->_lastModifiedDate = $newCache['updated'];
             }
         }
-        if ($this->_request->minify) {
+
+        if (! empty($this->_request->get['minify'])) {
             $this->_minify();
         }
     }
@@ -77,6 +78,8 @@ class Css extends Base
      */
     protected function _minify()
     {
+        $this->_cacheClientSide = true;
+
         $regexs = array(
             // Remove Comments
             '%/\*[^*]*\*+([^/][^*]*\*+)*/%',

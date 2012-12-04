@@ -64,7 +64,7 @@ class Response
             );
         }
 
-        if ($this->_request->minify) {
+        if ($AssetClass->getCacheClientSide()) {
             $lastModifiedDate = $AssetClass->getlastModifiedDate();
             $eTag = md5($lastModifiedDate . $AssetClass->getContent());
             $checkModifiedSince = isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ?
@@ -84,7 +84,7 @@ class Response
                 header('ETag: ' . $eTag);
             }
         } else {
-            // Do not cache if not minified
+            // Do not cache
             header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
             header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
         }

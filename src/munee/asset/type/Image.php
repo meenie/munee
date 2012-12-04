@@ -79,6 +79,17 @@ class Image extends Base
             'cast' => 'string'
         ),
     );
+
+    /**
+     * @var int
+     */
+    protected $_numberOfAllowedResizes = 3;
+
+    /**
+     * @var int
+     */
+    protected $_resizeTimelimit = 300;
+
     /**
      * Generates the JS content based on the request
      *
@@ -143,8 +154,11 @@ class Image extends Base
 
         // No need to recreate it if it already exists
         if (file_exists($newFile)) {
-            //return $newFile;
+            return $newFile;
         }
+
+        $this->_checkReferrer();
+        $this->_checkNumberOfAllowedResizes($hashedName);
 
         $Imagine = new \Imagine\Gd\Imagine();
         $image = $Imagine->open($file);
@@ -199,6 +213,47 @@ class Image extends Base
         return $newFile;
     }
 
+
+    /**
+     * Check to make sure the referrer domain is the same as the domain where the image exists.
+     *
+     * @throws ErrorException
+     */
+    protected function _checkReferrer()
+    {
+        if (! isset($_SERVER['HTTP_REFERER'])) {
+            throw new ErrorException('Direct resizing is not allowed.');
+        }
+
+        $referrer = preg_replace('%^https?://%', '', $_SERVER['HTTP_REFERER']);
+        if (! preg_match("%^{$_SERVER['SERVER_NAME']}%", $referrer)) {
+            throw new ErrorException('Referer does not match the correct domain.');
+        }
+    }
+
+
+    /**
+     * Check number of allowed resizes within a set timelimit
+     *
+     * @throws ErrorException
+     */
+    protected function _checkNumberOfAllowedResizes($hashedName)
+    {
+        $fileNameHash = preg_replace('%-.*\..+$%', '', $hashedName);
+        // Grab all the similar files
+        $cachedImages = glob($this->_imageCacheDir . DS . $fileNameHash . '*');
+        // Loop through and remove the ones that are older than the time limit
+        foreach ($cachedImages as $k => $image) {
+            if (filemtime($image) < time() - $this->_resizeTimelimit) {
+                unset($cachedImages[$k]);
+            }
+        }
+        // Check and see if we've reached the maximum allowed resizes within the current timelimit.
+        if (count($cachedImages) >= $this->_numberOfAllowedResizes) {
+            throw new ErrorException('You cannot create anymore resizes at this time.');
+        }
+    }
+
     /**
      * Generate File Name Hash based on resize arguments
      *
@@ -209,7 +264,7 @@ class Image extends Base
      */
     protected function _generateFileNameHash($file, $params)
     {
-        return md5($file . serialize($params)) . '.' . $this->_request->ext;
+        return md5($file) . '-' . md5(serialize($params)) . '.' . $this->_request->ext;
     }
 
     /**

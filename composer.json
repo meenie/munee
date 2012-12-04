@@ -20,6 +20,7 @@
     "require": {
         "php": ">=5.3.0",
         "leafo/lessphp": "*",
-        "tedivm/jshrink": "*"
+        "tedivm/jshrink": "*",
+        "imagine/Imagine": "*"
     }
 }

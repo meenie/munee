@@ -56,9 +56,8 @@ modified since the last request.  This will save you a substantial amount of ban
 1. Create a file called: `composer`.json and add the following:
 
         {
-            "minimum-stability": "dev",
             "require": {
-                "meenie/munee": "1.0.0"
+                "meenie/munee": "*"
             }
         }
 
@@ -76,10 +75,10 @@ modified since the last request.  This will save you a substantial amount of ban
 5. Open the .htaccess file in your webroot and paste in the following:
 
         #### Munee .htaccess Code Start ####
-        # Only run CSS and LESS through Munee every time if calling a direct file.
+        # Only run CSS/LESS and Images through Munee every time if calling a direct file.
         RewriteCond %{REQUEST_FILENAME} !-f [OR]
-        RewriteCond %{REQUEST_URI} \.(css|less)$
-        RewriteRule ^(minify/)?(.*\.(css|less|js))$ munee.php?minify=$1&files=/$2&type=$3 [L,QSA]
+        RewriteCond %{REQUEST_URI} \.(css|less|jpg|jpeg|gif|png)$
+        RewriteRule ^(minify/)?(.*\.(css|less|jpg|jpeg|gif|png|js))$ munee.php?minify=$1&files=/$2&ext=$3 [L,QSA]
         #### Munee .htaccess Code END ####
 
 Usage Instructions

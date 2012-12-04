@@ -56,9 +56,8 @@ modified since the last request.  This will save you a substantial amount of ban
 1. Create a file called: `composer`.json and add the following:
 
         {
-            "minimum-stability": "dev",
             "require": {
-                "meenie/munee": "1.0.0"
+                "meenie/munee": "*"
             }
         }
 

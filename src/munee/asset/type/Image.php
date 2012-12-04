@@ -30,18 +30,54 @@ class Image extends Base
      */
     protected $_allowedParams = array(
         'width' => array(
-            'alias' => 'w',
-            'regex' => '\d+'
+            'alias' => array('w'),
+            'regex' => '\d+',
+            'cast' => 'integer'
         ),
         'height' => array(
             'alias' => 'h',
-            'regex' => '\d+'
+            'regex' => '\d+',
+            'cast' => 'integer'
         ),
-        'crop' => array(
-            'alias' => 'c',
-            'regex' => 'exact|scaled',
-            'default' => 'scaled'
-        )
+        'quality' => array(
+            'alias' => array('q', 'qlty'),
+            'regex' => '\d{1,2}(?!\d)|100',
+            'default' => 75,
+            'cast' => 'integer'
+        ),
+        'exact' => array(
+            'alias' => 'e',
+            'regex' => 'true|false',
+            'default' => 'false',
+            'cast' => 'boolean'
+        ),
+        'stretch' => array(
+            'alias' => 's',
+            'regex' => 'true|false',
+            'default' => 'false',
+            'cast' => 'boolean'
+        ),
+        'fill' => array(
+            'alias' => 'f',
+            'regex' => 'true|false',
+            'default' => 'false',
+            'cast' => 'boolean'
+        ),
+        'fillColour' => array(
+            'alias' => array(
+                'fc',
+                'fillColor',
+                'fillcolor',
+                'fill_color',
+                'fill-color',
+                'fillcolour',
+                'fill_colour',
+                'fill-colour'
+            ),
+            'regex' => '[A-Fa-f0-9]{3,6}',
+            'default' => 'ffffff',
+            'cast' => 'string'
+        ),
     );
     /**
      * Generates the JS content based on the request
@@ -77,7 +113,18 @@ class Image extends Base
      */
     public function getHeaders()
     {
-        header("Content-Type: image/png");
+        switch ($this->_request->ext) {
+            case 'jpg':
+            case 'jpeg':
+                header("Content-Type: image/jpg");
+                break;
+            case 'png':
+                header("Content-Type: image/png");
+                break;
+            case 'gif':
+                header("Content-Type: image/gif");
+
+        }
     }
 
     /**
@@ -96,31 +143,58 @@ class Image extends Base
 
         // No need to recreate it if it already exists
         if (file_exists($newFile)) {
-            return $newFile;
+            //return $newFile;
         }
 
         $Imagine = new \Imagine\Gd\Imagine();
         $image = $Imagine->open($file);
 
         $size = $image->getSize();
-        $width = $size->getWidth();
-        $height = $size->getHeight();
+        $originalWidth = $size->getWidth();
+        $originalHeight = $size->getHeight();
+        $width = $originalWidth;
+        $height = $originalHeight;
         if (! empty($params['height']) && ! empty($params['width'])) {
-            $width = (int) $params['width'];
-            $height = (int) $params['height'];
+            if ($originalWidth > $params['width'] || $params['stretch']) {
+                $width = $params['width'];
+            }
+            if ($originalHeight > $params['height'] || $params['stretch']) {
+                $height = $params['height'];
+            }
         } elseif (! empty($params['height'])) {
-            $height = (int) $params['height'];
+            if ($originalHeight > $params['height'] || $params['stretch']) {
+                $height = $params['height'];
+            }
         } elseif (! empty($params['width'])) {
-            $width = (int) $params['width'];
+            if ($originalWidth > $params['width'] || $params['stretch']) {
+                $width = $params['width'];
+            }
         }
 
-        $mode = $params['crop'] == 'exact' ?
+        $mode = $params['exact'] ?
             \Imagine\Image\ImageInterface::THUMBNAIL_OUTBOUND :
             \Imagine\Image\ImageInterface::THUMBNAIL_INSET;
 
         $newSize = new \Imagine\Image\Box($width, $height);
 
-        $Imagine->open($file)->thumbnail($newSize, $mode)->save($newFile);
+        $newImage = $Imagine->open($file)->thumbnail($newSize, $mode);
+        if ($params['fill']) {
+            $adjustedSize = $newImage->getSize();
+            $canvasWidth = isset($params['width']) ? $params['width'] : $adjustedSize->getWidth();
+            $canvasHeight = isset($params['height']) ? $params['height'] : $adjustedSize->getHeight();
+            $canvas = $Imagine->create(
+                new \Imagine\Image\Box($canvasWidth, $canvasHeight),
+                new \Imagine\Image\Color($params['fillColour'])
+            );
+
+            // Put image in the middle of the canvas
+            $newImage = $canvas->paste($newImage, new \Imagine\Image\Point(
+                (int) (($canvasWidth - $adjustedSize->getWidth()) / 2),
+                (int) (($canvasHeight - $adjustedSize->getHeight()) / 2)
+            ));
+        }
+
+        $newImage->save($newFile, array('quality' => $params['quality']));
 
         return $newFile;
     }
@@ -149,19 +223,38 @@ class Image extends Base
      */
     protected function _parseParams($params)
     {
+        $ret = array();
         $regExs = $this->_getAllowedParamsRegEx();
-
-        // Grab out the values
-        foreach ($regExs as $param => $regEx) {
-            if (preg_match("%{$regEx}%", $params, $match)) {
-                $ret[$param] = $match[$param];
-            }
-        }
 
         // Set defaults if need be
         foreach ($this->_allowedParams as $param => $options) {
             if (! empty($options['default']) && empty($ret[$param])) {
                 $ret[$param] = $options['default'];
+            }
+        }
+
+        // Grab out the values
+        foreach ($regExs as $param => $regEx) {
+            if (preg_match("%{$regEx}%", $params, $match)) {
+                $val = strtolower($match[$param]);
+                $ret[$param] = $val;
+            }
+        }
+
+        // Cast the values based on the allowed params options
+        foreach ($ret as $param => $val) {
+            $cast = isset($this->_allowedParams[$param]['cast']) ?
+                $this->_allowedParams[$param]['cast'] : 'string';
+            switch ($cast) {
+                case 'integer';
+                    $ret[$param] = (integer) $val;
+                    break;
+                case 'boolean';
+                    $ret[$param] = 'true' == $val;
+                    break;
+                default:
+                    $ret[$param] = (string) $val;
+                    break;
             }
         }
 
@@ -184,7 +277,8 @@ class Image extends Base
         foreach ($this->_allowedParams as $param => $options) {
             $p = $param;
             if (! empty($options['alias'])) {
-                $p .= "|{$options['alias']}";
+                $alias = implode('|', (array) $options['alias']);
+                $p .= "|{$alias}";
             }
 
             $ret[$param] = "(?:{$p})\\[(?P<{$param}>{$options['regex']})\\]";

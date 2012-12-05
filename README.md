@@ -84,7 +84,7 @@ Using Munee, you resize/crop/stretch/fill images on-the-fly using a set of param
 
 **Security**
 
-When using an on-the-fly image resizing tool like this, there is an inherent risk that someone will try and exploit it to try and resize a photo a thousand different ways to take down your server. Munee has a couple of ways to minimise this risk a great deal.  One is it checks that the referer is set and is coming from the same domain that the image is located on.  Another is it only allows 3 resizes of an image within a 5 minute time span.  This can be modified or turned off for development purposes in the `bootstrap.php` file located in `/meenie/munee/config`.
+When using an on-the-fly image resizing tool like this, there is an inherent risk that someone will try and exploit it to try and resize a photo a thousand different ways to take down your server. Munee has a couple of ways to minimise this risk a great deal.  One is it checks that the referer is set and is coming from the same domain that the image is located on.  Another is it only allows 3 resizes of an image within a 5 minute time span.  In a later version, these can be modified or turned off for development purposes.
 
 **Resize Parameters** - Parameters can either be in long form or use their shortened form.  The value for an alias must be wrapped in square brackets `[]`. There is no need to put any characters between each parameter, although you can if you want.
 

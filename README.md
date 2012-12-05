@@ -108,15 +108,15 @@ Resize an image and keep it's correct aspect ratio but neither width or height c
 
 Crop an image to an exact size.  If the image is smaller than the provided dimensions, it will not stretch or fill the image out to match the height and width. **Note:** This is using the shortened form of the parameters.
 
-    <img src="/img/my-image.jpg?resize="w[100]h[85]e[true]">
+    <img src="/img/my-image.jpg?resize=w[100]h[85]e[true]">
 
 Crop an image and stretch it to an exact size.
 
-    <img src="/img/my-image.jpg?resize="w[200]h[300]e[true]s[true]">
+    <img src="/img/my-image.jpg?resize=w[200]h[300]e[true]s[true]">
 
 Resize an image and put it on dark grey background the exact size of the dimensions.
 
-    <img src="/img/my-image.jpg?resize="w[500]h[500]f[true]fc[444444]">
+    <img src="/img/my-image.jpg?resize=w[500]h[500]f[true]fc[444444]">
 
 ### Handling JavaScript ###
 

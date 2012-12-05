@@ -31,17 +31,17 @@ class Image extends Base
     {
         parent::__construct($Request);
 
-        $file = WEBROOT . array_shift($this->_request->files);
+        $image = WEBROOT . array_shift($this->_request->files);
 
-        if (! file_exists($file)) {
-            throw new NotFoundException('Image could not be found: ' . $file);
+        if (! file_exists($image)) {
+            throw new NotFoundException('Image could not be found: ' . str_replace(WEBROOT, '', $image));
         }
 
-        $file = Filter::run($file, $this->_request->params);
+        $filteredImage = Filter::run($image, $this->_request->params);
 
         $this->_cacheClientSide = true;
-        $this->_lastModifiedDate = filemtime($file);
-        $this->_content = file_get_contents($file);
+        $this->_lastModifiedDate = $filteredImage['changed'] ? time() : filemtime($filteredImage['image']);
+        $this->_content = file_get_contents($filteredImage['image']);
     }
 
     /**

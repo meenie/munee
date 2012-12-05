@@ -131,6 +131,6 @@ class JavaScript extends Base
     protected function _generateHashFilename()
     {
         return $this->_jsCacheDir . DS . md5(serialize($this->_request->files)) .
-            ($this->_request->minify ? '-minified' : null);
+            (! empty($this->_request->params['minify']) ? '-minified' : null);
     }
 }

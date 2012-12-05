@@ -52,23 +52,30 @@ abstract class Filter
      * @param $originalImage
      * @param $params
      *
-     * @return Filter
+     * @return array
      *
      * @throws ErrorException
      */
     public static function run($originalImage, $params)
     {
+        $ret = array(
+            'image' => $originalImage,
+            'changed' => false
+        );
+
         if (empty($params)) {
-            return $originalImage;
+            return $ret;
         }
 
         $cacheDir = CACHE . DS . 'images';
         Utils::createDir($cacheDir);
         $hashedName = self::_generateFileNameHash($originalImage, $params);
         $newImage = $cacheDir . DS . $hashedName;
-        // No need to recreate it if it already exists
-        if (file_exists($newImage)) {
-            return $newImage;
+        $ret['image'] = $newImage;
+
+        // No need to recreate it if it already exists and original copy hasn't changed
+        if (file_exists($newImage) && filemtime($originalImage) < filemtime($newImage)) {
+            return $ret;
         }
 
         self::_checkReferrer();
@@ -80,15 +87,15 @@ abstract class Filter
         // Run through the list of params and instantiate each filter
         foreach ($params as $param => $options) {
             $filterClass = 'munee\\asset\\type\\image\\filter\\' . ucfirst($param);
-            if (! class_exists($filterClass)) {
-                throw new ErrorException("The following filter does not exist: {$filterClass}");
+            if (class_exists($filterClass)) {
+                $Filter = new $filterClass($originalImage, $newImage, $options);
+                $Filter->_filter();
             }
-
-            $Filter = new $filterClass($originalImage, $newImage, $options);
-            $Filter->_filter();
         }
 
-        return $newImage;
+        $ret['changed'] = true;
+
+        return $ret;
     }
 
     /**

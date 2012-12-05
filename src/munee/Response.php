@@ -64,29 +64,25 @@ class Response
             );
         }
 
-        if ($AssetClass->getCacheClientSide()) {
-            $lastModifiedDate = $AssetClass->getlastModifiedDate();
-            $eTag = md5($lastModifiedDate . $AssetClass->getContent());
-            $checkModifiedSince = isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ?
-                $_SERVER['HTTP_IF_MODIFIED_SINCE'] : false;
-            $checkETag = isset($_SERVER['HTTP_IF_NONE_MATCH']) ?
-                $_SERVER['HTTP_IF_NONE_MATCH'] : false;
+        // We don't want the browser to handle any cache, Munee will handle that.
+        header("Cache-Control: no-cache");
 
-            if (
-                ($checkModifiedSince && strtotime($checkModifiedSince) == $lastModifiedDate) ||
-                $checkETag == $eTag
-            ) {
-                header("HTTP/1.1 304 Not Modified");
-                exit;
-            } else {
-                header("Last-Modified: " . gmdate("D, d M Y H:i:s", $lastModifiedDate) . " GMT");
-                header('Cache-Control: public');
-                header('ETag: ' . $eTag);
-            }
+        $lastModifiedDate = $AssetClass->getlastModifiedDate();
+        $eTag = md5($lastModifiedDate . $AssetClass->getContent());
+        $checkModifiedSince = isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ?
+            $_SERVER['HTTP_IF_MODIFIED_SINCE'] : false;
+        $checkETag = isset($_SERVER['HTTP_IF_NONE_MATCH']) ?
+            $_SERVER['HTTP_IF_NONE_MATCH'] : false;
+
+        if (
+            ($checkModifiedSince && strtotime($checkModifiedSince) == $lastModifiedDate) ||
+            $checkETag == $eTag
+        ) {
+            header("HTTP/1.1 304 Not Modified");
+            exit;
         } else {
-            // Do not cache
-            header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
-            header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
+            header("Last-Modified: " . gmdate("D, d M Y H:i:s", $lastModifiedDate) . " GMT");
+            header('ETag: ' . $eTag);
         }
 
         $AssetClass->getHeaders();

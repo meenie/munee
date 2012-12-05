@@ -35,7 +35,7 @@ class Request
      */
     public function __construct()
     {
-        if (empty($_GET['ext']) || empty($_GET['files'])) {
+        if (empty($_GET['files'])) {
             throw new ErrorException('Make sure you are using the correct .htaccess rules.');
         }
 
@@ -45,8 +45,7 @@ class Request
             $_GET['minify'] = true;
         }
 
-        $this->ext = $_GET['ext'];
-        unset($_GET['ext']);
+        $this->ext = pathinfo($_GET['files'], PATHINFO_EXTENSION);
         $this->files = explode(',', $_GET['files']);
         unset($_GET['files']);
         $this->params = $_GET;

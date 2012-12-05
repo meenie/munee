@@ -3,13 +3,22 @@ Munee: Optimising Your Assets
 
 ---
 
+Features
+--------
+
++ On the fly LESS Compiler
++ On-the-fly Image Resizing/Manipulation
++ Smart Asset Caching - Client Side & Server Side
++ Combine CSS or JS into one request
++ Minifying and Gzip
+
 What is Munee?
 --------------
 
-A PHP5.3 library to easily run all CSS through [lessphp](http://leafo.net/lessphp/)
-([LESS](http://lesscss.org/)) and when the project goes live, all CSS and JS are minified and cached locally and
-remotely for lightening fast requests. No need to change how you include your assets in your templates. Just follow
-the couple of installation instructions below and you are ready to go!
+A PHP5.3 library to easily run all CSS through [lessphp](http://leafo.net/lessphp/) ([LESS](http://lesscss.org/)),
+resize/manipulate images on the fly, minify CSS and JS, and cache assets locally and remotely for lightening fast
+requests. No need to change how you include your assets in your templates. Just follow the couple of installation
+instructions below and you are ready to go!
 
 Why the name Munee?
 -------------------
@@ -22,36 +31,17 @@ Requirements
 ------------
 
 + PHP5.3+
-+ `RewriteEngine` turned on inside a `.htaccess` file (Or in the Apache Config file)
-
-What Happens When?
-------------------
-
-**For CSS**
-
-The `RewriteRule`  will always run CSS through the Munee Library because the library
-needs to compile the CSS with lessphp and then cache the result. With the newest version of lessphp,
-Munee will make sure and rebuild the compiled CSS if any of the files have changed (including any
-files you have `@import` within the CSS files themselves - Yay!!).
-
-**For JavaScript**
-
-If you are requesting just one JavaScript file (`<script src="/js/libs/jquery-1.8.1.min.js"></script>`),
-the `RewriteRule` will not run it through the Munee Library.  It will just serve the file straight from your web server.
-Might as well not have php do more than it has to.  If you are requesting multiple JS files (or minifying),
-Munee will put them together into one request and cache the result.  It will also make sure and check the
-cache is newer than each of those requested files so you don't have any caching issues.
++ `RewriteEngine` turned on inside a `.htaccess` file (Or in the Apache Config file) **Optional**
 
 Note on Caching
 ---------------
 
-Munee caches asset requests server side and will overwrite that cache if it finds an asset has been
-modified.  If you are running the assets through minification, it will set the correct headers
-to cache the files client side and then return a `304 Not Modified` if the files have not been
-modified since the last request.  This will save you a substantial amount of bandwidth.
+Munee caches asset requests server side and returns a `304 Not Modified` on subsequent requests if the asset hasn't
+been modified. If the asset has been modified, it will overwrite that cache and tell the browser they must revalidate
+it's cache so the new file can be shown.
 
 [Composer](https://packagist.org/) Installation Instructions
----------------------------------------
+------------------------------------------------------------
 
 1. Create a file called: `composer`.json and add the following:
 

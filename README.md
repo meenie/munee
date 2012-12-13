@@ -57,7 +57,7 @@ Munee caches asset requests server side and returns a `304 Not Modified` on subs
 
         #### Munee .htaccess Code Start ####
         RewriteRule ^(.*\.(?:css|less|js|jpg|png|gif|jpeg))$ munee.php?files=/$1 [L,QSA]
-        #### Munee .htaccess Code END ####
+        #### Munee .htaccess Code End ####
 
 Usage Instructions
 ------------------

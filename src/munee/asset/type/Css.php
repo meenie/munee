@@ -22,48 +22,69 @@ use lessc;
 class Css extends Base
 {
     /**
-     * Generates the CSS content based on the request
+     * @var array
+     */
+    protected $_options = array(
+        'validateCache' => true,
+        'lessifyAllCss' => false
+    );
+
+    /**
+     * Generates the JS content based on the request
      *
      * @param \munee\Request $Request
-     * 
-     * @throws NotFoundException
      */
     public function __construct(Request $Request)
     {
+        $this->_cacheDir = CACHE . DS . 'css';
         parent::__construct($Request);
-        
+    }
+
+    /**
+     * Generates the CSS content based on the request
+     *
+     * @param string $file
+     *
+     * @return string
+     *
+     * @throws NotFoundException
+     */
+    public function _getFileContent($file)
+    {
         $lessTmpDir = CACHE . DS . 'css';
         Utils::createDir($lessTmpDir);
 
-        $files = (array) $this->_request->files;
-        foreach ($files as $file) {
-            $file = WEBROOT . $file;
-            if (! file_exists($file)) {
-                throw new NotFoundException('File could not be found: ' . $file);
-            }
+        $file = WEBROOT . $file;
+        $ext = pathinfo($file, PATHINFO_EXTENSION);
+        if (! file_exists($file)) {
+            throw new NotFoundException('File could not be found: ' . $file);
+        }
+
+        if ('less' == $ext || $this->_options['lessifyAllCss']) {
             $hashedFile = $lessTmpDir . DS . md5($file);
             if (file_exists($hashedFile)) {
                 $cache = unserialize(file_get_contents($hashedFile));
             } else {
                 $cache = $file;
             }
+
             $less = new lessc();
             $newCache = $less->cachedCompile($cache);
             if (! is_array($cache) || $newCache['updated'] > $cache['updated']) {
                 file_put_contents($hashedFile, serialize($newCache));
-                $this->_content .= $newCache['compiled'];
+                $content = $newCache['compiled'];
             } else {
-                $this->_content .= $cache['compiled'];
+                $content = $cache['compiled'];
             }
 
             if ($newCache['updated'] > $this->_lastModifiedDate) {
                 $this->_lastModifiedDate = $newCache['updated'];
             }
+        } else {
+            $content = file_get_contents($file);
         }
 
-        if (! empty($this->_request->params['minify'])) {
-            $this->_minify();
-        }
+        return $content;
     }
 
     /**
@@ -75,10 +96,18 @@ class Css extends Base
     }
 
     /**
-     * Minifies the CSS
+     * Callback function called after the content is collected
+     *
+     * Doing minification if needed
+     *
+     * @return string
      */
-    protected function _minify()
+    protected function _afterFilter()
     {
+        if (empty($this->_request->params['minify'])) {
+            return;
+        }
+
         $this->_cacheClientSide = true;
 
         $regexs = array(
@@ -92,7 +121,8 @@ class Css extends Base
             '$1 .'
         );
         $this->_content = preg_replace($regexs, $replaces, $this->_content);
-        // Remove Tabs, Spaces, New Lines, and Unnecessary Space */
+
+        // Remove Tabs, Spaces, New Lines, and Unnecessary Space
         $find = array(
             '{ ',
             ' }',

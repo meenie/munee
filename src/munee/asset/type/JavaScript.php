@@ -8,7 +8,6 @@
 
 namespace munee\asset\type;
 
-use munee\Request;
 use munee\asset\Base;
 
 /**
@@ -19,17 +18,6 @@ use munee\asset\Base;
 class JavaScript extends Base
 {
     /**
-     * Generates the JS content based on the request
-     *
-     * @param \munee\Request $Request
-     */
-    public function __construct(Request $Request)
-    {
-        $this->_cacheDir = CACHE . DS . 'js';
-        parent::__construct($Request);
-    }
-
-    /**
      * Set additional headers just for CSS
      */
     public function getHeaders()
@@ -38,17 +26,21 @@ class JavaScript extends Base
     }
 
     /**
-     * Callback function called after the content is collected
+     * Callback function called after the content is collected but before the content is cached
      *
      * Doing minification if needed
+     *
+     * @param string $content
+     *
+     * @return string
      */
-    protected function _afterFilter()
+    protected function _beforeCreateCacheCallback($content)
     {
-        if (empty($this->_request->params['minify'])) {
-            return;
+        if (! empty($this->_request->params['minify'])) {
+            $this->_cacheClientSide = true;
+            $content = \JShrink\Minifier::minify($content);
         }
 
-        $this->_cacheClientSide = true;
-        $this->_content = \JShrink\Minifier::minify($this->_content);
+        return $content;
     }
 }

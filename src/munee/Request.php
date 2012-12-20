@@ -46,7 +46,9 @@ class Request
         }
 
         $this->ext = pathinfo($_GET['files'], PATHINFO_EXTENSION);
-        $this->files = explode(',', $_GET['files']);
+        $this->files = array_map(function($v) {
+            return WEBROOT . $v;
+        }, explode(',', $_GET['files']));
         unset($_GET['files']);
         $this->params = $_GET;
     }

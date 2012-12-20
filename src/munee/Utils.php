@@ -20,4 +20,79 @@ class Utils
 
         return true;
     }
+
+    /**
+     * Check to see if a string is unserializable
+     *
+     * @param $value
+     * @param null $result
+     *
+     * @return boolean
+     *
+     * @see https://gist.github.com/1415653
+     */
+    public static function isSerialized($value, &$result = null)
+    {
+        // Bit of a give away this one
+        if (! is_string($value)) {
+            return false;
+        }
+        // Serialized FALSE, return TRUE. unserialize() returns FALSE on an
+        // invalid string or it could return FALSE if the string is serialized
+        // FALSE, eliminate that possibility.
+        if ('b:0;' === $value) {
+            $result = false;
+
+            return true;
+        }
+        $length = strlen($value);
+        $end = '';
+        if (isset($value[0])) {
+            switch ($value[0]) {
+                case 's':
+                    if ('"' !== $value[$length - 2]) {
+                        return false;
+                    }
+                case 'b':
+                case 'i':
+                case 'd':
+                    // This looks odd but it is quicker than isset()ing
+                    $end .= ';';
+                case 'a':
+                case 'O':
+                    $end .= '}';
+                    if (':' !== $value[1])
+                        return false;
+                    switch ($value[2]) {
+                        case 0:
+                        case 1:
+                        case 2:
+                        case 3:
+                        case 4:
+                        case 5:
+                        case 6:
+                        case 7:
+                        case 8:
+                        case 9:
+                            break;
+                        default:
+                            return false;
+                    }
+                case 'N':
+                    $end .= ';';
+                    if ($value[$length - 1] !== $end[0])
+                        return false;
+                    break;
+                default:
+                    return false;
+            }
+        }
+        if (($result = @unserialize($value)) === false) {
+            $result = null;
+
+            return false;
+        }
+
+        return true;
+    }
 }

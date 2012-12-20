@@ -59,72 +59,28 @@ abstract class Base
     public function __construct(Request $Request)
     {
         $this->_request = $Request;
+        $this->_cacheDir = CACHE . DS . strtolower(basename(get_class($this)));
 
-        // Set cache dir if needed
-        if (empty($this->_cacheDir)) {
-            $this->_cacheDir = CACHE;
-        }
         // Set cache dir if needed
         Utils::createDir($this->_cacheDir);
+    }
 
-        // If we have cache, use it.  If not, lets churn some files
-        if (! $this->_content = $this->_checkCache()) {
-            $files = $this->_request->files;
+    /**
+     * Grabs the content for the Response class
+     *
+     * @return string
+     */
+    public function getContent()
+    {
+        $this->_content = $this->_processFiles();
 
-            // Only one file? Nothing special
-            if (count($files) === 1) {
-                $file = WEBROOT . array_shift($files);
-                $this->_content = $this->_getFileContent($file);
-            // Lets combine all the files and split them up with comments.
-            } else {
-                foreach ($files as $file) {
-                    $file = WEBROOT . $file;
-                    $filename = str_replace(WEBROOT, '', $file);
-                    $this->_content .= "/*!\n";
-                    $this->_content .= " *\n";
-                    $this->_content .= " * Content from file: {$filename}\n";
-                    $this->_content .= " *\n";
-                    $this->_content .= " */\n\n";
-                    $this->_content .= $this->_getFileContent($file) . "\n";
-                }
-            }
-
-            // Run the afterFilter callback
-            $this->_afterFilter();
-
-            // Create the cache
-            $this->_createCache($this->_content);
-
-            // Set the lastModifiedDate
-            $this->_lastModifiedDate = time();
-        }
+        return $this->_content;
     }
 
     /**
      * All Base Sub-Classes must create this method to set their additional headers
      */
     abstract public function getHeaders();
-
-
-    /**
-     * Magic Method so you can echo out a the Asset Class
-     *
-     * @return string
-     */
-    public function __toString()
-    {
-        return $this->_content;
-    }
-
-    /**
-     * Return the current content
-     *
-     * @return string
-     */
-    public function getContent()
-    {
-        return $this->__toString();
-    }
 
     /**
      * Return a file's Last Modified Date.
@@ -169,12 +125,45 @@ abstract class Base
         $this->_options[$name] = $value;
     }
 
+    /**
+     * Process all files in the request and return content
+     *
+     * @return string
+     */
+    protected function _processFiles()
+    {
+        $ret = null;
+        foreach ($this->_request->files as $file) {
+            $ret .= $this->_getFileContent($file) . "\n";
+        }
+
+        return $ret;
+    }
 
     /**
-     * Callback method called after the content is collected
+     * Callback method called after the content is collected and cached
+     *
+     * @param string $content
+     *
+     * @return string
      */
-    protected function _afterFilter() {}
+    protected function _getFileContentCallback($content)
+    {
+        return $content;
+    }
 
+    /**
+     * Callback function called after the content is collected but before the content is cached
+     *
+     * @param string $content
+     * @param string $file
+     *
+     * @return string
+     */
+    protected function _beforeCreateCacheCallback($content, $file)
+    {
+        return $content;
+    }
 
     /**
      * Grab a files content but check to make sure it exists first
@@ -191,51 +180,67 @@ abstract class Base
             throw new NotFoundException('File could not be found: ' . $file);
         }
 
-        return file_get_contents($file);
+        if (! $content = $this->_checkCache($file)) {
+            $content = file_get_contents($file);
+
+            $content = $this->_beforeCreateCacheCallback($content, $file);
+            $this->_createCache($file, $content);
+
+            $content = $this->_getFileContentCallback($content);
+
+            $this->_lastModifiedDate = time();
+        }
+
+        return $content;
     }
 
     /**
      * Checks to see if cache exists and is the latest, if it does, return it
      *
+     * @param string $file
+     *
      * @return bool|string
      */
-    protected function _checkCache()
+    protected function _checkCache($file)
     {
-        $hashFile = $this->_generateHashFilename();
+        $hashFile = $this->_generateHashFilename($file);
         if (! file_exists($hashFile)) {
             return false;
         }
+
         $hashFileLastModified = filemtime($hashFile);
-        foreach ($this->_request->files as $file) {
-            $file = WEBROOT . $file;
-            if (! file_exists($file) || filemtime($file) > $hashFileLastModified) {
-                return false;
-            }
+        if (! file_exists($file) || filemtime($file) > $hashFileLastModified) {
+            return false;
         }
-        $this->_lastModifiedDate = $hashFileLastModified;
+
+        if ($this->_lastModifiedDate < $hashFileLastModified) {
+            $this->_lastModifiedDate = $hashFileLastModified;
+        }
 
         return file_get_contents($hashFile);
     }
 
     /**
-     * Caches a file based on it's type and file names.
+     * Caches a file based on it's filename and content.
      *
-     * @param $content
+     * @param string $file
+     * @param string $content
      */
-    protected function _createCache($content)
+    protected function _createCache($file, $content)
     {
-        $hashFile = $this->_generateHashFilename();
-        file_put_contents($hashFile, $content);
+        file_put_contents($this->_generateHashFilename($file), $content);
     }
 
     /**
-     * Generate hash filename
+     * Generate hash for a file based on it's path, name, and params.
+     *
+     * @param string $file
      *
      * @return string;
      */
-    protected function _generateHashFilename()
+    protected function _generateHashFilename($file)
     {
-        return $this->_cacheDir . DS . md5(serialize($this->_request->files)) .
-            (! empty($this->_request->params['minify']) ? '-minified' : null);
+        $ext = pathinfo($file, PATHINFO_EXTENSION);
+        return $this->_cacheDir . DS . md5($file . serialize($this->_request->params)) . '.' . $ext;
     }
 }

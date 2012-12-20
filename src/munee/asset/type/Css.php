@@ -30,64 +30,6 @@ class Css extends Base
     );
 
     /**
-     * Generates the JS content based on the request
-     *
-     * @param \munee\Request $Request
-     */
-    public function __construct(Request $Request)
-    {
-        $this->_cacheDir = CACHE . DS . 'css';
-        parent::__construct($Request);
-    }
-
-    /**
-     * Generates the CSS content based on the request
-     *
-     * @param string $file
-     *
-     * @return string
-     *
-     * @throws NotFoundException
-     */
-    public function _getFileContent($file)
-    {
-        $lessTmpDir = CACHE . DS . 'css';
-        Utils::createDir($lessTmpDir);
-
-        $file = WEBROOT . $file;
-        $ext = pathinfo($file, PATHINFO_EXTENSION);
-        if (! file_exists($file)) {
-            throw new NotFoundException('File could not be found: ' . $file);
-        }
-
-        if ('less' == $ext || $this->_options['lessifyAllCss']) {
-            $hashedFile = $lessTmpDir . DS . md5($file);
-            if (file_exists($hashedFile)) {
-                $cache = unserialize(file_get_contents($hashedFile));
-            } else {
-                $cache = $file;
-            }
-
-            $less = new lessc();
-            $newCache = $less->cachedCompile($cache);
-            if (! is_array($cache) || $newCache['updated'] > $cache['updated']) {
-                file_put_contents($hashedFile, serialize($newCache));
-                $content = $newCache['compiled'];
-            } else {
-                $content = $cache['compiled'];
-            }
-
-            if ($newCache['updated'] > $this->_lastModifiedDate) {
-                $this->_lastModifiedDate = $newCache['updated'];
-            }
-        } else {
-            $content = file_get_contents($file);
-        }
-
-        return $content;
-    }
-
-    /**
      * Set additional headers just for CSS
      */
     public function getHeaders()
@@ -96,20 +38,104 @@ class Css extends Base
     }
 
     /**
-     * Callback function called after the content is collected
+     * Checks to see if cache exists and is the latest, if it does, return it
+     * It also checks to see if this is LESS cache and makes sure all imported files are the latest
      *
-     * Doing minification if needed
+     * @param string $file
+     *
+     * @return bool|string
+     */
+    protected function _checkCache($file)
+    {
+        if (! $ret = parent::_checkCache($file)) {
+            return false;
+        }
+
+        if ($this->_isLess($file)) {
+            if (! Utils::isSerialized($ret, $lessCache)) {
+                return $ret;
+            }
+            foreach ($lessCache['files'] as $file => $lastModified) {
+                if (filemtime($file) > $lastModified) {
+                    return false;
+                }
+            }
+
+            $ret = $lessCache['compiled'];
+        }
+
+        return $ret;
+    }
+
+    /**
+     * Callback function called after the content is collected but before the content is cached
+     * We want to run the file through LESS if need be.
+     *
+     * @param string $content
+     * @param string $file
      *
      * @return string
      */
-    protected function _afterFilter()
+    protected function _beforeCreateCacheCallback($content, $file)
     {
-        if (empty($this->_request->params['minify'])) {
-            return;
+
+        if ($isLess = $this->_isLess($file)) {
+            $less = new lessc();
+            $content = $less->cachedCompile($file);
         }
 
-        $this->_cacheClientSide = true;
+        if (! empty($this->_request->params['minify'])) {
+            $this->_cacheClientSide = true;
+            if ($isLess) {
+                $content['compiled'] = $this->_minify($content['compiled']);
+            } else {
+                $content = $this->_minify($content);
+            }
+        }
 
+        // If content is an array, we want to serialize before we return it
+        return is_array($content) ? serialize($content) : $content;
+    }
+
+    /**
+     * Callback method called after the content is collected and cached
+     * Check if the content is serialized.  If it is, we have LESS cache
+     * and we want to return whats in the `compiled` array key
+     *
+     * @param string $content
+     *
+     * @return string
+     */
+    protected function _getFileContentCallback($content)
+    {
+        if (Utils::isSerialized($content, $content)) {
+            $content = $content['compiled'];
+        }
+
+        return $content;
+    }
+
+    /**
+     * Check if it's a LESS file or if we should run all CSS through LESS
+     *
+     * @param string $file
+     *
+     * @return boolean
+     */
+    protected function _isLess($file)
+    {
+        return 'less' == pathinfo($file, PATHINFO_EXTENSION) || $this->_options['lessifyAllCss'];
+    }
+
+    /**
+     * CSS Minification
+     *
+     * @param string $content
+     *
+     * @return string
+     */
+    protected function _minify($content)
+    {
         $regexs = array(
             // Remove Comments
             '%/\*[^*]*\*+([^/][^*]*\*+)*/%',
@@ -120,7 +146,7 @@ class Css extends Base
             '',
             '$1 .'
         );
-        $this->_content = preg_replace($regexs, $replaces, $this->_content);
+        $content = preg_replace($regexs, $replaces, $content);
 
         // Remove Tabs, Spaces, New Lines, and Unnecessary Space
         $find = array(
@@ -155,6 +181,6 @@ class Css extends Base
             ''
         );
 
-        $this->_content = str_replace($find, $replace, $this->_content);
+        return str_replace($find, $replace, $content);
     }
 }

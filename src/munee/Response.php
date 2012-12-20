@@ -39,10 +39,11 @@ class Response
     public function render()
     {
         $AssetClass = asset\Registry::getClass($this->_request);
+        $content = $AssetClass->getContent();
         $this->_setHeaders($AssetClass);
 
         ob_start('ob_gzhandler') || ob_start();
-        echo $AssetClass;
+        echo $content;
         ob_flush();
 
         return ob_get_clean();

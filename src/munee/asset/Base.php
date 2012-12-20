@@ -25,11 +25,6 @@ abstract class Base
     protected $_options = array();
 
     /**
-     * @var boolean
-     */
-    protected $_cacheClientSide = false;
-
-    /**
      * @var string
      */
     protected $_cacheDir;
@@ -93,16 +88,6 @@ abstract class Base
     }
 
     /**
-     * Return true/false if a response should be cached client side
-     *
-     * @return boolean
-     */
-    public function getCacheClientSide()
-    {
-        return (boolean) $this->_cacheClientSide;
-    }
-
-    /**
      * Set Options
      *
      * @param $options
@@ -132,12 +117,12 @@ abstract class Base
      */
     protected function _processFiles()
     {
-        $ret = null;
+        $ret = array();
         foreach ($this->_request->files as $file) {
-            $ret .= $this->_getFileContent($file) . "\n";
+            $ret[] = $this->_getFileContent($file);
         }
 
-        return $ret;
+        return implode("\n", $ret);
     }
 
     /**

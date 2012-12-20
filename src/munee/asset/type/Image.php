@@ -21,27 +21,25 @@ use munee\asset\type\image\Filter;
 class Image extends Base
 {
     /**
-     * Generates the JS content based on the request
+     * Overload the _getFileContent of Base and handle images a bit different
      *
-     * @param \munee\Request $Request
+     * @param string $image
+     *
+     * @return string
      *
      * @throws NotFoundException
      */
-    public function __construct(Request $Request)
+    protected function _getFileContent($image)
     {
-        parent::__construct($Request);
-
-        $image = WEBROOT . array_shift($this->_request->files);
 
         if (! file_exists($image)) {
             throw new NotFoundException('Image could not be found: ' . str_replace(WEBROOT, '', $image));
         }
 
         $filteredImage = Filter::run($image, $this->_request->params);
-
-        $this->_cacheClientSide = true;
         $this->_lastModifiedDate = $filteredImage['changed'] ? time() : filemtime($filteredImage['image']);
-        $this->_content = file_get_contents($filteredImage['image']);
+
+        return file_get_contents($filteredImage['image']);
     }
 
     /**

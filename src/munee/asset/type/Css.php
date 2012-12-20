@@ -8,10 +8,8 @@
 
 namespace munee\asset\type;
 
-use munee\Request;
 use munee\Utils;
 use munee\asset\Base;
-use munee\asset\NotFoundException;
 use lessc;
 
 /**
@@ -85,7 +83,6 @@ class Css extends Base
         }
 
         if (! empty($this->_request->params['minify'])) {
-            $this->_cacheClientSide = true;
             if ($isLess) {
                 $content['compiled'] = $this->_minify($content['compiled']);
             } else {

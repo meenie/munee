@@ -31,13 +31,13 @@ class JavaScript extends Base
      * Doing minification if needed
      *
      * @param string $content
+     * @param string $file
      *
      * @return string
      */
-    protected function _beforeCreateCacheCallback($content)
+    protected function _beforeCreateCacheCallback($content, $file)
     {
         if (! empty($this->_request->params['minify'])) {
-            $this->_cacheClientSide = true;
             $content = \JShrink\Minifier::minify($content);
         }
 

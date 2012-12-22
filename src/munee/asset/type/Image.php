@@ -8,7 +8,6 @@
 
 namespace munee\asset\type;
 
-use munee\Request;
 use munee\asset\Base;
 use munee\asset\NotFoundException;
 use munee\asset\type\image\Filter;
@@ -31,7 +30,6 @@ class Image extends Base
      */
     protected function _getFileContent($image)
     {
-
         if (! file_exists($image)) {
             throw new NotFoundException('Image could not be found: ' . str_replace(WEBROOT, '', $image));
         }

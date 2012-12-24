@@ -3,6 +3,11 @@ Munee: Optimising Your Assets
 
 ---
 
+Update 1.3.0 Important Note
+---------------------------
+
+In this and future versions of Munee, the way CSS is run through the `lessphp` compiler has changed.  By default, only `.less` files will be compiled and you will have to set a special parameter to have all CSS (`.css`) files run through the compiler as well. [See here](#handling-css) for more instructions. The reason behind this change is technically `.less` files should have have only valid LESS in them and `.css` should only have valid CSS in them.
+
 Features
 --------
 
@@ -64,7 +69,11 @@ Usage Instructions
 
 ### Handling CSS ###
 
-All CSS is automatically compiled through LESS and cached, there is nothing extra that you need to do.  Any changes you make to your CSS, even LESS files you have `@import` will automatically recreate the cache invalidate the client side cache and force the browser to download the newest version.
+All LESS files are automatically compiled through `lessphp` and cached, there is nothing extra that you need to do.  Any changes you make to your CSS, even LESS files you have `@import` will automatically recreate the cache, invalidate the client side cache, and force the browser to download the newest version.
+
+If you would like to run **all css** through `lessphp`, then you will need to pass the `lessifyAllCss` parameter into the `Request` class when you instantiate it:
+
+    echo \munee\Dispatcher::run(new munee\Request(array('css' => array('lessifyAllCss' => true))));
 
 **One Request For All CSS**
 

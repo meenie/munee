@@ -8,36 +8,43 @@
 
 namespace munee\asset\type;
 
-use munee\asset\Base;
-use munee\asset\NotFoundException;
-use munee\asset\type\image\Filter;
+use munee\asset\Type;
 
 /**
  * Handles Images
  *
  * @author Cody Lundquist
  */
-class Image extends Base
+class Image extends Type
 {
     /**
-     * Overload the _getFileContent of Base and handle images a bit different
-     *
-     * @param string $image
-     *
-     * @return string
-     *
-     * @throws NotFoundException
+     * @var array
      */
-    protected function _getFileContent($image)
+    protected $_options = array(
+        // How many filters can be done within the `allowedFiltersTimeLimit`
+        'numberOfAllowedFilters' => 3,
+        // Number of seconds - default is 5 minutes
+        'allowedFiltersTimeLimit' => 300
+    );
+
+    /**
+     * Checks to see if cache exists and is the latest, if it does, return it
+     *
+     * Extra security checks for images
+     *
+     * @param string $originalFile
+     * @param string $cacheFile
+     *
+     * @return bool|string
+     */
+    protected function _checkCache($originalFile, $cacheFile)
     {
-        if (! file_exists($image)) {
-            throw new NotFoundException('Image could not be found: ' . str_replace(WEBROOT, '', $image));
+        if (! $return = parent::_checkCache($originalFile, $cacheFile)) {
+            $this->_checkReferrer();
+            $this->_checkNumberOfAllowedFilters($cacheFile);
         }
 
-        $filteredImage = Filter::run($image, $this->_request->params);
-        $this->_lastModifiedDate = $filteredImage['changed'] ? time() : filemtime($filteredImage['image']);
-
-        return file_get_contents($filteredImage['image']);
+        return $return;
     }
 
     /**
@@ -56,6 +63,48 @@ class Image extends Base
             case 'gif':
                 header("Content-Type: image/gif");
                 break;
+        }
+    }
+
+    /**
+     * Check to make sure the referrer domain is the same as the domain where the image exists.
+     *
+     * @throws \ErrorException
+     */
+    protected function _checkReferrer()
+    {
+        if (! isset($_SERVER['HTTP_REFERER'])) {
+            throw new \ErrorException('Direct image manipulation is not allowed.');
+        }
+
+        $referrer = preg_replace('%^https?://%', '', $_SERVER['HTTP_REFERER']);
+        if (! preg_match("%^{$_SERVER['SERVER_NAME']}%", $referrer)) {
+            throw new \ErrorException('Referrer does not match the correct domain.');
+        }
+    }
+
+    /**
+     * Check number of allowed resizes within a set time limit
+     *
+     * @param string $checkImage
+     *
+     * @throws \ErrorException
+     */
+    protected function _checkNumberOfAllowedFilters($checkImage)
+    {
+        $pathInfo = pathinfo($checkImage);
+        $fileNameHash = preg_replace('%-.*$%', '', $pathInfo['filename']);
+        // Grab all the similar files
+        $cachedImages = glob($pathInfo['dirname'] . DS . $fileNameHash . '*');
+        // Loop through and remove the ones that are older than the time limit
+        foreach ($cachedImages as $k => $image) {
+            if (filemtime($image) < time() - $this->_options['allowedFiltersTimeLimit']) {
+                unset($cachedImages[$k]);
+            }
+        }
+        // Check and see if we've reached the maximum allowed resizes within the current time limit.
+        if (count($cachedImages) >= $this->_options['numberOfAllowedFilters']) {
+            throw new \ErrorException('You cannot create anymore resizes/manipulations at this time.');
         }
     }
 }

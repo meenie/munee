@@ -9,7 +9,7 @@
 namespace munee\asset\type;
 
 use munee\Utils;
-use munee\asset\Base;
+use munee\asset\Type;
 use lessc;
 
 /**
@@ -17,13 +17,12 @@ use lessc;
  *
  * @author Cody Lundquist
  */
-class Css extends Base
+class Css extends Type
 {
     /**
      * @var array
      */
     protected $_options = array(
-        'validateCache' => true,
         'lessifyAllCss' => false
     );
 
@@ -39,63 +38,53 @@ class Css extends Base
      * Checks to see if cache exists and is the latest, if it does, return it
      * It also checks to see if this is LESS cache and makes sure all imported files are the latest
      *
-     * @param string $file
+     * @param string $originalFile
+     * @param string $cacheFile
      *
-     * @return bool|string
+     * @return bool|string|array
      */
-    protected function _checkCache($file)
+    protected function _checkCache($originalFile, $cacheFile)
     {
-        if (! $ret = parent::_checkCache($file)) {
+        if (! $ret = parent::_checkCache($originalFile, $cacheFile)) {
             return false;
         }
 
-        if ($this->_isLess($file)) {
-            if (! Utils::isSerialized($ret, $lessCache)) {
+        if ($this->_isLess($cacheFile)) {
+            if (! Utils::isSerialized($ret, $ret)) {
+                // If for some reason the file isn't serialized, just return the content
                 return $ret;
             }
-            foreach ($lessCache['files'] as $file => $lastModified) {
+            // Go through each file and make sure none of them have changed
+            foreach ($ret['files'] as $file => $lastModified) {
                 if (filemtime($file) > $lastModified) {
                     return false;
                 }
             }
 
-            $ret = $lessCache['compiled'];
+            $ret = serialize($ret);
         }
 
         return $ret;
     }
 
     /**
-     * Callback function called after the content is collected but before the content is cached
-     * We want to run the file through LESS if need be.
+     * Callback method called before filters are run
      *
-     * @param string $content
-     * @param string $file
+     * Overriding to run the file through LESS if need be.
      *
-     * @return string
+     * @param string $originalFile
+     * @param string $cacheFile
      */
-    protected function _beforeCreateCacheCallback($content, $file)
+    protected function _beforeFilter($originalFile, $cacheFile)
     {
-
-        if ($isLess = $this->_isLess($file)) {
+        if ($this->_isLess($originalFile)) {
             $less = new lessc();
-            $content = $less->cachedCompile($file);
+            file_put_contents($cacheFile, serialize($less->cachedCompile($originalFile)));
         }
-
-        if (! empty($this->_request->params['minify'])) {
-            if ($isLess) {
-                $content['compiled'] = $this->_minify($content['compiled']);
-            } else {
-                $content = $this->_minify($content);
-            }
-        }
-
-        // If content is an array, we want to serialize before we return it
-        return is_array($content) ? serialize($content) : $content;
     }
 
     /**
-     * Callback method called after the content is collected and cached
+     * Callback method called after the content is collected and/or cached
      * Check if the content is serialized.  If it is, we have LESS cache
      * and we want to return whats in the `compiled` array key
      *
@@ -103,7 +92,7 @@ class Css extends Base
      *
      * @return string
      */
-    protected function _getFileContentCallback($content)
+    protected function _afterGetFileContent($content)
     {
         if (Utils::isSerialized($content, $content)) {
             $content = $content['compiled'];
@@ -122,62 +111,5 @@ class Css extends Base
     protected function _isLess($file)
     {
         return 'less' == pathinfo($file, PATHINFO_EXTENSION) || $this->_options['lessifyAllCss'];
-    }
-
-    /**
-     * CSS Minification
-     *
-     * @param string $content
-     *
-     * @return string
-     */
-    protected function _minify($content)
-    {
-        $regexs = array(
-            // Remove Comments
-            '%/\*[^*]*\*+([^/][^*]*\*+)*/%',
-            // Fixing extra spacing between classes so there is only one space
-            '%(\w)\s{2,}\.%',
-        );
-        $replaces = array(
-            '',
-            '$1 .'
-        );
-        $content = preg_replace($regexs, $replaces, $content);
-
-        // Remove Tabs, Spaces, New Lines, and Unnecessary Space
-        $find = array(
-            '{ ',
-            ' }',
-            '; ',
-            ', ',
-            ' {',
-            '} ',
-            ': ',
-            ' ,',
-            ' ;',
-            ';}',
-            "\r\n",
-            "\r",
-            "\n",
-            "\t",
-            '  ',
-            '    '
-        );
-        $replace = array(
-            '{',
-            '}',
-            ';',
-            ',',
-            '{',
-            '}',
-            ':',
-            ',',
-            ';',
-            '}',
-            ''
-        );
-
-        return str_replace($find, $replace, $content);
     }
 }

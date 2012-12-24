@@ -15,25 +15,19 @@ define('CACHE', MUNEE_FOLDER . DS . 'cache');
  * Register the CSS Asset Class with the extensions .css and .less
  */
 Registry::register(array('css', 'less'), function (\munee\Request $Request) {
-    $Css = new \munee\asset\type\Css($Request);
-
-    return $Css;
+    return new \munee\asset\type\Css($Request);
 });
 
 /**
  * Register the JavaScript Asset Class with the extension .js
  */
 Registry::register('js', function (\munee\Request $Request) {
-    $JavaScript = new \munee\asset\type\JavaScript($Request);
-
-    return $JavaScript;
+    return new \munee\asset\type\JavaScript($Request);
 });
 
 /**
  * Register the Image Asset Class with the extensions .jpg, .jpeg, .gif, and .png
  */
 Registry::register(array('jpg', 'jpeg', 'gif', 'png'), function (\munee\Request $Request) {
-    $Image = new \munee\asset\type\Image($Request);
-
-    return $Image;
+    return new \munee\asset\type\Image($Request);
 });

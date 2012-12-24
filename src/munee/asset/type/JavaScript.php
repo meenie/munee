@@ -8,39 +8,20 @@
 
 namespace munee\asset\type;
 
-use munee\asset\Base;
+use munee\asset\Type;
 
 /**
  * Handles JavaScript
  *
  * @author Cody Lundquist
  */
-class JavaScript extends Base
+class JavaScript extends Type
 {
     /**
-     * Set additional headers just for CSS
+     * Set headers for JavaScript
      */
     public function getHeaders()
     {
         header("Content-Type: text/javascript");
-    }
-
-    /**
-     * Callback function called after the content is collected but before the content is cached
-     *
-     * Doing minification if needed
-     *
-     * @param string $content
-     * @param string $file
-     *
-     * @return string
-     */
-    protected function _beforeCreateCacheCallback($content, $file)
-    {
-        if (! empty($this->_request->params['minify'])) {
-            $content = \JShrink\Minifier::minify($content);
-        }
-
-        return $content;
     }
 }

@@ -142,6 +142,10 @@ Format your script tag so the src has all js files delimited by a comma (,).
 To minify your JS, add the query string parameter `minify` and set it to `true`
 
     <script src="/js/libs/jquery-1.8.1.min.js,/js/libs/bootstrap.min.js,/js/site.js?minify=true"></script>
+    
+Build status
+------------
+[![Build Status](https://secure.travis-ci.org/meenie/munee.png?branch=master)](http://travis-ci.org/meenie/munee)
 
 Tips & Tricks
 -------------

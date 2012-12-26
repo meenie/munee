@@ -189,13 +189,11 @@ class Request
 
             return $ret;
         } else {
-            // No Regex? Just return value - probably should have used regex :)
-            if (empty($paramOptions['regex'])) {
-                return $value;
-            }
-
-            if (! preg_match("%^(?:{$paramOptions['regex']})$%", $value, $match)) {
-                throw new ErrorException("'{$value}' is not a valid value for: {$param}");
+            // Using RegEx?
+            if (! empty($paramOptions['regex'])) {
+                if (! preg_match("%^(?:{$paramOptions['regex']})$%", $value)) {
+                    throw new ErrorException("'{$value}' is not a valid value for: {$param}");
+                }
             }
 
             $cast = ! empty($paramOptions['cast']) ? $paramOptions['cast'] : 'string';

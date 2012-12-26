@@ -23,26 +23,112 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         new Request();
     }
 
-    public function testWithQueryString()
+    public function testConstructor()
     {
-        $_GET['minify'] = 'minify/';
-        $_GET['ext'] = 'css';
-        $_GET['files'] = '/css/foo.css';
+        $_GET = array(
+            'files' => '/js/foo.js,/js/bar.js'
+        );
 
-        $request = new Request();
+        $Request = new Request(array('foo' => 'bar'));
+        
+        $this->assertEquals('js', $Request->ext);
+        $this->assertEquals(array('/js/foo.js', '/js/bar.js'), $Request->files);
+        $this->assertEquals(array('foo' => 'bar'), $Request->options);
+    }
 
-        $this->assertEquals(true, $request->minify);
-        $this->assertEquals('css', $request->ext);
-        $this->assertEquals(array('/css/foo.css'), $request->files);
+    public function testLegacyCode()
+    {
+        $_GET = array(
+            'files' => '/minify/js/foo.js'
+        );
 
-        $_GET['minify'] = '';
-        $_GET['ext'] = 'js';
-        $_GET['files'] = '/js/foo.js,/js/bar.js';
+        $Request = new Request();
 
-        $request = new Request();
+        $this->assertEquals(array('/js/foo.js'), $Request->files);
+        $this->assertEquals(array('minify' => 'true'), $Request->getRawParams());
+    }
 
-        $this->assertEquals(false, $request->minify);
-        $this->assertEquals('js', $request->ext);
-        $this->assertEquals(array('/js/foo.js', '/js/bar.js'), $request->files);
+    public function testGetRawParams()
+    {
+        $_GET = array(
+            'files' => '/js/foo.js,/js/bar.js',
+            'minify' => 'true',
+            'notAllowedParam' => 'foo'
+        );
+
+        $Request = new Request();
+        
+        $rawParams = $Request->getRawParams();
+        $this->assertEquals(array('minify' => 'true', 'notAllowedParam' => 'foo'), $rawParams);
+    }
+
+    public function testParseParams()
+    {
+        $_GET = array(
+            'files' => '/js/foo.js,/js/bar.js',
+            'foo' => 'true',
+            'b' => 'ba[42]',
+            'notAllowedParam' => 'foo'
+
+        );
+
+        $Request = new Request();
+        
+        $this->assertEquals(array(), $Request->params);
+
+        $allowedParams = array(
+            'foo' => array(
+                'alias' => 'f',
+                'default' => 'false',
+                'cast' => 'boolean'
+            ),
+            'bar' => array(
+                'alias' => 'b',
+                'arguments' => array(
+                    'baz' => array(
+                        'alias' => 'ba',
+                        'regex' => '\d+',
+                        'cast' => 'integer',
+                        'default' => 24
+                    ),
+                )
+            ),
+            'qux' => array(
+                'default' => 'no'
+            )
+        );
+
+        $Request->parseParams($allowedParams);
+        $assertedParams = array(
+            'foo' => true,
+            'bar' => array(
+                'baz' => 42
+            ),
+            'qux' => 'no'
+        );
+
+        $this->assertEquals($assertedParams, $Request->params);
+    }
+
+    public function testWrongParamValue()
+    {
+        $_GET = array(
+            'files' => '/js/foo.js',
+            'foo' => 'not good'
+        );
+
+        $allowedParams = array(
+            'foo' => array(
+                'alias' => 'f',
+                'regex' => 'true|false',
+                'default' => 'false',
+                'cast' => 'boolean'
+            )
+        );
+
+        $Request = new Request();
+
+        $this->setExpectedException('munee\ErrorException');
+        $Request->parseParams($allowedParams);
     }
 }

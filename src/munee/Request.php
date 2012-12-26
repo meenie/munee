@@ -225,7 +225,6 @@ class Request
             case 'string':
             default:
                 $value = (string) $value;
-                break;
         }
 
         return $value;

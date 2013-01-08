@@ -30,6 +30,11 @@ abstract class Type
     protected $_params = array();
 
     /**
+     * @var array
+     */
+    protected $_filters = array();
+
+    /**
      * @var string
      */
     protected $_cacheDir;

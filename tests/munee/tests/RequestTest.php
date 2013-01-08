@@ -17,6 +17,25 @@ use munee\Request;
  */
 class RequestTest extends \PHPUnit_Framework_TestCase
 {
+    protected function setUp()
+    {
+        $jsDir = WEBROOT . DS . 'js';
+        if (! file_exists($jsDir)) {
+            mkdir($jsDir);
+        }
+
+        file_put_contents($jsDir . DS . 'foo.js', '//Temp foo.js File');
+        file_put_contents($jsDir . DS . 'bar.js', '//Temp bar.js File');
+    }
+
+    protected function tearDown()
+    {
+        $jsDir = WEBROOT . DS . 'js';
+        unlink($jsDir . DS . 'foo.js');
+        unlink($jsDir . DS . 'bar.js');
+        rmdir($jsDir);
+    }
+
     public function testNoQueryString()
     {
         $this->setExpectedException('munee\ErrorException');
@@ -30,10 +49,30 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         );
 
         $Request = new Request(array('foo' => 'bar'));
-        
+
         $this->assertEquals('js', $Request->ext);
-        $this->assertEquals(array('/js/foo.js', '/js/bar.js'), $Request->files);
+        $this->assertEquals(array(WEBROOT . '/js/foo.js', WEBROOT . '/js/bar.js'), $Request->files);
         $this->assertEquals(array('foo' => 'bar'), $Request->options);
+    }
+
+    public function testFileNotExist()
+    {
+        $_GET = array(
+            'files' => '/js/does-not-exist.js'
+        );
+
+        $this->setExpectedException('munee\ErrorException');
+        new Request();
+    }
+
+    public function testExtensionNotSupported()
+    {
+        $_GET = array(
+            'files' => '/js/foo.jpg,/js/bar.js'
+        );
+
+        $this->setExpectedException('munee\ErrorException');
+        new Request();
     }
 
     public function testLegacyCode()
@@ -44,7 +83,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
 
         $Request = new Request();
 
-        $this->assertEquals(array('/js/foo.js'), $Request->files);
+        $this->assertEquals(array(WEBROOT . '/js/foo.js'), $Request->files);
         $this->assertEquals(array('minify' => 'true'), $Request->getRawParams());
     }
 

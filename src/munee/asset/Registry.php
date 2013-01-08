@@ -22,7 +22,7 @@ class Registry
     /**
      * @var string Registered Classes
      */
-    protected static $registry = array();
+    protected static $_registry = array();
 
     /**
      * Register a resolver with a list of extensions
@@ -32,7 +32,8 @@ class Registry
      */
     public static function register($extensions, Closure $resolve)
     {
-        static::$registry[] = compact('extensions', 'resolve');
+        $extensions = (array) $extensions;
+        static::$_registry[] = compact('extensions', 'resolve');
     }
 
     /**
@@ -46,12 +47,32 @@ class Registry
      */
     public static function getClass(Request $Request)
     {
-        foreach (static::$registry as $registered) {
-            if (in_array($Request->ext, (array) $registered['extensions'])) {
+        foreach (static::$_registry as $registered) {
+            if (in_array($Request->ext, $registered['extensions'])) {
                 return $registered['resolve']($Request);
             }
         }
 
         throw new ErrorException("The following extension is not handled: {$Request->ext}");
+    }
+
+    /**
+     * Get Supported Extensions
+     *
+     * @param string $extension
+     *
+     * @return array
+     *
+     * @throws ErrorException
+     */
+    public static function getSupportedExtensions($extension)
+    {
+        foreach (static::$_registry as $registered) {
+            if (in_array($extension, (array) $registered['extensions'])) {
+                return $registered['extensions'];
+            }
+        }
+
+        throw new ErrorException("The following extension is not handled: {$extension}");
     }
 }

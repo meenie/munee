@@ -9,6 +9,7 @@
 namespace munee;
 
 use munee\ErrorException;
+use munee\asset\Registry;
 
 /**
  * Munee Request Class
@@ -68,7 +69,21 @@ class Request
 
         $this->ext = pathinfo($_GET['files'], PATHINFO_EXTENSION);
         $this->options = $options;
-        $this->files = array_map(function($v) {
+        $supportedExtensions = Registry::getSupportedExtensions($this->ext);
+        // Suppressing errors because Exceptions thrown in the callback cause Warnings.
+        $this->files = @array_map(function($v) use ($supportedExtensions) {
+            // Make sure all the file extension is supported
+            if (! in_array(pathinfo($v, PATHINFO_EXTENSION), $supportedExtensions)) {
+                throw new ErrorException('All requested files need to be: ' . implode(', ', $supportedExtensions));
+            }
+            // Strip any parent directory slugs
+            $v = str_replace(array('/..', '../'), '', $v);
+
+            // Check if the file exists
+            if (! file_exists(WEBROOT . $v)) {
+                throw new ErrorException('File does not exist: ' . $v);
+            }
+
             return WEBROOT . $v;
         }, explode(',', $_GET['files']));
 

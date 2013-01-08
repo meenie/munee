@@ -180,12 +180,6 @@ abstract class Type
      */
     protected function _getFileContent($originalFile)
     {
-        if (! file_exists($originalFile)) {
-            throw new NotFoundException(
-                'File could not be found: ' . str_replace(WEBROOT, '', $originalFile)
-            );
-        }
-
         $cacheFile = $this->_generateCacheFile($originalFile);
         if (! $content = $this->_checkCache($originalFile, $cacheFile)) {
             // Copy the original file to the cache location

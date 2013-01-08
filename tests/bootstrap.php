@@ -20,4 +20,6 @@ spl_autoload_register(function ($class) use ($ds, $muneePath) {
     }
 });
 
+define('WEBROOT', __DIR__ . $ds . 'tmp');
+
 require $muneePath . $ds . 'config' . $ds . 'bootstrap.php';

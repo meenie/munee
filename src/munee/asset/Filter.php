@@ -31,7 +31,7 @@ abstract class Filter
     /**
      * A Sub-Class uses this method to manipulate the image based on the params passed in
      *
-     * @param string $originalImage
+     * @param string $originalFile
      * @param array $arguments
      */
     abstract public function filter($originalFile, $arguments);

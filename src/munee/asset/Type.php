@@ -67,7 +67,7 @@ abstract class Type
 
         // Pull in filters based on the raw params that were passed in
         $rawParams = $Request->getRawParams();
-        $assetShortName = strtolower(basename(get_class($this)));
+        $assetShortName = strtolower(preg_replace('%^.*\\\\%','', get_class($this)));
         $allowedParams = array();
         foreach (array_keys($rawParams) as $filterName) {
             $filterClass = 'munee\\asset\\filter\\' . $assetShortName . '\\' . ucfirst($filterName);

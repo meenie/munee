@@ -73,7 +73,7 @@ class Request
         // Suppressing errors because Exceptions thrown in the callback cause Warnings.
         $this->files = @array_map(function($v) use ($supportedExtensions) {
             // Make sure all the file extension is supported
-            if (! in_array(pathinfo($v, PATHINFO_EXTENSION), $supportedExtensions)) {
+            if (! in_array(strtolower(pathinfo($v, PATHINFO_EXTENSION)), $supportedExtensions)) {
                 throw new ErrorException('All requested files need to be: ' . implode(', ', $supportedExtensions));
             }
             // Strip any parent directory slugs

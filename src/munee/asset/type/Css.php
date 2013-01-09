@@ -71,6 +71,7 @@ class Css extends Type
      * Callback method called before filters are run
      *
      * Overriding to run the file through LESS if need be.
+     * Also want to fix any relative paths for images.
      *
      * @param string $originalFile
      * @param string $cacheFile
@@ -79,7 +80,12 @@ class Css extends Type
     {
         if ($this->_isLess($originalFile)) {
             $less = new lessc();
-            file_put_contents($cacheFile, serialize($less->cachedCompile($originalFile)));
+            $compiledLess = $less->cachedCompile($originalFile);
+            $compiledLess['compiled'] = $this->_fixRelativeImagePaths($compiledLess['compiled'], $originalFile);
+            file_put_contents($cacheFile, serialize($compiledLess));
+        } else {
+            $content = file_get_contents($originalFile);
+            file_put_contents($cacheFile, $this->_fixRelativeImagePaths($content, $originalFile));
         }
     }
 
@@ -111,5 +117,34 @@ class Css extends Type
     protected function _isLess($file)
     {
         return 'less' == pathinfo($file, PATHINFO_EXTENSION) || $this->_options['lessifyAllCss'];
+    }
+
+    /**
+     * Fixes relative paths to absolute paths
+     *
+     * @param $content
+     * @param $originalFile
+     *
+     * @return string
+     */
+    protected function _fixRelativeImagePaths($content, $originalFile)
+    {
+        $regEx = '%(background(?:-image)?:.*?url[\\s]*\()[\\s\'"]*(\.\.[^\\)\'"]*)[\\s\'"]*(\\)[\\s]*)%';
+
+        $changedContent = preg_replace_callback($regEx, function($match) use ($originalFile) {
+            $basePath = str_replace(WEBROOT, '', dirname($originalFile)) . '/' . trim($match[2]);
+            $count = 1;
+            while ($count > 0) {
+                $basePath = preg_replace('%\\w+/\\.\\./%', '', $basePath, -1, $count);
+            }
+
+            return $match[1] . $basePath . $match[3];
+        }, $content);
+
+        if (null !== $changedContent) {
+            $content = $changedContent;
+        }
+
+        return $content;
     }
 }

@@ -24,6 +24,24 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
     protected $_lastModifiedTime = 123456789;
 
     /**
+     * Setup the tests
+     */
+    protected function setUp()
+    {
+        parent::setUp();
+        ob_start();
+    }
+
+    /**
+     * Test Case post processing
+     */
+    protected function tearDown()
+    {
+        header_remove();
+        parent::tearDown();
+    }
+
+    /**
      * Make sure the constructor is getting the correct Object passed to it.
      */
     public function testConstruct()

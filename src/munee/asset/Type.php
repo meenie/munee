@@ -96,17 +96,26 @@ abstract class Type
     }
 
     /**
+     * Process all files in the request and set the content
+     */
+    public function init()
+    {
+        $content = array();
+        foreach ($this->_request->files as $file) {
+            $fileContent = $this->_getFileContent($file);
+            $content[] = $this->_afterGetFileContent($fileContent);
+        }
+
+        $this->_content = implode("\n", $content);
+    }
+
+    /**
      * Grabs the content for the Response class
      *
      * @return string
      */
     public function getContent()
     {
-        // Only process the files once, twice would be silly!
-        if (empty($this->_content)) {
-            $this->_content = $this->_processFiles();
-        }
-
         return $this->_content;
     }
 
@@ -151,22 +160,6 @@ abstract class Type
     protected function _afterGetFileContent($content)
     {
         return $content;
-    }
-
-    /**
-     * Process all files in the request and return content
-     *
-     * @return string
-     */
-    protected function _processFiles()
-    {
-        $ret = array();
-        foreach ($this->_request->files as $file) {
-            $fileContent = $this->_getFileContent($file);
-            $ret[] = $this->_afterGetFileContent($fileContent);
-        }
-
-        return implode("\n", $ret);
     }
 
     /**

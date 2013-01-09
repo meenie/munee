@@ -16,7 +16,11 @@ namespace munee;
 class Dispatcher
 {
     /**
-     * Instantiate the Response class and wrap everything in a Try/Catch block for error handling
+     * 1) Initialise the Request
+     * 2) Grab the AssetType based on the request and initialise it
+     * 3) Instantiate the Response class, set the headers, and then return the content
+     *
+     * Rap everything in a Try/Catch block for error handling
      *
      * @param Request $Request
      *
@@ -28,10 +32,22 @@ class Dispatcher
     public static function run(Request $Request)
     {
         try {
+            // Initialise the Request
             $Request->init();
-            $Response = new Response($Request);
-
-            return $Response->render();
+            // Grab the correct AssetType
+            $AssetType = asset\Registry::getClass($Request);
+            // Initialise the AssetType
+            $AssetType->init();
+            // Create a response
+            $Response = new Response($AssetType);
+            // Set The Headers
+            $Response->setHeaders();
+            if (! $Response->notModified) {
+                // Return the content
+                return $Response->render();
+            } else {
+                return null;
+            }
         } catch (asset\NotFoundException $e) {
             header("HTTP/1.0 404 Not Found");
             header("Status: 404 Not Found");

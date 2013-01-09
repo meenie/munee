@@ -16,60 +16,60 @@ namespace munee;
 class Response
 {
     /**
-     * @var Request
+     * @var boolean
      */
-    protected $_request;
+    public $notModified = false;
+
+    /**
+     * @var Object
+     */
+    protected $_assetType;
 
     /**
      * Constructor
      *
-     * @param Request $Request
+     * @param object $AssetType
+     *
+     * @throws ErrorException
      */
-    public function __construct(Request $Request)
+    public function __construct($AssetType)
     {
-        $this->_request = $Request;
+        // Must be a Sub-Class of \munee\asset\Type
+        $baseClass = '\\munee\\asset\\Type';
+        if (! is_subclass_of($AssetType, $baseClass)) {
+            throw new ErrorException(
+                get_class($AssetType) . ' is not a sub class of ' . $baseClass
+            );
+        }
+
+        $this->_assetType = $AssetType;
     }
 
     /**
-     * Instantiates the correct Asset Class, sets the correct headers, and returns a response.
+     * Returns the Asset Types content.
      * It will try and use Gzip to compress the content and save bandwidth
      *
      * @return string
      */
     public function render()
     {
-        $AssetClass = asset\Registry::getClass($this->_request);
-        $content = $AssetClass->getContent();
-        $this->_setHeaders($AssetClass);
+        $content = $this->_assetType->getContent();
+        if (! $ret = ob_gzhandler($content, 5)) {
+            $ret = $content;
+        }
 
-        ob_start('ob_gzhandler') || ob_start();
-        echo $content;
-        ob_flush();
-
-        return ob_get_clean();
+        return $ret;
     }
 
     /**
      * Set Headers for Response
      * 
-     * @param object $AssetClass
-     *
      * @throws ErrorException
      */
-    protected function _setHeaders($AssetClass)
+    public function setHeaders()
     {
-        // Must be a Sub-Class of \munee\asset\Base
-        if (is_subclass_of($AssetClass, '\\asset\\Base')) {
-            throw new ErrorException(
-                get_class($AssetClass) . ' is not a sub class of \\munee\\asset\\Base'
-            );
-        }
-
-        // We don't want the browser to handle any cache, Munee will handle that.
-        header("Cache-Control: no-cache");
-
-        $lastModifiedDate = $AssetClass->getlastModifiedDate();
-        $eTag = md5($lastModifiedDate . $AssetClass->getContent());
+        $lastModifiedDate = $this->_assetType->getLastModifiedDate();
+        $eTag = md5($lastModifiedDate . $this->_assetType->getContent());
         $checkModifiedSince = isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ?
             $_SERVER['HTTP_IF_MODIFIED_SINCE'] : false;
         $checkETag = isset($_SERVER['HTTP_IF_NONE_MATCH']) ?
@@ -80,12 +80,13 @@ class Response
             $checkETag == $eTag
         ) {
             header("HTTP/1.1 304 Not Modified");
-            exit;
+            $this->notModified = true;
         } else {
-            header("Last-Modified: " . gmdate("D, d M Y H:i:s", $lastModifiedDate) . " GMT");
+            // We don't want the browser to handle any cache, Munee will handle that.
+            header('Cache-Control: no-cache');
+            header('Last-Modified: ' . gmdate('D, d M Y H:i:s', $lastModifiedDate) . ' GMT');
             header('ETag: ' . $eTag);
+            $this->_assetType->getHeaders();
         }
-
-        $AssetClass->getHeaders();
     }
 }

@@ -127,6 +127,9 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $Request->init();
     }
 
+    /**
+     * Make legacy code is still being supported
+     */
     public function testLegacyCode()
     {
         $Request = new Request();
@@ -141,6 +144,9 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(array('minify' => 'true'), $Request->getRawParams());
     }
 
+    /**
+     * Make sure you are getting the correct raw parameters
+     */
     public function testGetRawParams()
     {
         $Request = new Request();
@@ -156,6 +162,9 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(array('minify' => 'true', 'notAllowedParam' => 'foo'), $rawParams);
     }
 
+    /**
+     * Make sure the Parameter Parser is doing it's job correctly
+     */
     public function testParseParams()
     {
         $Request = new Request();
@@ -206,6 +215,9 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($assertedParams, $Request->params);
     }
 
+    /**
+     * Make sure the param validation is working properly
+     */
     public function testWrongParamValue()
     {
         $Request = new Request();

@@ -24,24 +24,6 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
     protected $_lastModifiedTime = 123456789;
 
     /**
-     * Setup the tests
-     */
-    protected function setUp()
-    {
-        parent::setUp();
-        ob_start();
-    }
-
-    /**
-     * Test Case post processing
-     */
-    protected function tearDown()
-    {
-        header_remove();
-        parent::tearDown();
-    }
-
-    /**
      * Make sure the constructor is getting the correct Object passed to it.
      */
     public function testConstruct()
@@ -52,6 +34,8 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Test the initial request from a browser.  Meaning they haven't requested the file before
+     *
+     * @runInSeparateProcess
      */
     public function testNonCachedResponse()
     {
@@ -90,6 +74,8 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
      * Test the subsequent request by setting the correct $_SERVER variables and returning a
      * 304 response.  Unfortunately, xdebug_get_headers() does not return header response codes
      * so I am testing a variable instead.
+     *
+     * @runInSeparateProcess
      */
     public function testCachedResponse()
     {
@@ -114,6 +100,8 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
     /**
      * Test to see if what the browser request headers has is expired and return a new response
      * with new caching headers.
+     *
+     * @runInSeparateProcess
      */
     public function testExpiredRequestResponse()
     {

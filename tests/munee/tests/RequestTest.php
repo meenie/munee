@@ -17,6 +17,11 @@ use munee\Request;
  */
 class RequestTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * Set Up
+     *
+     * Create some tmp asset files
+     */
     protected function setUp()
     {
         $jsDir = WEBROOT . DS . 'js';
@@ -28,6 +33,11 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         file_put_contents($jsDir . DS . 'bar.js', '//Temp bar.js File');
     }
 
+    /**
+     * Tear Down
+     *
+     * Remove the tmp asset files
+     */
     protected function tearDown()
     {
         $jsDir = WEBROOT . DS . 'js';
@@ -36,73 +46,120 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         rmdir($jsDir);
     }
 
-    public function testNoQueryString()
+    /**
+     * Make sure there is at least a files query string parameter
+     */
+    public function testNoFilesQueryStringParam()
     {
+        $Request = new Request();
+
         $this->setExpectedException('munee\ErrorException');
-        new Request();
+        $Request->init();
     }
 
+    /**
+     * Constructor Test
+     */
     public function testConstructor()
     {
+        $Request = new Request(array('foo' => 'bar'));
+        $this->assertSame(array('foo' => 'bar'), $Request->options);
+    }
+
+    /**
+     * Make sure files are parsed properly and the extension is set
+     */
+    public function testInit()
+    {
+        $Request = new Request();
+
         $_GET = array(
             'files' => '/js/foo.js,/js/bar.js'
         );
+        $Request->init();
 
-        $Request = new Request(array('foo' => 'bar'));
-
-        $this->assertEquals('js', $Request->ext);
-        $this->assertEquals(array(WEBROOT . '/js/foo.js', WEBROOT . '/js/bar.js'), $Request->files);
-        $this->assertEquals(array('foo' => 'bar'), $Request->options);
+        $this->assertSame('js', $Request->ext);
+        $this->assertSame(array(WEBROOT . '/js/foo.js', WEBROOT . '/js/bar.js'), $Request->files);
     }
 
+    /**
+     * Make sure the correct exception is thrown when a file does not exist
+     */
     public function testFileNotExist()
     {
+        $Request = new Request();
+
         $_GET = array(
             'files' => '/js/does-not-exist.js'
         );
 
-        $this->setExpectedException('munee\ErrorException');
-        new Request();
+        $this->setExpectedException('munee\asset\NotFoundException');
+        $Request->init();
     }
 
+    /**
+     * Make sure all passed in files can be handled by the asset type class
+     */
     public function testExtensionNotSupported()
     {
+        $Request = new Request();
+
         $_GET = array(
             'files' => '/js/foo.jpg,/js/bar.js'
         );
 
         $this->setExpectedException('munee\ErrorException');
-        new Request();
+        $Request->init();
+    }
+
+    /**
+     * Make sure they can not go above webroot when requesting a file
+     */
+    public function testGoingAboveWebroot()
+    {
+        $Request = new Request();
+
+        $_GET = array(
+            'files' => '/../..././js/bad.js,/js/bar.js'
+        );
+
+        $this->setExpectedException('munee\asset\NotFoundException');
+        $Request->init();
     }
 
     public function testLegacyCode()
     {
+        $Request = new Request();
+
         $_GET = array(
             'files' => '/minify/js/foo.js'
         );
 
-        $Request = new Request();
+        $Request->init();
 
-        $this->assertEquals(array(WEBROOT . '/js/foo.js'), $Request->files);
-        $this->assertEquals(array('minify' => 'true'), $Request->getRawParams());
+        $this->assertSame(array(WEBROOT . '/js/foo.js'), $Request->files);
+        $this->assertSame(array('minify' => 'true'), $Request->getRawParams());
     }
 
     public function testGetRawParams()
     {
+        $Request = new Request();
+
         $_GET = array(
             'files' => '/js/foo.js,/js/bar.js',
             'minify' => 'true',
             'notAllowedParam' => 'foo'
         );
 
-        $Request = new Request();
-        
+        $Request->init();
         $rawParams = $Request->getRawParams();
-        $this->assertEquals(array('minify' => 'true', 'notAllowedParam' => 'foo'), $rawParams);
+        $this->assertSame(array('minify' => 'true', 'notAllowedParam' => 'foo'), $rawParams);
     }
 
     public function testParseParams()
     {
+        $Request = new Request();
+
         $_GET = array(
             'files' => '/js/foo.js,/js/bar.js',
             'foo' => 'true',
@@ -111,8 +168,8 @@ class RequestTest extends \PHPUnit_Framework_TestCase
 
         );
 
-        $Request = new Request();
-        
+        $Request->init();
+
         $this->assertEquals(array(), $Request->params);
 
         $allowedParams = array(
@@ -146,15 +203,19 @@ class RequestTest extends \PHPUnit_Framework_TestCase
             'qux' => 'no'
         );
 
-        $this->assertEquals($assertedParams, $Request->params);
+        $this->assertSame($assertedParams, $Request->params);
     }
 
     public function testWrongParamValue()
     {
+        $Request = new Request();
+
         $_GET = array(
             'files' => '/js/foo.js',
             'foo' => 'not good'
         );
+
+        $Request->init();
 
         $allowedParams = array(
             'foo' => array(
@@ -164,8 +225,6 @@ class RequestTest extends \PHPUnit_Framework_TestCase
                 'cast' => 'boolean'
             )
         );
-
-        $Request = new Request();
 
         $this->setExpectedException('munee\ErrorException');
         $Request->parseParams($allowedParams);

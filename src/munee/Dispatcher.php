@@ -28,6 +28,7 @@ class Dispatcher
     public static function run(Request $Request)
     {
         try {
+            $Request->init();
             $Response = new Response($Request);
 
             return $Response->render();

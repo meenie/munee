@@ -52,10 +52,19 @@ class Request
      * Constructor
      *
      * @param array $options
-     *
-     * @throws ErrorException
      */
     public function __construct($options = array())
+    {
+        $this->options = $options;
+    }
+
+    /**
+     * Parses the $_GET global variable and does sanity checks
+     *
+     * @throws ErrorException
+     * @throws asset\NotFoundException
+     */
+    public function init()
     {
         if (empty($_GET['files'])) {
             throw new ErrorException('Make sure you are using the correct .htaccess rules.');
@@ -68,20 +77,26 @@ class Request
         }
 
         $this->ext = pathinfo($_GET['files'], PATHINFO_EXTENSION);
-        $this->options = $options;
         $supportedExtensions = Registry::getSupportedExtensions($this->ext);
         // Suppressing errors because Exceptions thrown in the callback cause Warnings.
         $this->files = @array_map(function($v) use ($supportedExtensions) {
             // Make sure all the file extension is supported
             if (! in_array(strtolower(pathinfo($v, PATHINFO_EXTENSION)), $supportedExtensions)) {
-                throw new ErrorException('All requested files need to be: ' . implode(', ', $supportedExtensions));
+                //throw new ErrorException('All requested files need to be: ' . implode(', ', $supportedExtensions));
             }
-            // Strip any parent directory slugs
-            $v = str_replace(array('/..', '../'), '', $v);
+            // Strip any parent directory slugs - loop through until they are all gone
+            $count = 1;
+            while ($count > 0) {
+                $v = preg_replace('%(/\\.\\.?|\\.\\.?/)%', '', $v, -1, $count);
+                // If there is no slash prefix, add it back in
+                if (substr($v, 0, 1) != '/') {
+                    $v = '/' . $v;
+                }
+            }
 
             // Check if the file exists
             if (! file_exists(WEBROOT . $v)) {
-                throw new ErrorException('File does not exist: ' . $v);
+                throw new asset\NotFoundException('File does not exist: ' . $v);
             }
 
             return WEBROOT . $v;
@@ -90,7 +105,6 @@ class Request
         unset($_GET['files']);
         $this->_rawParams = $_GET;
     }
-
 
     /**
      * Returns the pre-parsed raw params

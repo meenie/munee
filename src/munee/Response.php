@@ -83,7 +83,7 @@ class Response
             $this->notModified = true;
         } else {
             // We don't want the browser to handle any cache, Munee will handle that.
-            header('Cache-Control: no-cache');
+            header('Cache-Control: must-revalidate');
             header('Last-Modified: ' . gmdate('D, d M Y H:i:s', $lastModifiedDate) . ' GMT');
             header('ETag: ' . $eTag);
             $this->_assetType->getHeaders();

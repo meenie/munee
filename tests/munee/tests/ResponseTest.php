@@ -43,7 +43,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
         $Response->setHeaders();
 
         $checkHeaders = array();
-        $checkHeaders['Cache-Control'] = 'no-cache';
+        $checkHeaders['Cache-Control'] = 'must-revalidate';
         $checkHeaders['Content-Type'] = 'text/test';
         $checkHeaders['Last-Modified'] = gmdate('D, d M Y H:i:s', $this->_lastModifiedTime) . ' GMT';
         // ETag is MD5 Hash of the content + last modified date
@@ -113,7 +113,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
         $Response->setHeaders();
 
         $checkHeaders = array();
-        $checkHeaders['Cache-Control'] = 'no-cache';
+        $checkHeaders['Cache-Control'] = 'must-revalidate';
         $checkHeaders['Content-Type'] = 'text/test';
         $checkHeaders['Last-Modified'] = gmdate('D, d M Y H:i:s', $this->_lastModifiedTime) . ' GMT';
         // ETag is MD5 Hash of the content + last modified date

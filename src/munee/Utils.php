@@ -22,6 +22,37 @@ class Utils
     }
 
     /**
+     * Recursively remove a directory and all of it's contents
+     *
+     * @param $dir
+     *
+     * @throws ErrorException
+     */
+    public static function removeDir($dir)
+    {
+        if (is_dir($dir)) {
+            $objects = scandir($dir);
+            foreach ($objects as $object) {
+                if ('.' != $object && '..' != $object) {
+                    if ('dir' == filetype($dir . DS . $object)) {
+                        static::removeDir($dir . DS . $object);
+                    } else {
+                        if (! unlink($dir . DS . $object)) {
+                            throw new ErrorException(
+                                'The following file could not be deleted: ' . $dir . DS . $object
+                            );
+                        }
+                    }
+                }
+            }
+
+            if (! rmdir($dir)) {
+                throw new ErrorException("The following directory could not be deleted: {$dir}");
+            }
+        }
+    }
+
+    /**
      * Check to see if a string is unserializable
      *
      * @param $value
@@ -53,6 +84,7 @@ class Utils
                     if ('"' !== $value[$length - 2]) {
                         return false;
                     }
+                    break;
                 case 'b':
                 case 'i':
                 case 'd':
@@ -61,27 +93,29 @@ class Utils
                 case 'a':
                 case 'O':
                     $end .= '}';
-                    if (':' !== $value[1])
+                    if (':' !== $value[1]) {
                         return false;
+                    }
                     switch ($value[2]) {
-                        case 0:
-                        case 1:
-                        case 2:
-                        case 3:
-                        case 4:
-                        case 5:
-                        case 6:
-                        case 7:
-                        case 8:
-                        case 9:
+                        case '0':
+                        case '1':
+                        case '2':
+                        case '3':
+                        case '4':
+                        case '5':
+                        case '6':
+                        case '7':
+                        case '8':
+                        case '9':
                             break;
                         default:
                             return false;
                     }
                 case 'N':
                     $end .= ';';
-                    if ($value[$length - 1] !== $end[0])
+                    if ($value[$length - 1] !== $end[0]) {
                         return false;
+                    }
                     break;
                 default:
                     return false;

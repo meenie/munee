@@ -13,7 +13,7 @@ use munee\Request;
 use Closure;
 
 /**
- * Registers extensions against a Closure which will instantiate the an Asset Type handler
+ * Registers extensions against a Closure which will instantiate the Asset Type handler
  *
  * @author Cody Lundquist
  */
@@ -34,6 +34,27 @@ class Registry
     {
         $extensions = (array) $extensions;
         static::$_registry[] = compact('extensions', 'resolve');
+    }
+
+    /**
+     * Un-Register one or more extensions
+     *
+     * @param $extensions
+     */
+    public static function unRegister($extensions)
+    {
+        foreach ((array) $extensions as $extension) {
+            foreach (static::$_registry as &$registered) {
+                $key = array_search($extension, $registered['extensions'], true);
+                if (false !== $key) {
+                    unset($registered['extensions'][$key]);
+                }
+
+                if (empty($registered['extensions'])) {
+                    unset($registered);
+                }
+            }
+        }
     }
 
     /**

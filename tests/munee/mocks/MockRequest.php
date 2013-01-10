@@ -20,8 +20,8 @@ class MockRequest extends Request
     /**
      * Override function to just set Extension
      */
-    public function init()
+    public function __construct()
     {
-        $this->ext = 'test';
+        $this->ext = 'foo';
     }
 }

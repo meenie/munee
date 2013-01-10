@@ -6,9 +6,10 @@
  * @license http://opensource.org/licenses/mit-license.php
  */
 
-namespace munee\tests;
+namespace munee\cases;
 
 use munee\Request;
+use munee\Utils;
 
 /**
  * Tests for the \munee\Request Class
@@ -25,9 +26,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $jsDir = WEBROOT . DS . 'js';
-        if (! file_exists($jsDir)) {
-            mkdir($jsDir);
-        }
+        Utils::createDir($jsDir);
 
         file_put_contents($jsDir . DS . 'foo.js', '//Temp foo.js File');
         file_put_contents($jsDir . DS . 'bar.js', '//Temp bar.js File');
@@ -40,10 +39,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
      */
     protected function tearDown()
     {
-        $jsDir = WEBROOT . DS . 'js';
-        unlink($jsDir . DS . 'foo.js');
-        unlink($jsDir . DS . 'bar.js');
-        rmdir($jsDir);
+        Utils::removeDir(WEBROOT . DS . 'js');
     }
 
     /**

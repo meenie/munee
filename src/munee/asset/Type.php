@@ -81,7 +81,7 @@ abstract class Type
         // Parse the raw params based on a map of allowedParams for those filters
         $this->_request->parseParams($allowedParams);
 
-        $this->_cacheDir = CACHE . DS . $assetShortName;
+        $this->_cacheDir = MUNEE_CACHE . DS . $assetShortName;
 
         // Set the AssetType options if someone were passed in through the Request Class
         if (isset($this->_request->options[$assetShortName])) {

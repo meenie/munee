@@ -3,13 +3,13 @@
 use munee\asset\Registry;
 
 // DIRECTORY_SEPARATOR alias
-define('DS' , DIRECTORY_SEPARATOR);
+defined('DS') || define('DS' , DIRECTORY_SEPARATOR);
 // Folder where munee is located
-define('MUNEE_FOLDER', dirname(__DIR__));
+defined('MUNEE_FOLDER') || define('MUNEE_FOLDER', dirname(__DIR__));
 // Define Webroot if hasn't already been defined
 defined('WEBROOT') || define('WEBROOT', $_SERVER['DOCUMENT_ROOT']);
 // Define the cache path
-define('CACHE', MUNEE_FOLDER . DS . 'cache');
+defined('MUNEE_CACHE') || define('MUNEE_CACHE', MUNEE_FOLDER . DS . 'cache');
 
 /**
  * Register the CSS Asset Class with the extensions .css and .less

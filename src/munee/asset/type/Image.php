@@ -8,6 +8,7 @@
 
 namespace munee\asset\type;
 
+use munee\ErrorException;
 use munee\asset\Type;
 
 /**
@@ -24,7 +25,9 @@ class Image extends Type
         // How many filters can be done within the `allowedFiltersTimeLimit`
         'numberOfAllowedFilters' => 3,
         // Number of seconds - default is 5 minutes
-        'allowedFiltersTimeLimit' => 300
+        'allowedFiltersTimeLimit' => 300,
+        // Should the referrer be checked for security
+        'checkReferrer' => true
     );
 
     /**
@@ -40,7 +43,10 @@ class Image extends Type
     protected function _checkCache($originalFile, $cacheFile)
     {
         if (! $return = parent::_checkCache($originalFile, $cacheFile)) {
-            $this->_checkReferrer();
+            if ($this->_options['checkReferrer']) {
+                $this->_checkReferrer();
+            }
+
             $this->_checkNumberOfAllowedFilters($cacheFile);
         }
 
@@ -69,17 +75,17 @@ class Image extends Type
     /**
      * Check to make sure the referrer domain is the same as the domain where the image exists.
      *
-     * @throws \ErrorException
+     * @throws ErrorException
      */
     protected function _checkReferrer()
     {
         if (! isset($_SERVER['HTTP_REFERER'])) {
-            throw new \ErrorException('Direct image manipulation is not allowed.');
+            throw new ErrorException('Direct image manipulation is not allowed.');
         }
 
         $referrer = preg_replace('%^https?://%', '', $_SERVER['HTTP_REFERER']);
         if (! preg_match("%^{$_SERVER['SERVER_NAME']}%", $referrer)) {
-            throw new \ErrorException('Referrer does not match the correct domain.');
+            throw new ErrorException('Referrer does not match the correct domain.');
         }
     }
 
@@ -88,7 +94,7 @@ class Image extends Type
      *
      * @param string $checkImage
      *
-     * @throws \ErrorException
+     * @throws ErrorException
      */
     protected function _checkNumberOfAllowedFilters($checkImage)
     {
@@ -104,7 +110,7 @@ class Image extends Type
         }
         // Check and see if we've reached the maximum allowed resizes within the current time limit.
         if (count($cachedImages) >= $this->_options['numberOfAllowedFilters']) {
-            throw new \ErrorException('You cannot create anymore resizes/manipulations at this time.');
+            throw new ErrorException('You cannot create anymore resizes/manipulations at this time.');
         }
     }
 }

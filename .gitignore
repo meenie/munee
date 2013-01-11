@@ -1,0 +1,6 @@
+.idea
+webroot/*
+cache/*
+vendor/*
+composer.lock
+composer.phar

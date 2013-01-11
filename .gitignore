@@ -4,3 +4,4 @@ cache/*
 vendor/*
 composer.lock
 composer.phar
+_site/*

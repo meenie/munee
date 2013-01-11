@@ -123,6 +123,10 @@ header{
   color: #fff;
 }
 
+.share .build-status {
+  padding-bottom: 10px;
+}
+
 .tab-content{		
   min-height: 300px;
 }

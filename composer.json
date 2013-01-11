@@ -1,7 +1,7 @@
 {
     "name": "meenie/munee",
-    "description": "Munee: Optimising Your Assets",
-    "keywords": ["php","less","optimizing","css","javascript","lessphp"],
+    "description": "PHP 5.3 Asset Optimisation - Smart Caching, On-The-Fly Image Resizing, Auto-LESS-Compiling, and CSS & JavaScript Combining/Minifying",
+    "keywords": ["php","less","cache","asset optimisation","asset optimization","asset management","css","javascript","lessphp","image manipulation"],
     "homepage": "http://mun.ee",
     "license": "MIT",
     "authors": [

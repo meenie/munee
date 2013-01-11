@@ -1,6 +1,8 @@
 Munee: Optimising Your Assets
 =============================
 
+#####PHP 5.3 Asset Optimisation - Smart Caching, On-The-Fly Image Resizing, Auto-LESS-Compiling, and CSS & JavaScript Combining/Minifying
+
 ---
 
 Update 1.3.0 Important Note
@@ -41,28 +43,54 @@ Munee caches asset requests server side and returns a `304 Not Modified` on subs
 [Composer](https://packagist.org/) Installation Instructions
 ------------------------------------------------------------
 
-1. Create a file called: `composer.json` and add the following:
+### Step 1: Download/Install Munee using composer
 
-        {
-            "require": {
-                "meenie/munee": "*"
-            }
-        }
-1. Run `curl -s http://getcomposer.org/installer | php`
-1. Run `php composer.phar install`
-1. Make sure the `cache` folder inside `vendor/meenie/munee` is writable
-1. Create a file called `munee.php` that is web accessible and paste in the following (**Update the correct path to the `autoload.php` file**):
+Add `meenie/munee` to your `composer.json` file:
 
-        // Include the composer autoload file
-        require 'vendor/autoload.php';
-        // Echo out the response
-        echo \munee\Dispatcher::run(new munee\Request());
+```js
+{
+    "require": {
+        "meenie/munee": "*"
+    }
+}
+```
 
-1. Open the .htaccess file in your webroot and paste in the following: **Optional**
+If you haven't already, download Composer
 
-        #### Munee .htaccess Code Start ####
-        RewriteRule ^(.*\.(?:css|less|js|jpg|png|gif|jpeg))$ munee.php?files=/$1 [L,QSA]
-        #### Munee .htaccess Code End ####
+```bash
+$ curl -s http://getcomposer.org/installer | php
+```
+
+Now install Munee
+
+```bash
+$ php composer.phar install
+```
+
+Make sure the `cache` folder inside `vendor/meenie/munee` is writable
+
+### Step 2: Use Munee in your library
+
+Create a file called `munee.php` that is web accessible and paste in the following
+
+```php
+// Include the composer autoload file
+require 'vendor/autoload.php';
+// Echo out the response
+echo \munee\Dispatcher::run(new munee\Request());
+```
+
+**Note: Update the correct path to the `autoload.php` file**
+
+### Step 3: Create A `RewriteRule` rule - [Optional](#tips--tricks)
+
+Open the `.htaccess` file in your webroot and paste in the following: 
+
+```
+#### Munee .htaccess Code Start ####
+RewriteRule ^(.*\.(?:css|less|js|jpg|png|gif|jpeg))$ munee.php?files=/$1 [L,QSA]
+#### Munee .htaccess Code End ####
+```
 
 Usage Instructions
 ------------------

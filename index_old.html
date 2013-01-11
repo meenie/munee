@@ -1,0 +1,190 @@
+---
+layout: default
+title: Munee: Optimising Your Assets
+---
+
+<section>
+    <h1>Munee: Optimising Your Assets</h1>
+
+    <hr><h2>Update 1.3.0 Important Note</h2>
+
+    <p>In this and future versions of Munee, the way CSS is run through the <code>lessphp</code> compiler has changed.  By default, only <code>.less</code> files will be compiled and you will have to set a special parameter to have all CSS (<code>.css</code>) files run through the compiler as well. <a href="#handling-css">See here</a> for more instructions. The reason behind this change is technically <code>.less</code> files should have only valid LESS in them and <code>.css</code> should only have valid CSS in them.</p>
+
+    <h2>Features</h2>
+
+    <ul>
+        <li>On-the-fly LESS Compiling</li>
+        <li>On-the-fly Image Resizing/Manipulation</li>
+        <li>Smart Asset Caching - Client Side &amp; Server Side</li>
+        <li>Combine CSS or JS into one request</li>
+        <li>Minifying and Gzip Server Response</li>
+    </ul><h2>What is Munee?</h2>
+
+    <p>A PHP5.3 library to easily run all CSS through <a href="http://leafo.net/lessphp/">lessphp</a> (<a href="http://lesscss.org/">LESS</a>), resize/manipulate images on the fly, minify CSS and JS, and cache assets locally and remotely for lightening fast requests. No need to change how you include your assets in your templates. Just follow the couple of installation instructions below and you are ready to go!</p>
+
+    <h2>Why the name Munee?</h2>
+
+    <p>The reason I chose the name Munee is because it sounds like 'Money' which is another word for 'Assets' and what this library optimises.  Also, I needed a top level uniquely named Namespace for the library.</p>
+
+    <h2>Requirements</h2>
+
+    <ul>
+        <li>PHP5.3+</li>
+        <li>
+            <code>RewriteEngine</code> turned on inside a <code>.htaccess</code> file (Or in the Apache Config file) <strong>Optional</strong>
+        </li>
+    </ul><h2>Note on Caching</h2>
+
+    <p>Munee caches asset requests server side and returns a <code>304 Not Modified</code> on subsequent requests if the asset hasn't been modified. If the asset has been modified, it will overwrite that cache and tell the browser they must revalidate it's cache so the new file can be shown. To accomplish this without the browser's caching engine trying to be smart, Munee sets the <code>Cache-Control</code> header to <code>no-cache</code>.  If you run into any problems, please <a href="https://github.com/meenie/munee/issues">submit an issue</a>.</p>
+
+    <h2>
+        <a href="https://packagist.org/">Composer</a> Installation Instructions</h2>
+
+    <ol>
+        <li>
+            <p>Create a file called: <code>composer.json</code> and add the following:</p>
+
+<pre><code>{
+    "require": {
+    "meenie/munee": "*"
+    }
+    }
+</code></pre>
+        </li>
+        <li><p>Run <code>curl -s http://getcomposer.org/installer | php</code></p></li>
+        <li><p>Run <code>php composer.phar install</code></p></li>
+        <li><p>Make sure the <code>cache</code> folder inside <code>vendor/meenie/munee</code> is writable</p></li>
+        <li>
+            <p>Create a file called <code>munee.php</code> that is web accessible and paste in the following (**Update the correct path to the <code>autoload.php</code> file**):</p>
+
+<pre><code>// Include the composer autoload file
+    require 'vendor/autoload.php';
+    // Echo out the response
+    echo \munee\Dispatcher::run(new munee\Request());
+</code></pre>
+        </li>
+        <li>
+            <p>Open the .htaccess file in your webroot and paste in the following: <strong>Optional</strong></p>
+
+<pre><code>#### Munee .htaccess Code Start ####
+    RewriteRule ^(.*\.(?:css|less|js|jpg|png|gif|jpeg))$ munee.php?files=/$1 [L,QSA]
+    #### Munee .htaccess Code End ####
+</code></pre>
+        </li>
+    </ol><h2>Usage Instructions</h2>
+
+    <h3>Handling CSS</h3>
+
+    <p>All LESS files are automatically compiled through <code>lessphp</code> and cached, there is nothing extra that you need to do.  Any changes you make to your CSS, even LESS files you have <code>@import</code> will automatically recreate the cache, invalidate the client side cache, and force the browser to download the newest version.</p>
+
+    <p>If you would like to run <strong>all css</strong> through <code>lessphp</code>, then you will need to pass the <code>lessifyAllCss</code> parameter into the <code>Request</code> class when you instantiate it:</p>
+
+<pre><code>echo \munee\Dispatcher::run(new munee\Request(array('css' =&gt; array('lessifyAllCss' =&gt; true))));
+</code></pre>
+
+    <p><strong>One Request For All CSS</strong></p>
+
+    <p>Format your style so the href has all CSS files delimited by a comma (,).</p>
+
+<pre><code>&lt;link rel="stylesheet" href="/css/libs/bootstrap.min.css,/css/site.css"&gt;
+</code></pre>
+
+    <p><strong>Minify CSS</strong></p>
+
+    <p>To minify your CSS, add the query string parameter <code>minify</code> and set it to <code>true</code></p>
+
+<pre><code>&lt;link rel="stylesheet" href="/css/libs/bootstrap.min.css,/css/site.css?minify=true"&gt;
+</code></pre>
+
+    <h3>Handling/Resizing Images</h3>
+
+    <p>Using Munee, you resize/crop/stretch/fill images on-the-fly using a set of parameters.  The resulting image will be cached and served up on subsequent requests.  If the source image is modified, it will recreate the cache and invalidate the client side cache and force the browser to download the newest version.</p>
+
+    <p><strong>Security</strong></p>
+
+    <p>When using an on-the-fly image resizing tool like this, there is an inherent risk that someone will try and exploit it to try and resize a photo a thousand different ways to take down your server. Munee has a couple of ways to minimise this risk a great deal.  One is it checks that the referer is set and is coming from the same domain that the image is located on.  Another is it only allows 3 resizes of an image within a 5 minute time span.  In a later version, these can be modified or turned off for development purposes.</p>
+
+    <p><strong>Resize Parameters</strong> - Parameters can either be in long form or use their shortened form.  The value for an alias must be wrapped in square brackets <code>[]</code>. There is no need to put any characters between each parameter, although you can if you want.</p>
+
+    <ul>
+        <li>
+            <code>height</code> (or <code>h</code>) - The max height you want the image. Value must be an integer.</li>
+        <li>
+            <code>width</code> (or <code>w</code>) - The max width you want the image. Value must be an integer.</li>
+        <li>
+            <code>exact</code> (or <code>e</code>) - Crop the image to the exact <code>height</code> and <code>width</code>. Value can be <code>true</code> or <code>false</code>.</li>
+        <li>
+            <code>stretch</code> (or <code>s</code>) - Stretch the image to match the exact <code>height</code> and <code>width</code>. Value can be <code>true</code> or <code>false</code>.</li>
+        <li>
+            <code>fill</code> (or <code>f</code>) - Draw a background the exact size of the <code>height</code> and <code>width</code> and centre the image in the middle. (If you do not want the image to be stretched, then do not use the <code>stretch</code> parameter along with <code>fill</code>). Value can be <code>true</code> or <code>false</code>.</li>
+        <li>
+            <code>fillColour</code> (or <code>fc</code>) - The colour of the background. Default is <code>FFFFFF</code> (white).  This can be any hex colour (i.e. <code>FF0000</code>)</li>
+        <li>
+            <code>quality</code> (or <code>q</code>) - JPEG compression value. Default is: <code>75</code> - It will only work for JPEG's.</li>
+    </ul><p><strong>Examples</strong></p>
+
+    <p>Resize an image to a specific width and keep it's correct aspect ratio. <strong>Note:</strong> This is using the long form of the parameters.</p>
+
+<pre><code>&lt;img src="/img/my-image.jpg?resize=width[250]"&gt;
+</code></pre>
+
+    <p>Resize an image and keep it's correct aspect ratio but neither width or height can be bigger than specified. </p>
+
+<pre><code>&lt;img src="/img/my-image.jpg?resize=width[100]-height[50]"&gt;
+</code></pre>
+
+    <p>Crop an image to an exact size.  If the image is smaller than the provided dimensions, it will not stretch or fill the image out to match the height and width. <strong>Note:</strong> This is using the shortened form of the parameters.</p>
+
+<pre><code>&lt;img src="/img/my-image.jpg?resize=w[100]h[85]e[true]"&gt;
+</code></pre>
+
+    <p>Crop an image and stretch it to an exact size.</p>
+
+<pre><code>&lt;img src="/img/my-image.jpg?resize=w[200]h[300]e[true]s[true]"&gt;
+</code></pre>
+
+    <p>Resize an image and put it on dark grey background the exact size of the dimensions.</p>
+
+<pre><code>&lt;img src="/img/my-image.jpg?resize=w[500]h[500]f[true]fc[444444]"&gt;
+</code></pre>
+
+    <h3>Handling JavaScript</h3>
+
+    <p>All JavaScript is served through Munee so that it can handle the client side caching.</p>
+
+    <p><strong>One Request For All JS</strong></p>
+
+    <p>Format your script tag so the src has all js files delimited by a comma (,).</p>
+
+<pre><code>&lt;script src="/js/libs/jquery-1.8.1.min.js,/js/libs/bootstrap.min.js,/js/site.js"&gt;&lt;/script&gt;
+</code></pre>
+
+    <p><strong>Minify JS</strong></p>
+
+    <p>To minify your JS, add the query string parameter <code>minify</code> and set it to <code>true</code></p>
+
+<pre><code>&lt;script src="/js/libs/jquery-1.8.1.min.js,/js/libs/bootstrap.min.js,/js/site.js?minify=true"&gt;&lt;/script&gt;
+</code></pre>
+
+    <h2>Build status</h2>
+
+    <p><a href="http://travis-ci.org/meenie/munee"><img src="https://secure.travis-ci.org/meenie/munee.png?branch=master" alt="Build Status"></a></p>
+
+    <h2>Tips &amp; Tricks</h2>
+
+    <p><strong>Minimising JavaScript Errors When Minified</strong></p>
+
+    <p>Make sure and use curly brackets for block statements (<code>if</code>, <code>while</code>, <code>switch</code>, etc) and terminate lines with a semicolon.  When the JavaScript is minified, it will put all of your code on one line.  If you have left out some brackets for an <code>if</code> statement, it will include the rest of your code inside that <code>if</code> statement and cause a lot of problems.  As long as you follow decent coding standards, you will not have a problem.</p>
+
+    <p><strong>Using Munee without the <code>.htaccess</code> file</strong></p>
+
+    <p>If you would like to use Munee without having to use a <code>.htaccess</code> you will need to change how your assets are added in your template.  So instead of doing this:</p>
+
+<pre><code>&lt;link rel="stylesheet" href="/css/libs/bootstrap.min.css,/css/site.css?minify=true"&gt;
+</code></pre>
+
+    <p>You will need to do this:</p>
+
+<pre><code>&lt;link rel="stylesheet" href="/path/to/munee.php?files=/css/libs/bootstrap.min.css,/css/site.css&amp;minify=true"&gt;
+</code></pre>
+</section>

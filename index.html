@@ -1,190 +1,703 @@
----
-layout: default
-title: Munee: Optimising Your Assets
----
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Meenie: Optimising Your Assets</title>
+    <meta name="description"
+          content="PHP 5.3 Asset Optimisation - Smart Caching, On-The-Fly Image Manipulation, Auto-LESS-Compiling, and CSS &amp; JavaScript Combining/Minifying">
+    <meta name="author" content="Cody Lundquist">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Styles -->
+    <link href="assets/css/bootstrap.css" rel="stylesheet">
+    <link href="assets/css/bootstrap-responsive.css" rel="stylesheet">
+    <link href="assets/css/style.css" rel="stylesheet">
+    <link href="assets/css/font-awesome.css" rel="stylesheet">
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,400,600,700,300|Bree+Serif"
+          rel="stylesheet" type="text/css">
+    <link href="assets/js/google-code-prettify/prettify.css" rel="stylesheet">
+    <!--[if IE]>
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:300italic" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400italic" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:600italic" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:700italic" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:300" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:600" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Bree+Serif:400" rel="stylesheet" type="text/css">
+    <![endif]-->
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if IE 7]>
+    <link rel="stylesheet" href="assets/css/font-awesome-ie7.css">
+    <![endif]-->
+</head>
+<body>
+<header class="masthead">
+    <div class="container">
+        <h1 class="font-bree-serif">Munee: Optimising Your Assets</h1>
+        <p class="font-open-sans-normal">
+            PHP 5.3 Asset Optimisation - Smart Caching, On-The-Fly Image Resizing, <br>
+            Auto-LESS-Compiling, and CSS &amp; JavaScript Combining/Minifying
+        </p>
+        <p class="jumbo">
+            <a href="https://github.com/meenie/munee" class="btn btn-inverse btn-large font-open-sans-normal"><strong>View
+                Project on GitHub</strong></a>
+            <a href="https://github.com/meenie/munee#composer-installation-instructions" class="btn btn-success btn-large font-open-sans-normal"><strong>Install Library </strong>
+                <small>(v1.3.9)</small>
+            </a>
+        </p>
+        <p class="share">
+            <a href="https://twitter.com/intent/tweet?screen_name=meenstreek" class="twitter-mention-button" data-related="meenstreek">Tweet to @meenstreek</a>
+            <script>
+                !function (d, s, id) {
+                    var js, fjs = d.getElementsByTagName(s)[0];
+                    if (!d.getElementById(id)) {
+                        js = d.createElement(s);
+                        js.id = id;
+                        js.src = "http://platform.twitter.com/widgets.js";
+                        fjs.parentNode.insertBefore(js, fjs);
+                    }
+                }(document, "script", "twitter-wjs");
+            </script>
+            <a href="https://twitter.com/share" class="twitter-share-button" data-via="meenstreek">Tweet</a>
+            <script>
+                !function (d, s, id) {
+                    var js, fjs = d.getElementsByTagName(s)[0];
+                    if (!d.getElementById(id)) {
+                        js = d.createElement(s);
+                        js.id = id;
+                        js.src = "http://platform.twitter.com/widgets.js";
+                        fjs.parentNode.insertBefore(js, fjs);
+                    }
+                }(document, "script", "twitter-wjs");
+            </script>
+        </p>
+    </div>
+    <!--end container-->
+</header>
+<div class="main-content">
+<div class="container">
+<div class="row" id="content">
+<div class="span12">
+<div class="tabbable">
+<!--<ul class="nav nav-tabs" id="pluginTab">
+    <li class="active"><a href="#overview">Overview</a></li>
+    <li><a href="#examples">Examples</a></li>
+    <li><a href="#howtouse">How To Use</a></li>
+    <li><a href="#documentation">Documentation</a></li>
+    <li><a href="#faq">FAQ</a></li>
+    <li><a href="#roadmap">Roadmap and changelog</a></li>
+    <li><a href="https://github.com/meenie/munee/issues/new" class="tip" title="Issues on GitHub">Submit An Issue</a></li>
+</ul>-->
+<div class="tab-content">
+<!--
+  =====================================
+  Overview Tab Content
+  =====================================
+  -->
+<div class="tab-pane active" id="overview">
+    <h1 class="font-bree-serif align-center">Lightening Fast &amp; Easy To Use</h1>
+    <h4 class="align-center font-open-sans-normal-italic">
+        Want to learn more about <em><strong>Munee</strong></em>? Check the features below.
+    </h4>
+    <div class="row features">
+        <div class="span4"><i class="feature-icon icon-flag"></i>
 
-<section>
-    <h1>Munee: Optimising Your Assets</h1>
+            <h3>Easy To Install &amp; Use</h3>
 
-    <hr><h2>Update 1.3.0 Important Note</h2>
+            <p>
+                Using <a href="http://getcomposer.org" target="_blank">Composer</a>, <em><strong>Munee</strong></em> can be installed in 3 easy steps.
+                You will not have to change how you include your assets, everything just works!
+            </p>
+        </div>
+        <!--end span4-->
+        <div class="span4"><i class="feature-icon icon-th"></i>
 
-    <p>In this and future versions of Munee, the way CSS is run through the <code>lessphp</code> compiler has changed.  By default, only <code>.less</code> files will be compiled and you will have to set a special parameter to have all CSS (<code>.css</code>) files run through the compiler as well. <a href="#handling-css">See here</a> for more instructions. The reason behind this change is technically <code>.less</code> files should have only valid LESS in them and <code>.css</code> should only have valid CSS in them.</p>
+            <h3>Smart Caching</h3>
 
-    <h2>Features</h2>
+            <p>
+                Assets are cached server-side and client-side. On every request, each asset is checked if a newer version
+                is available. If so, <em><strong>Munee</strong></em> will bust the cache and force the browser to download the latest version.
+            </p>
+        </div>
+        <!--end span4-->
+        <div class="span4"><i class="feature-icon icon-resize-full"></i>
 
-    <ul>
-        <li>On-the-fly LESS Compiling</li>
-        <li>On-the-fly Image Resizing/Manipulation</li>
-        <li>Smart Asset Caching - Client Side &amp; Server Side</li>
-        <li>Combine CSS or JS into one request</li>
-        <li>Minifying and Gzip Server Response</li>
-    </ul><h2>What is Munee?</h2>
+            <h3>On-The-Fly Image Resizing</h3>
 
-    <p>A PHP5.3 library to easily run all CSS through <a href="http://leafo.net/lessphp/">lessphp</a> (<a href="http://lesscss.org/">LESS</a>), resize/manipulate images on the fly, minify CSS and JS, and cache assets locally and remotely for lightening fast requests. No need to change how you include your assets in your templates. Just follow the couple of installation instructions below and you are ready to go!</p>
+            <p>
+                Quickly resize/crop/fill images on the fly utilising an easy to use parameter syntax.  Once the image has
+                been manipulated, the cached version will be served on the next request.  Security measures are put in place
+                to stop malicious users in their tracks.
+            </p>
+        </div>
+        <!--end span4-->
+    </div>
+    <!--end row-->
+    <div class="row features">
+        <div class="span4"><i class="feature-icon icon-twitter"></i>
 
-    <h2>Why the name Munee?</h2>
+            <h3>Auto LESS Compiling</h3>
 
-    <p>The reason I chose the name Munee is because it sounds like 'Money' which is another word for 'Assets' and what this library optimises.  Also, I needed a top level uniquely named Namespace for the library.</p>
+            <p>
+                All <code>.less</code> files are automatically compiled through <a href="http://leafo.net/lessphp/" target="_blank">lessphp</a>
+                and cached.  You can also tell <em><strong>Munee</strong></em> to run all <code>.css</code> files through
+                <a href="http://leafo.net/lessphp/" target="_blank">lessphp</a>.
+            </p>
+        </div>
+        <!--end span4-->
+        <div class="span4"><i class="feature-icon icon-list-ol"></i>
 
-    <h2>Requirements</h2>
+            <h3>Combine CSS/JS Into One Request</h3>
+            <p>
+                When creating your <code>&lt;link&gt;</code> and <code>&lt;style&gt;</code> tags, you can comma delimit
+                each file into one request.  <em><strong>Munee</strong></em> will cache each file individually and combine the content of one.
+            </p>
+        </div>
+        <!--end span4-->
+        <div class="span4"><i class="feature-icon icon-font"></i>
 
-    <ul>
-        <li>PHP5.3+</li>
-        <li>
-            <code>RewriteEngine</code> turned on inside a <code>.htaccess</code> file (Or in the Apache Config file) <strong>Optional</strong>
-        </li>
-    </ul><h2>Note on Caching</h2>
+            <h3>Minification & Gzip Compression</h3>
 
-    <p>Munee caches asset requests server side and returns a <code>304 Not Modified</code> on subsequent requests if the asset hasn't been modified. If the asset has been modified, it will overwrite that cache and tell the browser they must revalidate it's cache so the new file can be shown. To accomplish this without the browser's caching engine trying to be smart, Munee sets the <code>Cache-Control</code> header to <code>no-cache</code>.  If you run into any problems, please <a href="https://github.com/meenie/munee/issues">submit an issue</a>.</p>
+            <p>
+                The CSS &amp; JavaScript can optionally be minified to save on bandwidth.  <em><strong>Munee</strong></em> will also use
+                <code>ob_gzhandler()</code> to Gzip the response to save even more bandwidth.
+            </p>
+        </div>
+        <!--end span4-->
 
-    <h2>
-        <a href="https://packagist.org/">Composer</a> Installation Instructions</h2>
+    </div>
+    <!--end row-->
+    <hr class="soften"/>
+    <!-- <h1 class="font-bree-serif align-center">Showcase</h1>
+    <h4 class="align-center font-open-sans-normal-italic">Websites using this plugin. Check Out</h4>
+    <ul class="thumbnails">
+        <li class="span3"><a href="#" class="thumbnail"> <img src="http://placehold.it/260x180" alt=""> </a></li>
+        <li class="span3"><a href="#" class="thumbnail"> <img src="http://placehold.it/260x180" alt=""> </a></li>
+        <li class="span3"><a href="#" class="thumbnail"> <img src="http://placehold.it/260x180" alt=""> </a></li>
+        <li class="span3"><a href="#" class="thumbnail"> <img src="http://placehold.it/260x180" alt=""> </a></li>
+    </ul> -->
+    <!--end thumbnails-->
+</div>
+<!--end overview-content-->
+<!--
+=====================================
+Examples
+=====================================
+-->
+<div class="tab-pane" id="examples">
+    <h2 class="font-bree-serif">Example Heading</h2>
 
-    <ol>
-        <li>
-            <p>Create a file called: <code>composer.json</code> and add the following:</p>
+    <p>Some Description about the example if needed</p>
 
-<pre><code>{
-    "require": {
-    "meenie/munee": "*"
-    }
-    }
-</code></pre>
-        </li>
-        <li><p>Run <code>curl -s http://getcomposer.org/installer | php</code></p></li>
-        <li><p>Run <code>php composer.phar install</code></p></li>
-        <li><p>Make sure the <code>cache</code> folder inside <code>vendor/meenie/munee</code> is writable</p></li>
-        <li>
-            <p>Create a file called <code>munee.php</code> that is web accessible and paste in the following (**Update the correct path to the <code>autoload.php</code> file**):</p>
+    <div class="row">
+        <div class="span6">
+            <ul class="thumbnails">
+                <li class="span4"><a href="#" class="thumbnail"> <img src="http://placehold.it/360x268" alt=""> </a>
+                </li>
+                <li class="span2"><a href="#" class="thumbnail"> <img src="http://placehold.it/160x120" alt=""> </a>
+                </li>
+                <li class="span2"><a href="#" class="thumbnail"> <img src="http://placehold.it/160x120" alt=""> </a>
+                </li>
+                <li class="span2"><a href="#" class="thumbnail"> <img src="http://placehold.it/160x120" alt=""> </a>
+                </li>
+                <li class="span2"><a href="#" class="thumbnail"> <img src="http://placehold.it/160x120" alt=""> </a>
+                </li>
+                <li class="span2"><a href="#" class="thumbnail"> <img src="http://placehold.it/160x120" alt=""> </a>
+                </li>
+            </ul>
+        </div>
+        <!--end span6-->
+        <div class="span6">
+            <section class="sec-header">
+                <h3 class="font-bree-serif">The Markup</h3>
+<pre class="prettyprint linenums">&lt;ul class="thumbnails"&gt;
+&lt;li class="span4"&gt; &lt;a href="#" class="thumbnail"&gt; &lt;img src="http://placehold.it/360x268" alt=""&gt; &lt;/a&gt; &lt;/li&gt;
+....
+&lt;/ul&gt;
+</pre>
+            </section>
+            <section class="sec-header">
+                <h3 class="font-bree-serif">CSS</h3>
+<pre class="prettyprint linenums">
+thumbnails {
+  margin-left: -20px;
+  list-style: none;
+  *zoom: 1;
+}
+.thumbnails > li {
+  float: left;
+  margin-bottom: 18px;
+  margin-left: 20px;
+}
+...
+</pre>
+            </section>
+        </div>
+        <!--end span6-->
+    </div>
+    <!--end row-->
+</div>
+<!--end examples-content-->
+<!--
+=====================================
+How to Use Tab Content
+=====================================
+-->
+<div class="tab-pane" id="howtouse">
+    <section class="sec-header">
+        <h3 class="font-bree-serif">Link Css</h3>
 
-<pre><code>// Include the composer autoload file
-    require 'vendor/autoload.php';
-    // Echo out the response
-    echo \munee\Dispatcher::run(new munee\Request());
-</code></pre>
-        </li>
-        <li>
-            <p>Open the .htaccess file in your webroot and paste in the following: <strong>Optional</strong></p>
+        <p>Move the <strong>plugin CSS</strong> file to your server and link to it in the <code><abbr title="<head>">head</abbr></code>
+            section of your document.</p>
+        <pre class="prettyprint linenums">&lt;link rel="stylesheet" href="yourplugin.css" /&gt;</pre>
+    </section>
+    <section class="sec-header">
+        <h3 class="font-bree-serif">Link JS</h3>
 
-<pre><code>#### Munee .htaccess Code Start ####
-    RewriteRule ^(.*\.(?:css|less|js|jpg|png|gif|jpeg))$ munee.php?files=/$1 [L,QSA]
-    #### Munee .htaccess Code End ####
-</code></pre>
-        </li>
-    </ol><h2>Usage Instructions</h2>
+        <p>Move the <strong>plugin JS</strong> file to your server and link to it before the closing <code><abbr
+                title="<body>">body</abbr></code> tag.</p>
 
-    <h3>Handling CSS</h3>
+        <p>Please note that you must include jQuery (v1.7 or later) before the slider JS file.</p>
+				<pre class="prettyprint linenums">
+&lt;script src="jquery-1.7.1.min.js"&gt;&lt;/script&gt;
+&lt;script src="jquery.yourplugin.min.js"&gt;&lt;/script&gt;
+</pre>
+    </section>
+    <section class="sec-header">
+        <h3 class="font-bree-serif">The Markup</h3>
 
-    <p>All LESS files are automatically compiled through <code>lessphp</code> and cached, there is nothing extra that you need to do.  Any changes you make to your CSS, even LESS files you have <code>@import</code> will automatically recreate the cache, invalidate the client side cache, and force the browser to download the newest version.</p>
+        <p>Add the following markup</p>
+                <pre class="prettyprint linenums">&lt;ul class="thumbnails"&gt;
+&lt;li class="span4"&gt; &lt;a href="#" class="thumbnail"&gt; &lt;img src="http://placehold.it/360x268" alt=""&gt; &lt;/a&gt; &lt;/li&gt;
+....
+&lt;/ul&gt;
+</pre>
+    </section>
+    <section class="sec-header">
+        <h3 class="font-bree-serif">Call Plugin</h3>
 
-    <p>If you would like to run <strong>all css</strong> through <code>lessphp</code>, then you will need to pass the <code>lessifyAllCss</code> parameter into the <code>Request</code> class when you instantiate it:</p>
+        <p>Just before the closing <code><abbr title="<body>">body</abbr></code> tag (after any JS file includes), call
+            the plugin with code below:</p>
+                <pre class="prettyprint linenums">
+&lt;script&gt;
+$(document).ready(function () {
+	$('.selector').yourPlugin();
+});
+&lt;/script&gt;
+</pre>
+    </section>
+</div>
+<!--end howtouse-content-->
+<!--
+=====================================
+Documentation Tab Content
+=====================================
+-->
+<div class="tab-pane" id="documentation">
+    <section class="sec-header">
+        <h3 class="font-bree-serif">Plugin Settings</h3>
 
-<pre><code>echo \munee\Dispatcher::run(new munee\Request(array('css' =&gt; array('lessifyAllCss' =&gt; true))));
-</code></pre>
+        <p>Plugin accepts settings from an object of key/value pairs, and can be assigned to any HTML element.</p>
+        <table class="table table-bordered settings">
+            <thead>
+            <tr>
+                <th><strong>Property</strong></th>
+                <th><strong>Default</strong></th>
+                <th><strong>Description</strong></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>Property1</td>
+                <td>Default Value</td>
+                <td>some description about this</td>
+            </tr>
+            <tr>
+                <td>Property2</td>
+                <td>"Default String"</td>
+                <td>some description about this</td>
+            </tr>
+            <tr>
+                <td>Property3</td>
+                <td>false</td>
+                <td>some description about this</td>
+            </tr>
+            <tr>
+                <td>Property4</td>
+                <td>Default Value</td>
+                <td>some description about this</td>
+            </tr>
+            <tr>
+                <td>Property5</td>
+                <td>"Default String"</td>
+                <td>some description about this</td>
+            </tr>
+            <tr>
+                <td>Property6</td>
+                <td>false</td>
+                <td>some description about this</td>
+            </tr>
+            </tbody>
+        </table>
 
-    <p><strong>One Request For All CSS</strong></p>
+    </section>
+</div>
+<!--end documentation-content-->
+<!--
+=====================================
+FAQ Tab Content
+=====================================
+-->
+<div class="tab-pane" id="faq">
+    <section class="sec-header">
+        <h3 class="font-bree-serif">FAQ
+            <small>Option1</small>
+        </h3>
+        <div class="row">
+            <div class="span3">
+                <div class="well">
+                    <ul class="nav nav-pills nav-stacked">
+                        <li class="active"><a href="#">Category 1</a></li>
+                        <li><a href="#">Category 2</a></li>
+                        <li><a href="#">Category 3</a></li>
+                        <li><a href="#">Category 4</a></li>
+                        <li><a href="#">Category 5</a></li>
+                    </ul>
+                </div>
+                <!--end well-->
+            </div>
+            <!--end span3-->
+            <div class="span9">
+                <form class="well form-search">
+                    <input type="text" class="span7" style="margin: 0 auto;" data-provide="typeahead" data-items="4"
+                           data-source="[&quot;keyword1&quot;,&quot;keyword2&quot;]">
+                    <button type="submit" class="btn btn-success">Search</button>
+                </form>
+                <div class="accordion" id="faq-accordion">
+                    <div class="accordion-group">
+                        <div class="accordion-heading">
+                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2"
+                               href="#collapseOne">
+                                Question #1
+                            </a>
+                        </div>
+                        <div id="collapseOne" class="accordion-body collapse in">
+                            <div class="accordion-inner">
+                                Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad
+                                squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck
+                                quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it
+                                squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica,
+                                craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur
+                                butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth
+                                nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-group">
+                        <div class="accordion-heading">
+                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2"
+                               href="#collapseTwo">
+                                Question Item #2
+                            </a>
+                        </div>
+                        <div id="collapseTwo" class="accordion-body collapse">
+                            <div class="accordion-inner">
+                                Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad
+                                squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck
+                                quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it
+                                squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica,
+                                craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur
+                                butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth
+                                nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-group">
+                        <div class="accordion-heading">
+                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2"
+                               href="#collapseThree">
+                                Question Item #3
+                            </a>
+                        </div>
+                        <div id="collapseThree" class="accordion-body collapse">
+                            <div class="accordion-inner">
+                                Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad
+                                squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck
+                                quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it
+                                squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica,
+                                craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur
+                                butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth
+                                nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--end accordion-->
+            </div>
+            <!--end span9-->
+        </div>
+        <!--end row-->
+    </section>
 
-    <p>Format your style so the href has all CSS files delimited by a comma (,).</p>
+    <section class="sec-header">
+        <h3 class="font-bree-serif">FAQ
+            <small>Option2</small>
+        </h3>
+        <div class="accordion" id="faq-accordion1">
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapse1">
+                        Question #1
+                    </a>
+                </div>
+                <div id="collapse1" class="accordion-body collapse in">
+                    <div class="accordion-inner">
+                        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid.
+                        3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt
+                        laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin
+                        coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes
+                        anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings
+                        occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard
+                        of them accusamus labore sustainable VHS.
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapse2">
+                        Question Item #2
+                    </a>
+                </div>
+                <div id="collapse2" class="accordion-body collapse">
+                    <div class="accordion-inner">
+                        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid.
+                        3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt
+                        laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin
+                        coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes
+                        anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings
+                        occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard
+                        of them accusamus labore sustainable VHS.
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapse3">
+                        Question Item #3
+                    </a>
+                </div>
+                <div id="collapse3" class="accordion-body collapse">
+                    <div class="accordion-inner">
+                        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid.
+                        3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt
+                        laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin
+                        coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes
+                        anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings
+                        occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard
+                        of them accusamus labore sustainable VHS.
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--end accordion-->
+    </section>
+</div>
+<!--end faq-content-->
+<!--
+=====================================
+Roadmap and changelog Tab Content
+=====================================
+-->
+<div class="tab-pane" id="roadmap">
+    <section class="sec-header">
+        <h3 class="font-bree-serif">Roadmap</h3>
 
-<pre><code>&lt;link rel="stylesheet" href="/css/libs/bootstrap.min.css,/css/site.css"&gt;
-</code></pre>
+        <p>For more up-to-date information on release dates for these versions, please refer to the <a href="#"
+                                                                                                       class="tip"
+                                                                                                       title="Link to your GitHub Account">Issues
+            Milestones</a>.</p>
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th><strong>Version</strong></th>
+                <th><strong>Description</strong></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>1.0.3</td>
+                <td>Description about this version goes here</td>
+            </tr>
+            <tr>
+                <td>1.0.2</td>
+                <td>Description about this version goes here</td>
+            </tr>
+            <tr>
+                <td>1.0.1</td>
+                <td>Description about this version goes here</td>
+            </tr>
+            <tr>
+                <td>1.0.0</td>
+                <td>Description about this version goes here</td>
+            </tr>
 
-    <p><strong>Minify CSS</strong></p>
+            </tbody>
+        </table>
+    </section>
 
-    <p>To minify your CSS, add the query string parameter <code>minify</code> and set it to <code>true</code></p>
+    <section class="sec-header">
+        <h3 class="font-bree-serif">Changelog</h3>
 
-<pre><code>&lt;link rel="stylesheet" href="/css/libs/bootstrap.min.css,/css/site.css?minify=true"&gt;
-</code></pre>
+        <div class="accordion" id="changelog-accordion">
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion3" href="#collapseaa">
+                        <strong>1.0.3 (June 1, 2012)</strong>
+                    </a>
+                </div>
+                <div id="collapseaa" class="accordion-body collapse in">
+                    <div class="accordion-inner">
+                        <h5>CSS Changes</h5>
+                        <ul>
+                            <li>Some description about the changes</li>
+                            <li>Some description about the changes</li>
+                            <li>Some description about the changes</li>
+                            <li>Some description about the changes</li>
+                            <li>Some description about the changes</li>
+                        </ul>
+                        <h5>Javascript Changes</h5>
+                        <ul>
+                            <li>Some description about the changes</li>
+                            <li>Some description about the changes</li>
+                            <li>Some description about the changes</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion3" href="#collapseab">
+                        <strong>1.0.2 (April 1, 2012)</strong>
+                    </a>
+                </div>
+                <div id="collapseab" class="accordion-body collapse">
+                    <div class="accordion-inner">
+                        <h5>HTML Changes</h5>
+                        <ul>
+                            <li>Some description about the changes</li>
+                            <li>Some description about the changes</li>
+                            <li>Some description about the changes</li>
+                            <li>Some description about the changes</li>
+                            <li>Some description about the changes</li>
+                        </ul>
+                        <h5>Javascript Changes</h5>
+                        <ul>
+                            <li>Some description about the changes</li>
+                            <li>Some description about the changes</li>
+                            <li>Some description about the changes</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion3" href="#collapseac">
+                        <strong>1.0.1 (March 1, 2012)</strong>
+                    </a>
+                </div>
+                <div id="collapseac" class="accordion-body collapse">
+                    <div class="accordion-inner">
+                        <h5>HTML Changes</h5>
+                        <ul>
+                            <li>Some description about the changes</li>
+                            <li>Some description about the changes</li>
+                            <li>Some description about the changes</li>
+                            <li>Some description about the changes</li>
+                            <li>Some description about the changes</li>
+                        </ul>
+                        <h5>Javascript Changes</h5>
+                        <ul>
+                            <li>Some description about the changes</li>
+                            <li>Some description about the changes</li>
+                            <li>Some description about the changes</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--end accordion-->
+    </section>
+</div>
+<!--end roadmap-content-->
+</div>
+<!--end tab-content-->
+</div>
+<!--end tabbable-->
 
-    <h3>Handling/Resizing Images</h3>
-
-    <p>Using Munee, you resize/crop/stretch/fill images on-the-fly using a set of parameters.  The resulting image will be cached and served up on subsequent requests.  If the source image is modified, it will recreate the cache and invalidate the client side cache and force the browser to download the newest version.</p>
-
-    <p><strong>Security</strong></p>
-
-    <p>When using an on-the-fly image resizing tool like this, there is an inherent risk that someone will try and exploit it to try and resize a photo a thousand different ways to take down your server. Munee has a couple of ways to minimise this risk a great deal.  One is it checks that the referer is set and is coming from the same domain that the image is located on.  Another is it only allows 3 resizes of an image within a 5 minute time span.  In a later version, these can be modified or turned off for development purposes.</p>
-
-    <p><strong>Resize Parameters</strong> - Parameters can either be in long form or use their shortened form.  The value for an alias must be wrapped in square brackets <code>[]</code>. There is no need to put any characters between each parameter, although you can if you want.</p>
-
-    <ul>
-        <li>
-            <code>height</code> (or <code>h</code>) - The max height you want the image. Value must be an integer.</li>
-        <li>
-            <code>width</code> (or <code>w</code>) - The max width you want the image. Value must be an integer.</li>
-        <li>
-            <code>exact</code> (or <code>e</code>) - Crop the image to the exact <code>height</code> and <code>width</code>. Value can be <code>true</code> or <code>false</code>.</li>
-        <li>
-            <code>stretch</code> (or <code>s</code>) - Stretch the image to match the exact <code>height</code> and <code>width</code>. Value can be <code>true</code> or <code>false</code>.</li>
-        <li>
-            <code>fill</code> (or <code>f</code>) - Draw a background the exact size of the <code>height</code> and <code>width</code> and centre the image in the middle. (If you do not want the image to be stretched, then do not use the <code>stretch</code> parameter along with <code>fill</code>). Value can be <code>true</code> or <code>false</code>.</li>
-        <li>
-            <code>fillColour</code> (or <code>fc</code>) - The colour of the background. Default is <code>FFFFFF</code> (white).  This can be any hex colour (i.e. <code>FF0000</code>)</li>
-        <li>
-            <code>quality</code> (or <code>q</code>) - JPEG compression value. Default is: <code>75</code> - It will only work for JPEG's.</li>
-    </ul><p><strong>Examples</strong></p>
-
-    <p>Resize an image to a specific width and keep it's correct aspect ratio. <strong>Note:</strong> This is using the long form of the parameters.</p>
-
-<pre><code>&lt;img src="/img/my-image.jpg?resize=width[250]"&gt;
-</code></pre>
-
-    <p>Resize an image and keep it's correct aspect ratio but neither width or height can be bigger than specified. </p>
-
-<pre><code>&lt;img src="/img/my-image.jpg?resize=width[100]-height[50]"&gt;
-</code></pre>
-
-    <p>Crop an image to an exact size.  If the image is smaller than the provided dimensions, it will not stretch or fill the image out to match the height and width. <strong>Note:</strong> This is using the shortened form of the parameters.</p>
-
-<pre><code>&lt;img src="/img/my-image.jpg?resize=w[100]h[85]e[true]"&gt;
-</code></pre>
-
-    <p>Crop an image and stretch it to an exact size.</p>
-
-<pre><code>&lt;img src="/img/my-image.jpg?resize=w[200]h[300]e[true]s[true]"&gt;
-</code></pre>
-
-    <p>Resize an image and put it on dark grey background the exact size of the dimensions.</p>
-
-<pre><code>&lt;img src="/img/my-image.jpg?resize=w[500]h[500]f[true]fc[444444]"&gt;
-</code></pre>
-
-    <h3>Handling JavaScript</h3>
-
-    <p>All JavaScript is served through Munee so that it can handle the client side caching.</p>
-
-    <p><strong>One Request For All JS</strong></p>
-
-    <p>Format your script tag so the src has all js files delimited by a comma (,).</p>
-
-<pre><code>&lt;script src="/js/libs/jquery-1.8.1.min.js,/js/libs/bootstrap.min.js,/js/site.js"&gt;&lt;/script&gt;
-</code></pre>
-
-    <p><strong>Minify JS</strong></p>
-
-    <p>To minify your JS, add the query string parameter <code>minify</code> and set it to <code>true</code></p>
-
-<pre><code>&lt;script src="/js/libs/jquery-1.8.1.min.js,/js/libs/bootstrap.min.js,/js/site.js?minify=true"&gt;&lt;/script&gt;
-</code></pre>
-
-    <h2>Build status</h2>
-
-    <p><a href="http://travis-ci.org/meenie/munee"><img src="https://secure.travis-ci.org/meenie/munee.png?branch=master" alt="Build Status"></a></p>
-
-    <h2>Tips &amp; Tricks</h2>
-
-    <p><strong>Minimising JavaScript Errors When Minified</strong></p>
-
-    <p>Make sure and use curly brackets for block statements (<code>if</code>, <code>while</code>, <code>switch</code>, etc) and terminate lines with a semicolon.  When the JavaScript is minified, it will put all of your code on one line.  If you have left out some brackets for an <code>if</code> statement, it will include the rest of your code inside that <code>if</code> statement and cause a lot of problems.  As long as you follow decent coding standards, you will not have a problem.</p>
-
-    <p><strong>Using Munee without the <code>.htaccess</code> file</strong></p>
-
-    <p>If you would like to use Munee without having to use a <code>.htaccess</code> you will need to change how your assets are added in your template.  So instead of doing this:</p>
-
-<pre><code>&lt;link rel="stylesheet" href="/css/libs/bootstrap.min.css,/css/site.css?minify=true"&gt;
-</code></pre>
-
-    <p>You will need to do this:</p>
-
-<pre><code>&lt;link rel="stylesheet" href="/path/to/munee.php?files=/css/libs/bootstrap.min.css,/css/site.css&amp;minify=true"&gt;
-</code></pre>
-</section>
+<div class="well align-center">
+    <h4>
+        For any queries or issues. <a href="https://github.com/meenie/munee/issues/new">Submit an issue</a> on
+        <a href="https://github.com">GitHub</a> or Contact me <a href="mailto:cody.lundquist@gmail.com">cody.lundquist@gmail.com</a>
+    </h4>
+</div>
+<!--end well-->
+</div>
+<!--end span12-->
+</div>
+<!--end row-->
+</div>
+<!--end container-->
+</div>
+<!--end main-content-->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="span6">
+                <p>&copy; Cody Lundquist. All Rights Reserved</p>
+            </div>
+            <div class="span2 offset4">
+                <p><a href="#" id="top">Go To Top</a></p>
+            </div>
+            <!--end span2-->
+        </div>
+        <!--end row-->
+    </div>
+    <!--end container-->
+</footer>
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.min.js"></script>
+<script src="assets/js/google-code-prettify/prettify.js"></script>
+<script type="text/javascript" src="assets/js/respond.js"></script>
+<script type="text/javascript">
+    $(function () {
+        //Load Goodle Code Pretiffy
+        window.prettyPrint && prettyPrint();
+        //Tab function
+        $('#pluginTab a').click(function (e) {
+            e.preventDefault();
+            $(this).tab('show');
+        });
+        //FAQ autosuggest
+        $('.typeahead').typeahead();
+        //tooltip init
+        $("a.tip").tooltip();
+        //footer link to got top
+        gotoTop();
+        function gotoTop() {
+            // scroll body to 0px on click
+            $('a#top').on('click', function () {
+                $('body,html').animate({
+                    scrollTop: 0
+                }, 800);
+                return false;
+            });
+        };
+    });
+</script>
+</body>
+</html>

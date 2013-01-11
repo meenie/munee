@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="utf-8">
     <title>Munee: Optimising Your Assets</title>
@@ -130,7 +130,7 @@
             <h3>On-The-Fly Image Resizing</h3>
 
             <p>
-                Quickly resize/crop/fill images on the fly utilising an easy to use parameter syntax.  Once the image has
+                Quickly resize/crop/fill images on the fly utilising <a target="_blank" href="http://imagine.readthedocs.org/en/latest/">Imagine</a> and an easy to use parameter syntax.  Once the image has
                 been manipulated, the cached version will be served on the next request.  Security measures are put in place
                 to stop malicious users in their tracks.
             </p>
@@ -155,7 +155,8 @@
             <h3>Combine CSS/JS Into One Request</h3>
             <p>
                 When creating your <code>&lt;link&gt;</code> and <code>&lt;style&gt;</code> tags, you can comma delimit
-                each file into one request.  <em><strong>Munee</strong></em> will cache each file individually and combine the content of one.
+                each file into one request.  <em><strong>Munee</strong></em> will cache each file individually and combine
+                each files content.
             </p>
         </div>
         <!--end span4-->

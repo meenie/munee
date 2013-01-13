@@ -86,7 +86,7 @@ echo \munee\Dispatcher::run(new munee\Request());
 
 Open the `.htaccess` file in your webroot and paste in the following: 
 
-```
+```bash
 #### Munee .htaccess Code Start ####
 RewriteRule ^(.*\.(?:css|less|js|jpg|png|gif|jpeg))$ munee.php?files=/$1 [L,QSA]
 #### Munee .htaccess Code End ####
@@ -101,19 +101,25 @@ All LESS files are automatically compiled through `lessphp` and cached, there is
 
 If you would like to run **all css** through `lessphp`, then you will need to pass the `lessifyAllCss` parameter into the `Request` class when you instantiate it:
 
-    echo \munee\Dispatcher::run(new munee\Request(array('css' => array('lessifyAllCss' => true))));
+```php
+echo \munee\Dispatcher::run(new munee\Request(array('css' => array('lessifyAllCss' => true))));
+```
 
 **One Request For All CSS**
 
 Format your style so the href has all CSS files delimited by a comma (,).
 
-    <link rel="stylesheet" href="/css/libs/bootstrap.min.css,/css/site.css">
+```html
+<link rel="stylesheet" href="/css/libs/bootstrap.min.css,/css/site.css">
+```
 
 **Minify CSS**
 
 To minify your CSS, add the query string parameter `minify` and set it to `true`
 
-    <link rel="stylesheet" href="/css/libs/bootstrap.min.css,/css/site.css?minify=true">
+```html
+<link rel="stylesheet" href="/css/libs/bootstrap.min.css,/css/site.css?minify=true">
+```
 
 ### Handling/Resizing Images ###
 
@@ -137,23 +143,33 @@ When using an on-the-fly image resizing tool like this, there is an inherent ris
 
 Resize an image to a specific width and keep it's correct aspect ratio. **Note:** This is using the long form of the parameters.
 
-    <img src="/img/my-image.jpg?resize=width[250]">
+```html
+<img src="/img/my-image.jpg?resize=width[250]">
+```
 
 Resize an image and keep it's correct aspect ratio but neither width or height can be bigger than specified. 
 
-    <img src="/img/my-image.jpg?resize=width[100]-height[50]">
+```html
+<img src="/img/my-image.jpg?resize=width[100]-height[50]">
+```
 
 Crop an image to an exact size.  If the image is smaller than the provided dimensions, it will not stretch or fill the image out to match the height and width. **Note:** This is using the shortened form of the parameters.
 
-    <img src="/img/my-image.jpg?resize=w[100]h[85]e[true]">
+```html
+<img src="/img/my-image.jpg?resize=w[100]h[85]e[true]">
+```
 
 Crop an image and stretch it to an exact size.
 
-    <img src="/img/my-image.jpg?resize=w[200]h[300]e[true]s[true]">
+```html
+<img src="/img/my-image.jpg?resize=w[200]h[300]e[true]s[true]">
+```
 
 Resize an image and put it on dark grey background the exact size of the dimensions.
 
-    <img src="/img/my-image.jpg?resize=w[500]h[500]f[true]fc[444444]">
+```html
+<img src="/img/my-image.jpg?resize=w[500]h[500]f[true]fc[444444]">
+```
 
 ### Handling JavaScript ###
 
@@ -163,13 +179,17 @@ All JavaScript is served through Munee so that it can handle the client side cac
 
 Format your script tag so the src has all js files delimited by a comma (,).
 
-    <script src="/js/libs/jquery-1.8.1.min.js,/js/libs/bootstrap.min.js,/js/site.js"></script>
+```html
+<script src="/js/libs/jquery-1.8.1.min.js,/js/libs/bootstrap.min.js,/js/site.js"></script>
+```
 
 **Minify JS**
 
 To minify your JS, add the query string parameter `minify` and set it to `true`
 
-    <script src="/js/libs/jquery-1.8.1.min.js,/js/libs/bootstrap.min.js,/js/site.js?minify=true"></script>
+```html
+<script src="/js/libs/jquery-1.8.1.min.js,/js/libs/bootstrap.min.js,/js/site.js?minify=true"></script>
+```
     
 Build status
 ------------
@@ -186,8 +206,12 @@ Make sure and use curly brackets for block statements (`if`, `while`, `switch`, 
 
 If you would like to use Munee without having to use a `.htaccess` you will need to change how your assets are added in your template.  So instead of doing this:
 
-    <link rel="stylesheet" href="/css/libs/bootstrap.min.css,/css/site.css?minify=true">
+```html
+<link rel="stylesheet" href="/css/libs/bootstrap.min.css,/css/site.css?minify=true">
+```
 
 You will need to do this:
 
-    <link rel="stylesheet" href="/path/to/munee.php?files=/css/libs/bootstrap.min.css,/css/site.css&minify=true">
+```html
+<link rel="stylesheet" href="/path/to/munee.php?files=/css/libs/bootstrap.min.css,/css/site.css&minify=true">
+```

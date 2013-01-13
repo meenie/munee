@@ -43,6 +43,13 @@
     ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
   })();
+  function recordOutboundLink(link, category, action) {
+      try {
+          var myTracker=_gat._getTrackerByName();
+          _gaq.push(['myTracker._trackEvent', category , action ]);
+          setTimeout('document.location = "' + link.href + '"', 100)
+      }catch(err){}
+  }
 </script>
 </head>
 <body>
@@ -56,7 +63,10 @@
         <p class="jumbo">
             <a href="https://github.com/meenie/munee" class="btn btn-inverse btn-large font-open-sans-normal"><strong>View
                 Project on GitHub</strong></a>
-            <a href="https://github.com/meenie/munee#composer-installation-instructions" target="_blank" class="btn btn-success btn-large font-open-sans-normal" onClick="_gaq.push(['_trackEvent', 'install']);"><strong>Install Library </strong>
+            <a href="https://github.com/meenie/munee#composer-installation-instructions"
+                    onclick="recordOutboundLink(this, 'Install Munee', 'github.com')"
+                    class="btn btn-success btn-large font-open-sans-normal">
+                <strong>Install Library </strong>
                 <small>(v1.3.9)</small>
             </a>
         </p>

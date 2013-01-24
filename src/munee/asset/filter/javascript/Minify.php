@@ -37,7 +37,7 @@ class Minify extends Filter
      *
      * @return void
      */
-    public function filter($file, $arguments)
+    public function doFilter($file, $arguments)
     {
         if (! $arguments['minify']) {
             return;

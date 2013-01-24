@@ -34,5 +34,5 @@ abstract class Filter
      * @param string $originalFile
      * @param array $arguments
      */
-    abstract public function filter($originalFile, $arguments);
+    abstract public function doFilter($originalFile, $arguments);
 }

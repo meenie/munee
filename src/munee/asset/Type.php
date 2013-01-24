@@ -186,7 +186,7 @@ abstract class Type
                 if (! is_array($arguments)) {
                     $arguments = array($filterName => $arguments);
                 }
-                $Filter->filter($cacheFile, $arguments);
+                $Filter->doFilter($cacheFile, $arguments);
             }
 
             $this->_afterFilter($originalFile, $cacheFile);

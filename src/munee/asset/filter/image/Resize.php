@@ -92,7 +92,7 @@ class Resize extends Filter
      *
      * @throws ErrorException
      */
-    public function filter($originalImage, $arguments)
+    public function doFilter($originalImage, $arguments)
     {
         // Need at least a height or a width
         if (empty($arguments['height']) && empty($arguments['width'])) {

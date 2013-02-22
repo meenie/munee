@@ -7,7 +7,7 @@ defined('DS') || define('DS' , DIRECTORY_SEPARATOR);
 // Folder where munee is located
 defined('MUNEE_FOLDER') || define('MUNEE_FOLDER', dirname(__DIR__));
 // Define Webroot if hasn't already been defined
-defined('WEBROOT') || define('WEBROOT', $_SERVER['DOCUMENT_ROOT']);
+defined('WEBROOT') || define('WEBROOT', str_replace($_SERVER['SCRIPT_NAME'], '', $_SERVER['SCRIPT_FILENAME']));
 // Define the cache path
 defined('MUNEE_CACHE') || define('MUNEE_CACHE', MUNEE_FOLDER . DS . 'cache');
 

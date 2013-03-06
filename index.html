@@ -57,8 +57,7 @@
     <div class="container">
         <h1 class="font-bree-serif">Munee: Optimising Your Assets</h1>
         <p class="font-open-sans-normal">
-            PHP 5.3 Asset Optimisation - Smart Caching, On-The-Fly Image Resizing, <br>
-            Auto-LESS-Compiling, and CSS &amp; JavaScript Combining/Minifying
+            PHP 5.3 Asset Optimisation - Smart Caching, On-The-Fly Image Resizing, <br>On-the-fly LESS, SASS, CoffeeScript Compiling, and CSS & JavaScript Combining/Minifying
         </p>
         <p class="jumbo">
             <a href="https://github.com/meenie/munee" class="btn btn-inverse btn-large font-open-sans-normal"><strong>View
@@ -67,7 +66,7 @@
                     onclick="recordOutboundLink(this, 'Install Munee', 'github.com')"
                     class="btn btn-success btn-large font-open-sans-normal">
                 <strong>Install Library </strong>
-                <small>(v1.3.9)</small>
+                <small>(v1.4.1)</small>
             </a>
         </p>
         <p class="share">
@@ -162,12 +161,10 @@
     <div class="row features">
         <div class="span4"><i class="feature-icon icon-cogs"></i>
 
-            <h3>Auto LESS Compiling</h3>
-
+            <h3>LESS/SCSS/CoffeeScript Compiling</h3>
             <p>
-                All <code>.less</code> files are automatically compiled through <a href="http://leafo.net/lessphp/" target="_blank">lessphp</a>
-                and cached.  You can also tell <em><strong>Munee</strong></em> to run all <code>.css</code> files through
-                <a href="http://leafo.net/lessphp/" target="_blank">lessphp</a>.
+                Just include these assets (<code>.less, .scss, .coffee</code>) to your HTML and <em><strong>Munee</strong></em>
+                will automatically compile and cache them for future requests.
             </p>
         </div>
         <!--end span4-->

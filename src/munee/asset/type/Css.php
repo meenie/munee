@@ -23,7 +23,8 @@ class Css extends Type
      * @var array
      */
     protected $_options = array(
-        'lessifyAllCss' => false
+        'lessifyAllCss' => false,
+        'scssifyAllCss' => false
     );
 
     /**
@@ -49,11 +50,7 @@ class Css extends Type
             return false;
         }
 
-        if ($this->_isLess($cacheFile)) {
-            if (! Utils::isSerialized($ret, $ret)) {
-                // If for some reason the file isn't serialized, just return the content
-                return $ret;
-            }
+        if (Utils::isSerialized($ret, $ret)) {
             // Go through each file and make sure none of them have changed
             foreach ($ret['files'] as $file => $lastModified) {
                 if (filemtime($file) > $lastModified) {
@@ -83,6 +80,18 @@ class Css extends Type
             $compiledLess = $less->cachedCompile($originalFile);
             $compiledLess['compiled'] = $this->_fixRelativeImagePaths($compiledLess['compiled'], $originalFile);
             file_put_contents($cacheFile, serialize($compiledLess));
+        } elseif ($this->_isScss($originalFile)) {
+            $scss = new \scssc();
+            $scss->addImportPath(pathinfo($originalFile, PATHINFO_DIRNAME));
+            $compiled = $scss->compile(file_get_contents($originalFile));
+            $content = compact('compiled');
+            $parsedFiles = $scss->getParsedFiles();
+            $parsedFiles[] = $originalFile;
+            foreach ($parsedFiles as $file) {
+                $content['files'][$file] = filemtime($file);
+            }
+
+            file_put_contents($cacheFile, serialize($content));
         } else {
             $content = file_get_contents($originalFile);
             file_put_contents($cacheFile, $this->_fixRelativeImagePaths($content, $originalFile));
@@ -117,6 +126,18 @@ class Css extends Type
     protected function _isLess($file)
     {
         return 'less' == pathinfo($file, PATHINFO_EXTENSION) || $this->_options['lessifyAllCss'];
+    }
+
+    /**
+     * Check if it's a SCSS file or if we should run all CSS through SCSS
+     *
+     * @param string $file
+     *
+     * @return boolean
+     */
+    protected function _isScss($file)
+    {
+        return 'scss' == pathinfo($file, PATHINFO_EXTENSION) || $this->_options['scssifyAllCss'];
     }
 
     /**

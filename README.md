@@ -1,19 +1,19 @@
 Munee: Optimising Your Assets
 =============================
 
-#####PHP 5.3 Asset Optimisation - Smart Caching, On-The-Fly Image Resizing, Auto-LESS-Compiling, and CSS & JavaScript Combining/Minifying
+#####PHP 5.3 Asset Optimisation - Smart Caching, On-The-Fly Image Resizing, On-the-fly LESS, SASS, CoffeeScript Compiling, and CSS & JavaScript Combining/Minifying
 
 ---
 
 Update 1.3.0 Important Note
 ---------------------------
 
-In this and future versions of Munee, the way CSS is run through the `lessphp` compiler has changed.  By default, only `.less` files will be compiled and you will have to set a special parameter to have all CSS (`.css`) files run through the compiler as well. [See here](#handling-css) for more instructions. The reason behind this change is technically `.less` files should have only valid LESS in them and `.css` should only have valid CSS in them.
+In this and future versions of Munee, the way CSS is run through the `LESS` compiler has changed.  By default, only `.less` files will be compiled and you will have to set a special parameter to have all CSS (`.css`) files run through the compiler as well. [See here](#handling-css) for more instructions. The reason behind this change is technically `.less` files should have only valid LESS in them and `.css` should only have valid CSS in them.
 
 Features
 --------
 
-+ On-the-fly LESS Compiling
++ On-the-fly LESS, SASS, CoffeeScript Compiling
 + On-the-fly Image Resizing/Manipulation
 + Smart Asset Caching - Client Side & Server Side
 + Combine CSS or JS into one request
@@ -22,7 +22,7 @@ Features
 What is Munee?
 --------------
 
-A PHP5.3 library to easily run all CSS through [lessphp](http://leafo.net/lessphp/) ([LESS](http://lesscss.org/)), resize/manipulate images on the fly, minify CSS and JS, and cache assets locally and remotely for lightening fast requests. No need to change how you include your assets in your templates. Just follow the couple of installation instructions below and you are ready to go!
+A PHP5.3 library to easily on-the-fly compile LESS, SCSS (SASS is not supported!), or CoffeeScript, resize/manipulate images on-the-fly, minify CSS and JS, and cache assets locally and remotely for lightening fast requests. No need to change how you include your assets in your templates. Just follow the couple of installation instructions below and you are ready to go!
 
 Why the name Munee?
 -------------------
@@ -88,7 +88,7 @@ Open the `.htaccess` file in your webroot and paste in the following:
 
 ```bash
 #### Munee .htaccess Code Start ####
-RewriteRule ^(.*\.(?:css|less|js|jpg|png|gif|jpeg))$ munee.php?files=/$1 [L,QSA]
+RewriteRule ^(.*\.(?:css|less|scss|js|coffee|jpg|png|gif|jpeg))$ munee.php?files=/$1 [L,QSA]
 #### Munee .htaccess Code End ####
 ```
 
@@ -97,12 +97,18 @@ Usage Instructions
 
 ### Handling CSS ###
 
-All LESS files are automatically compiled through `lessphp` and cached, there is nothing extra that you need to do.  Any changes you make to your CSS, even LESS files you have `@import` will automatically recreate the cache, invalidate the client side cache, and force the browser to download the newest version.
+All LESS & SCSS (SASS is not supported!) files are automatically compiled into CSS and cached, there is nothing extra that you need to do.  Any changes you make to your CSS, even LESS/SCSS files you have `@import`ed will automatically recreate the cache, invalidate the client side cache, and force the browser to download the newest version.
 
-If you would like to run **all css** through `lessphp`, then you will need to pass the `lessifyAllCss` parameter into the `Request` class when you instantiate it:
+If you would like to run **all css** through the `LESS` compiler, then you will need to pass the `lessifyAllCss` parameter into the `Request` class with the value of `true` when you instantiate it:
 
 ```php
 echo \munee\Dispatcher::run(new munee\Request(array('css' => array('lessifyAllCss' => true))));
+```
+
+If you would like to run **all css** through the `scssphp` compiler, then you will need to pass the `scssifyAllCss` parameter into the `Request` class with the value of `true` when you instantiate it:
+
+```php
+echo \munee\Dispatcher::run(new munee\Request(array('css' => array('scssifyAllCss' => true))));
 ```
 
 **One Request For All CSS**
@@ -110,7 +116,7 @@ echo \munee\Dispatcher::run(new munee\Request(array('css' => array('lessifyAllCs
 Format your style so the href has all CSS files delimited by a comma (,).
 
 ```html
-<link rel="stylesheet" href="/css/libs/bootstrap.min.css,/css/site.css">
+<link rel="stylesheet" href="/css/libs/bootstrap.min.css,/css/site.less">
 ```
 
 **Minify CSS**
@@ -118,7 +124,7 @@ Format your style so the href has all CSS files delimited by a comma (,).
 To minify your CSS, add the query string parameter `minify` and set it to `true`
 
 ```html
-<link rel="stylesheet" href="/css/libs/bootstrap.min.css,/css/site.css?minify=true">
+<link rel="stylesheet" href="/css/libs/bootstrap.min.css,/css/site.scss?minify=true">
 ```
 
 ### Handling/Resizing Images ###
@@ -190,6 +196,14 @@ To minify your JS, add the query string parameter `minify` and set it to `true`
 ```html
 <script src="/js/libs/jquery-1.8.1.min.js,/js/libs/bootstrap.min.js,/js/site.js?minify=true"></script>
 ```
+
+**CoffeeScript**
+
+CoffeeScript can also be automatically compiled if included in your html.  When requested, Munee will compile it, cache it, and set the `Content-Type` headers to `text/javascript`
+
+```html
+<script src="/js/libs/jquery-1.8.1.min.js,/js/libs/bootstrap.min.js,/js/site.coffee?minify=true"></script>
+```
     
 Build status
 ------------
@@ -197,6 +211,18 @@ Build status
 
 Tips & Tricks
 -------------
+
+**Resizing Images In Emails**
+
+If you want to resize images through Munee in your emails, you will need to turn off one of the security features in Munee.  This is the Referrer check.  To get it working, you can pass in the following option when you instantiate Munee:
+
+```php
+echo \munee\Dispatcher::run(new \munee\Request(array(
+    'image' => array(
+        'checkReferrer' => false
+    )
+)));
+```
 
 **Minimising JavaScript Errors When Minified**
 

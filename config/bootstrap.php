@@ -14,14 +14,14 @@ defined('MUNEE_CACHE') || define('MUNEE_CACHE', MUNEE_FOLDER . DS . 'cache');
 /**
  * Register the CSS Asset Class with the extensions .css and .less
  */
-Registry::register(array('css', 'less'), function (\munee\Request $Request) {
+Registry::register(array('css', 'less', 'scss'), function (\munee\Request $Request) {
     return new \munee\asset\type\Css($Request);
 });
 
 /**
  * Register the JavaScript Asset Class with the extension .js
  */
-Registry::register('js', function (\munee\Request $Request) {
+Registry::register(array('js', 'coffee'), function (\munee\Request $Request) {
     return new \munee\asset\type\JavaScript($Request);
 });
 

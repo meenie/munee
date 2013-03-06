@@ -9,6 +9,7 @@
 namespace munee\asset\type;
 
 use munee\asset\Type;
+use CoffeeScript;
 
 /**
  * Handles JavaScript
@@ -23,5 +24,22 @@ class JavaScript extends Type
     public function getHeaders()
     {
         header("Content-Type: text/javascript");
+    }
+
+
+    /**
+     * Callback method called before filters are run
+     *
+     * Overriding to run the file through CoffeeScript compiler if it has a .coffee extension
+     *
+     * @param string $originalFile
+     * @param string $cacheFile
+     */
+    protected function _beforeFilter($originalFile, $cacheFile)
+    {
+        if ('coffee' == pathinfo($originalFile, PATHINFO_EXTENSION)) {
+            $coffeeScript = CoffeeScript\Compiler::compile(file_get_contents($originalFile));
+            file_put_contents($cacheFile, $coffeeScript);
+        }
     }
 }

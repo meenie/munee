@@ -27,8 +27,37 @@ class Image extends Type
         // Number of seconds - default is 5 minutes
         'allowedFiltersTimeLimit' => 300,
         // Should the referrer be checked for security
-        'checkReferrer' => true
+        'checkReferrer' => true,
+        'placeholders' => false
     );
+
+    protected $_placeholdersDefault = array(
+        'generate' => array(
+            'color' => '#DDDDDD',
+            'text' => 'Placeholder'
+        ),
+        'image' => null
+    );
+
+    /**
+     * Overwrite the _setupFile function so placeholder images can be shown instead of broken images
+     *
+     *
+     * @param string $originalFile
+     * @param string $cacheFile
+     */
+    protected function _setupFile($originalFile, $cacheFile)
+    {
+        if (! file_exists($originalFile)) {
+
+            if (! empty($this->_options['placeholder']) && file_exists($this->_options['placeholder'])) {
+                $originalFile = $this->_options['placeholder'];
+            }
+        }
+
+        parent::_setupFile($originalFile, $cacheFile);
+
+    }
 
     /**
      * Checks to see if cache exists and is the latest, if it does, return it
@@ -43,6 +72,21 @@ class Image extends Type
     protected function _checkCache($originalFile, $cacheFile)
     {
         if (! $return = parent::_checkCache($originalFile, $cacheFile)) {
+            /**
+             * If using the placeholder when the original file doesn't
+             * and it has already been cached, return the cached contents.
+             * Also make sure the placeholder hasn't been modified since being cached.
+             */
+            if (
+                ! file_exists($originalFile) &&
+                ! empty($this->_options['placeholder']) &&
+                file_exists($this->_options['placeholder']) &&
+                file_exists($cacheFile) &&
+                filemtime($cacheFile) > filemtime($this->_options['placeholder'])
+            ) {
+                return file_get_contents($cacheFile);
+            }
+
             if ($this->_options['checkReferrer']) {
                 $this->_checkReferrer();
             }
@@ -111,6 +155,13 @@ class Image extends Type
         // Check and see if we've reached the maximum allowed resizes within the current time limit.
         if (count($cachedImages) >= $this->_options['numberOfAllowedFilters']) {
             throw new ErrorException('You cannot create anymore resizes/manipulations at this time.');
+        }
+    }
+
+    protected function _parsePlaceholders($file)
+    {
+        if (! empty($this->_options['placeholders'])) {
+
         }
     }
 }

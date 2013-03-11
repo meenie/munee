@@ -10,6 +10,7 @@ namespace munee\asset;
 
 use munee\Request;
 use munee\Utils;
+use munee\asset\NotFoundException;
 
 /**
  * Base Asset Class
@@ -102,7 +103,13 @@ abstract class Type
     {
         $content = array();
         foreach ($this->_request->files as $file) {
-            $fileContent = $this->_getFileContent($file);
+            $cacheFile = $this->_generateCacheFile($file);
+
+            if (! $fileContent = $this->_checkCache($file, $cacheFile)) {
+                $this->_setupFile($file, $cacheFile);
+                $fileContent = $this->_getFileContent($file, $cacheFile);
+            }
+
             $content[] = $this->_afterGetFileContent($fileContent);
         }
 
@@ -163,38 +170,51 @@ abstract class Type
     }
 
     /**
-     * Grab a files content but check to make sure it exists first
+     * Checks to see if the file exists and then copies it to the cache folder for further manipulation
      *
      * @param $originalFile
+     * @param $cacheFile
+     *
+     * @throws NotFoundException
+     */
+    protected function _setupFile($originalFile, $cacheFile)
+    {
+        // Check if the file exists
+        if (! file_exists($originalFile)) {
+            throw new NotFoundException('File does not exist: ' . str_replace(WEBROOT, '', $originalFile));
+        }
+
+        // Copy the original file to the cache location
+        copy($originalFile, $cacheFile);
+    }
+
+    /**
+     * Grab a files content but check to make sure it exists first
+     *
+     * @param string $originalFile
+     * @param string $cacheFile
      *
      * @return string
      *
      * @throws NotFoundException
      */
-    protected function _getFileContent($originalFile)
+    protected function _getFileContent($originalFile, $cacheFile)
     {
-        $cacheFile = $this->_generateCacheFile($originalFile);
-        if (! $content = $this->_checkCache($originalFile, $cacheFile)) {
-            // Copy the original file to the cache location
-            copy($originalFile, $cacheFile);
-
-            $this->_beforeFilter($originalFile, $cacheFile);
-            // Run through each filter
-            foreach ($this->_filters as $filterName => $Filter) {
-                $arguments = isset($this->_request->params[$filterName]) ?
-                    $this->_request->params[$filterName] : array();
-                if (! is_array($arguments)) {
-                    $arguments = array($filterName => $arguments);
-                }
-                $Filter->doFilter($cacheFile, $arguments);
+        $this->_beforeFilter($originalFile, $cacheFile);
+        // Run through each filter
+        foreach ($this->_filters as $filterName => $Filter) {
+            $arguments = isset($this->_request->params[$filterName]) ?
+                $this->_request->params[$filterName] : array();
+            if (! is_array($arguments)) {
+                $arguments = array($filterName => $arguments);
             }
-
-            $this->_afterFilter($originalFile, $cacheFile);
-            $this->_lastModifiedDate = time();
-            $content = file_get_contents($cacheFile);
+            $Filter->doFilter($cacheFile, $arguments);
         }
 
-        return $content;
+        $this->_afterFilter($originalFile, $cacheFile);
+        $this->_lastModifiedDate = time();
+
+        return file_get_contents($cacheFile);
     }
 
     /**
@@ -207,7 +227,7 @@ abstract class Type
      */
     protected function _checkCache($originalFile, $cacheFile)
     {
-        if (! file_exists($cacheFile)) {
+        if (! file_exists($cacheFile) || ! file_exists($originalFile)) {
             return false;
         }
 

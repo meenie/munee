@@ -10,6 +10,7 @@ namespace munee\asset\type;
 
 use munee\ErrorException;
 use munee\asset\Type;
+use munee\Utils;
 
 /**
  * Handles Images
@@ -31,33 +32,7 @@ class Image extends Type
         'placeholders' => false
     );
 
-    protected $_placeholdersDefault = array(
-        'generate' => array(
-            'color' => '#DDDDDD',
-            'text' => 'Placeholder'
-        ),
-        'image' => null
-    );
-
-    /**
-     * Overwrite the _setupFile function so placeholder images can be shown instead of broken images
-     *
-     *
-     * @param string $originalFile
-     * @param string $cacheFile
-     */
-    protected function _setupFile($originalFile, $cacheFile)
-    {
-        if (! file_exists($originalFile)) {
-
-            if (! empty($this->_options['placeholder']) && file_exists($this->_options['placeholder'])) {
-                $originalFile = $this->_options['placeholder'];
-            }
-        }
-
-        parent::_setupFile($originalFile, $cacheFile);
-
-    }
+    protected $_placeholder = false;
 
     /**
      * Checks to see if cache exists and is the latest, if it does, return it
@@ -73,16 +48,17 @@ class Image extends Type
     {
         if (! $return = parent::_checkCache($originalFile, $cacheFile)) {
             /**
-             * If using the placeholder when the original file doesn't
+             * If using the placeholder when the original file doesn't exist
              * and it has already been cached, return the cached contents.
              * Also make sure the placeholder hasn't been modified since being cached.
              */
+            $this->_placeholder = $this->_parsePlaceholders($originalFile);
             if (
                 ! file_exists($originalFile) &&
-                ! empty($this->_options['placeholder']) &&
-                file_exists($this->_options['placeholder']) &&
+                $this->_placeholder &&
+                file_exists($this->_placeholder) &&
                 file_exists($cacheFile) &&
-                filemtime($cacheFile) > filemtime($this->_options['placeholder'])
+                filemtime($cacheFile) > filemtime($this->_placeholder)
             ) {
                 return file_get_contents($cacheFile);
             }
@@ -95,6 +71,26 @@ class Image extends Type
         }
 
         return $return;
+    }
+
+    /**
+     * Overwrite the _setupFile function so placeholder images can be shown instead of broken images
+     *
+     *
+     * @param string $originalFile
+     * @param string $cacheFile
+     */
+    protected function _setupFile($originalFile, $cacheFile)
+    {
+        if (! file_exists($originalFile)) {
+            // If we are using a placeholder and that exists, use it!
+            if ($this->_placeholder && file_exists($this->_placeholder)) {
+                $originalFile = $this->_placeholder;
+            }
+        }
+
+        parent::_setupFile($originalFile, $cacheFile);
+
     }
 
     /**
@@ -158,10 +154,57 @@ class Image extends Type
         }
     }
 
+    /**
+     * @param string $file
+     *
+     * @return boolean|string
+     *
+     * @throws ErrorException
+     */
     protected function _parsePlaceholders($file)
     {
+        $ret = false;
         if (! empty($this->_options['placeholders'])) {
+            if (! is_array($this->_options['placeholders'])) {
+                throw new ErrorException('Placeholders option must be an array.');
+            }
 
+            foreach ($this->_options['placeholders'] as $path => $placeholder) {
+                // Setup path for regex
+                $regex = str_replace('*', '.*?', $path) . '$';
+                if (preg_match("%{$regex}%", $file)) {
+                    if ('http' == substr($placeholder, 0, 4)) {
+                        $ret = $this->_getImageByUrl($placeholder);
+                    } else {
+                        $ret = $placeholder;
+                    }
+                    break;
+                }
+            }
         }
+
+        return $ret;
+    }
+
+    /**
+     * Grabs an image by URL from another server
+     *
+     * @param string $url
+     *
+     * @return string
+     */
+    protected function _getImageByUrl($url)
+    {
+        $cacheFolder = MUNEE_CACHE . DS . 'placeholders';
+        Utils::createDir($cacheFolder);
+        $requestOptions = serialize($this->_request->options);
+        $originalFile = array_shift($this->_request->files);
+
+        $fileName = $cacheFolder . DS . md5($url) . '-' . md5($requestOptions . $originalFile);
+        if (! file_exists($fileName)) {
+            file_put_contents($fileName, file_get_contents($url));
+        }
+
+        return $fileName;
     }
 }

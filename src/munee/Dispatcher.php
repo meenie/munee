@@ -16,6 +16,13 @@ namespace munee;
 class Dispatcher
 {
     /**
+     * Dispatch default options
+     *
+     * @var array
+     */
+    static $_defaultOptions = array('setHeaders' => true);
+
+    /**
      * 1) Initialise the Request
      * 2) Grab the AssetType based on the request and initialise it
      * 3) Instantiate the Response class, set the headers, and then return the content
@@ -23,31 +30,47 @@ class Dispatcher
      * Rap everything in a Try/Catch block for error handling
      *
      * @param Request $Request
+     * @param array $options
      *
      * @return string
      *
      * @catch NotFoundException
      * @catch ErrorException
      */
-    public static function run(Request $Request)
+    public static function run(Request $Request, $options = array())
     {
         try {
-            // Initialise the Request
+            /**
+             * Merge in default options
+             */
+            $options = array_merge(self::$_defaultOptions, $options);
+            /**
+             * Initialise the Request
+             */
             $Request->init();
-            // Grab the correct AssetType
+            /**
+             * Grab the correct AssetType
+             */
             $AssetType = asset\Registry::getClass($Request);
-            // Initialise the AssetType
+            /**
+             * Initialise the AssetType
+             */
             $AssetType->init();
-            // Create a response
+            /**
+             * Create a response
+             */
             $Response = new Response($AssetType);
-            // Set The Headers
-            $Response->setHeaders();
-            if (! $Response->notModified) {
-                // Return the content
-                return $Response->render();
-            } else {
-                return null;
+            /**
+             * Set the headers if told to do so
+             */
+            if ($options['setHeaders']) {
+                $Response->setHeaders();
             }
+            /**
+             * If the content hasn't been modified return null so only headers are sent
+             * otherwise return the content
+             */
+            return $Response->notModified ? null : $Response->render();
         } catch (asset\NotFoundException $e) {
             header("HTTP/1.0 404 Not Found");
             header("Status: 404 Not Found");

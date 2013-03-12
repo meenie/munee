@@ -54,7 +54,7 @@ class Response
     public function render()
     {
         $content = $this->_assetType->getContent();
-        if (! $ret = ob_gzhandler($content, 5)) {
+        if (! $ret = ob_gzhandler($content, PHP_OUTPUT_HANDLER_START | PHP_OUTPUT_HANDLER_END)) {
             $ret = $content;
         }
 

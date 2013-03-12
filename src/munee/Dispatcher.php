@@ -40,21 +40,32 @@ class Dispatcher
     public static function run(Request $Request, $options = array())
     {
         try {
-            // Merge in default options
+            /**
+             * Merge in default options
+             */
             $options = array_merge(self::$_defaultOptions, $options);
-            // Initialise the Request
+            /**
+             * Initialise the Request
+             */
             $Request->init();
-            // Grab the correct AssetType
+            /**
+             * Grab the correct AssetType
+             */
             $AssetType = asset\Registry::getClass($Request);
-            // Initialise the AssetType
+            /**
+             * Initialise the AssetType
+             */
             $AssetType->init();
-            // Create a response
+            /**
+             * Create a response
+             */
             $Response = new Response($AssetType);
-            // Set the headers if told to do so
+            /**
+             * Set the headers if told to do so
+             */
             if ($options['setHeaders']) {
                 $Response->setHeaders();
             }
-
             /**
              * If the content hasn't been modified return null so only headers are sent
              * otherwise return the content

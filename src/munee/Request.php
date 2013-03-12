@@ -80,11 +80,11 @@ class Request
         $supportedExtensions = Registry::getSupportedExtensions($this->ext);
         // Suppressing errors because Exceptions thrown in the callback cause Warnings.
         $this->files = @array_map(function($v) use ($supportedExtensions) {
-            // Make sure all the file extension is supported
+            // Make sure all the file extensions are supported
             if (! in_array(strtolower(pathinfo($v, PATHINFO_EXTENSION)), $supportedExtensions)) {
-                //throw new ErrorException('All requested files need to be: ' . implode(', ', $supportedExtensions));
+                throw new ErrorException('All requested files need to be: ' . implode(', ', $supportedExtensions));
             }
-            // Strip any parent directory slugs - loop through until they are all gone
+            // Strip any parent directory slugs (../) - loop through until they are all gone
             $count = 1;
             while ($count > 0) {
                 $v = preg_replace('%(/\\.\\.?|\\.\\.?/)%', '', $v, -1, $count);
@@ -92,11 +92,6 @@ class Request
                 if (substr($v, 0, 1) != '/') {
                     $v = '/' . $v;
                 }
-            }
-
-            // Check if the file exists
-            if (! file_exists(WEBROOT . $v)) {
-                throw new asset\NotFoundException('File does not exist: ' . $v);
             }
 
             return WEBROOT . $v;

@@ -79,21 +79,6 @@ class RequestTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Make sure the correct exception is thrown when a file does not exist
-     */
-    public function testFileNotExist()
-    {
-        $Request = new Request();
-
-        $_GET = array(
-            'files' => '/js/does-not-exist.js'
-        );
-
-        $this->setExpectedException('munee\asset\NotFoundException');
-        $Request->init();
-    }
-
-    /**
      * Make sure all passed in files can be handled by the asset type class
      */
     public function testExtensionNotSupported()
@@ -119,8 +104,8 @@ class RequestTest extends \PHPUnit_Framework_TestCase
             'files' => '/../..././js/bad.js,/js/bar.js'
         );
 
-        $this->setExpectedException('munee\asset\NotFoundException');
         $Request->init();
+        $this->assertSame(array(WEBROOT . '/js/bad.js', WEBROOT . '/js/bar.js'), $Request->files);
     }
 
     /**

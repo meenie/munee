@@ -38,7 +38,7 @@ Requirements
 Note on Caching
 ---------------
 
-Munee caches asset requests server side and returns a `304 Not Modified` on subsequent requests if the asset hasn't been modified. If the asset has been modified, it will overwrite that cache and tell the browser they must revalidate it's cache so the new file can be shown. To accomplish this without the browser's caching engine trying to be smart, Munee sets the `Cache-Control` header to `no-cache`.  If you run into any problems, please [submit an issue](https://github.com/meenie/munee/issues).
+Munee caches asset requests server side and returns a `304 Not Modified` on subsequent requests if the asset hasn't been modified. If the asset has been modified, it will overwrite that cache and tell the browser they must revalidate it's cache so the new file can be shown. To accomplish this without the browser's caching engine trying to be smart, Munee sets the `Cache-Control` header to `must-revalidate`.  If you run into any problems, please [submit an issue](https://github.com/meenie/munee/issues).
 
 [Composer](https://packagist.org/) Installation Instructions
 ------------------------------------------------------------

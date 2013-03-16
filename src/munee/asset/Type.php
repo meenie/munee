@@ -256,7 +256,13 @@ abstract class Type
         $params = serialize($this->_request->params);
         $ext = pathinfo($file, PATHINFO_EXTENSION);
 
-        return $this->_cacheDir . DS . md5($file) . '-' .
-            md5($params . $requestOptions) . '.' . $ext;
+        $fileHash = md5($file);
+        $optionsHash = md5($params . $requestOptions);
+
+        $cacheDir = $this->_cacheDir . DS . substr($fileHash, 0, 2) . DS . substr($optionsHash, 0, 2);
+
+        Utils::createDir($cacheDir);
+
+        return $cacheDir . DS . substr($fileHash, 2) . '-' . substr($optionsHash, 2) . '.' . $ext;
     }
 }

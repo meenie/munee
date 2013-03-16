@@ -241,3 +241,11 @@ You will need to do this:
 ```html
 <link rel="stylesheet" href="/path/to/munee.php?files=/css/libs/bootstrap.min.css,/css/site.css&minify=true">
 ```
+
+**Preventing Munee From Setting Headers**
+
+If for some reason you would like to prevent Munee from setting any headers, you can pass a second argument in the Dispatcher::run() function with `array('setHeaders' => false)`.
+
+```php
+$content = \munee\Dispatcher::run(new \munee\Request(array('files' => '/css/site.css')), array('setHeaders' => false));
+```

@@ -1,9 +1,12 @@
 {
-    "name": "meenie/munee",
+    "name": "meenie/Munee",
     "description": "PHP 5.3 Asset Optimisation - Smart Caching, On-The-Fly Image Resizing, On-the-fly LESS, SASS, CoffeeScript Compiling, and CSS & JavaScript Combining/Minifying",
     "keywords": ["php","less","scss","coffeescript","cache","asset optimisation","asset optimization","asset management","css","javascript","lessphp","scssphp","image manipulation"],
     "homepage": "http://mun.ee",
     "license": "MIT",
+    "replace": {
+        "meenie/munee": "*"
+    },
     "authors": [
         {
             "name": "Cody Lundquist",
@@ -13,7 +16,7 @@
     ],
     "autoload": {
         "psr-0": {
-            "munee": "src/"
+            "Munee": "src/"
         },
         "files": ["config/bootstrap.php"]
     },

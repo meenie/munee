@@ -6,12 +6,12 @@
  * @license http://opensource.org/licenses/mit-license.php
  */
 
-namespace munee\cases;
+namespace Munee\cases;
 
-use munee\Utils;
+use Munee\Utils;
 
 /**
- * Tests for the \munee\Utils Class
+ * Tests for the \Munee\Utils Class
  *
  * @author Cody Lundquist
  */

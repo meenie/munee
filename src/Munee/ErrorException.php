@@ -6,6 +6,6 @@
  * @license http://opensource.org/licenses/mit-license.php
  */
 
-namespace munee;
+namespace Munee;
 
 class ErrorException extends \Exception {}

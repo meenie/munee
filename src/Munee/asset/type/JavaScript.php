@@ -6,9 +6,9 @@
  * @license http://opensource.org/licenses/mit-license.php
  */
 
-namespace munee\asset\type;
+namespace Munee\asset\type;
 
-use munee\asset\Type;
+use Munee\asset\Type;
 use CoffeeScript;
 
 /**

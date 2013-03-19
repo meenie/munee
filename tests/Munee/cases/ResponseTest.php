@@ -6,13 +6,13 @@
  * @license http://opensource.org/licenses/mit-license.php
  */
 
-namespace munee\cases;
+namespace Munee\cases;
 
-use munee\Response;
-use munee\mocks\MockAssetType;
+use Munee\Response;
+use Munee\mocks\MockAssetType;
 
 /**
- * Tests for the \munee\Response Class
+ * Tests for the \Munee\Response Class
  *
  * @author Cody Lundquist
  */
@@ -28,7 +28,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function testConstruct()
     {
-        $this->setExpectedException('munee\ErrorException');
+        $this->setExpectedException('Munee\ErrorException');
         new Response(new \stdClass());
     }
 

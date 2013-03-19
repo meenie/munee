@@ -6,9 +6,9 @@
  * @license http://opensource.org/licenses/mit-license.php
  */
 
-namespace munee\asset\filter\javascript;
+namespace Munee\asset\filter\javascript;
 
-use munee\asset\Filter;
+use Munee\asset\Filter;
 
 /**
  * Minify Filter for JavaScript

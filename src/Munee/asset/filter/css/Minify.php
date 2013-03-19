@@ -6,10 +6,10 @@
  * @license http://opensource.org/licenses/mit-license.php
  */
 
-namespace munee\asset\filter\css;
+namespace Munee\asset\filter\css;
 
-use munee\asset\Filter;
-use munee\Utils;
+use Munee\asset\Filter;
+use Munee\Utils;
 
 /**
  * Minify Filter for CSS

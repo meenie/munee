@@ -6,10 +6,10 @@
  * @license http://opensource.org/licenses/mit-license.php
  */
 
-namespace munee\asset;
+namespace Munee\asset;
 
-use munee\ErrorException;
-use munee\Request;
+use Munee\ErrorException;
+use Munee\Request;
 use Closure;
 
 /**
@@ -60,7 +60,7 @@ class Registry
     /**
      * Return the AssetClass based on the file extension in the Request Class
      *
-     * @param \munee\Request $Request
+     * @param \Munee\Request $Request
      *
      * @return Object
      *

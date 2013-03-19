@@ -6,7 +6,7 @@
  * @license http://opensource.org/licenses/mit-license.php
  */
 
-namespace munee;
+namespace Munee;
 
 /**
  * The outermost layer of Munee that wraps everything in a Try/Catch block and also instantiates the Render Class

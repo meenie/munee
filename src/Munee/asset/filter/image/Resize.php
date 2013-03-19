@@ -6,10 +6,10 @@
  * @license http://opensource.org/licenses/mit-license.php
  */
 
-namespace munee\asset\filter\image;
+namespace Munee\asset\filter\image;
 
-use munee\asset\Filter;
-use munee\ErrorException;
+use Munee\asset\Filter;
+use Munee\ErrorException;
 use Imagine\Image\ImageInterface;
 use Imagine\Image\Box;
 use Imagine\Image\Color;

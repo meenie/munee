@@ -1,6 +1,6 @@
 <?php
 
-namespace munee;
+namespace Munee;
 
 class Utils
 {

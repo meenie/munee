@@ -6,9 +6,9 @@
  * @license http://opensource.org/licenses/mit-license.php
  */
 
-namespace munee\mocks;
+namespace Munee\mocks;
 
-use munee\Request;
+use Munee\Request;
 
 /**
  * Mock Request class for Response Test

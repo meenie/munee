@@ -6,14 +6,14 @@
  * @license http://opensource.org/licenses/mit-license.php
  */
 
-namespace munee\cases\asset;
+namespace Munee\cases\asset;
 
-use munee\asset\Registry;
-use munee\mocks\MockRequest;
-use munee\mocks\MockAssetType;
+use Munee\asset\Registry;
+use Munee\mocks\MockRequest;
+use Munee\mocks\MockAssetType;
 
 /**
- * Tests for the \munee\asset\Registry Class
+ * Tests for the \Munee\asset\Registry Class
  *
  * @author Cody Lundquist
  */
@@ -54,7 +54,7 @@ class RegistryTest extends \PHPUnit_Framework_TestCase
      */
     public function testExtensionNotSupported()
     {
-        $this->setExpectedException('munee\ErrorException');
+        $this->setExpectedException('Munee\ErrorException');
         Registry::getSupportedExtensions('nope');
     }
 
@@ -65,7 +65,7 @@ class RegistryTest extends \PHPUnit_Framework_TestCase
     {
         $MockRequest = new MockRequest();
         $MockRequest->ext = 'nope';
-        $this->setExpectedException('munee\ErrorException');
+        $this->setExpectedException('Munee\ErrorException');
         Registry::getClass($MockRequest);
     }
 

@@ -6,10 +6,10 @@
  * @license http://opensource.org/licenses/mit-license.php
  */
 
-namespace munee\asset\type;
+namespace Munee\asset\type;
 
-use munee\Utils;
-use munee\asset\Type;
+use Munee\Utils;
+use Munee\asset\Type;
 use lessc;
 
 /**

@@ -6,8 +6,8 @@
  * @license http://opensource.org/licenses/mit-license.php
  */
 
-namespace munee\asset;
+namespace Munee\asset;
 
-use munee\ErrorException;
+use Munee\ErrorException;
 
 class NotFoundException extends ErrorException {}

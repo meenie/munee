@@ -6,7 +6,7 @@
  * @license http://opensource.org/licenses/mit-license.php
  */
 
-namespace munee;
+namespace Munee;
 
 /**
  * Munee Response Class
@@ -34,8 +34,8 @@ class Response
      */
     public function __construct($AssetType)
     {
-        // Must be a Sub-Class of \munee\asset\Type
-        $baseClass = '\\munee\\asset\\Type';
+        // Must be a Sub-Class of \Munee\asset\Type
+        $baseClass = '\\Munee\\asset\\Type';
         if (! is_subclass_of($AssetType, $baseClass)) {
             throw new ErrorException(
                 get_class($AssetType) . ' is not a sub class of ' . $baseClass

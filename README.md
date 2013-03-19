@@ -45,12 +45,12 @@ Munee caches asset requests server side and returns a `304 Not Modified` on subs
 
 ### Step 1: Download/Install Munee using composer
 
-Add `meenie/munee` to your `composer.json` file:
+Add `meenie/Munee` to your `composer.json` file:
 
 ```js
 {
     "require": {
-        "meenie/munee": "*"
+        "meenie/Munee": "*"
     }
 }
 ```
@@ -67,7 +67,7 @@ Now install Munee
 $ php composer.phar install
 ```
 
-Make sure the `cache` folder inside `vendor/meenie/munee` is writable
+Make sure the `cache` folder inside `vendor/meenie/Munee` is writable
 
 ### Step 2: Use Munee in your library
 
@@ -77,7 +77,7 @@ Create a file called `munee.php` that is web accessible and paste in the followi
 // Include the composer autoload file
 require 'vendor/autoload.php';
 // Echo out the response
-echo \munee\Dispatcher::run(new munee\Request());
+echo \Munee\Dispatcher::run(new Munee\Request());
 ```
 
 **Note: Update the correct path to the `autoload.php` file**
@@ -102,13 +102,13 @@ All LESS & SCSS (SASS is not supported!) files are automatically compiled into C
 If you would like to run **all css** through the `LESS` compiler, then you will need to pass the `lessifyAllCss` parameter into the `Request` class with the value of `true` when you instantiate it:
 
 ```php
-echo \munee\Dispatcher::run(new munee\Request(array('css' => array('lessifyAllCss' => true))));
+echo \Munee\Dispatcher::run(new Munee\Request(array('css' => array('lessifyAllCss' => true))));
 ```
 
 If you would like to run **all css** through the `scssphp` compiler, then you will need to pass the `scssifyAllCss` parameter into the `Request` class with the value of `true` when you instantiate it:
 
 ```php
-echo \munee\Dispatcher::run(new munee\Request(array('css' => array('scssifyAllCss' => true))));
+echo \Munee\Dispatcher::run(new Munee\Request(array('css' => array('scssifyAllCss' => true))));
 ```
 
 **One Request For All CSS**
@@ -207,7 +207,7 @@ CoffeeScript can also be automatically compiled if included in your html.  When 
     
 Build status
 ------------
-[![Build Status](https://secure.travis-ci.org/meenie/munee.png?branch=master)](http://travis-ci.org/meenie/munee)
+[![Build Status](https://secure.travis-ci.org/meenie/Munee.png?branch=master)](http://travis-ci.org/meenie/Munee)
 
 Tips & Tricks
 -------------
@@ -217,7 +217,7 @@ Tips & Tricks
 If you want to resize images through Munee in your emails, you will need to turn off one of the security features in Munee.  This is the Referrer check.  To get it working, you can pass in the following option when you instantiate Munee:
 
 ```php
-echo \munee\Dispatcher::run(new \munee\Request(array(
+echo \Munee\Dispatcher::run(new \Munee\Request(array(
     'image' => array(
         'checkReferrer' => false
     )
@@ -247,5 +247,5 @@ You will need to do this:
 If for some reason you would like to prevent Munee from setting any headers, you can pass a second argument in the Dispatcher::run() function with `array('setHeaders' => false)`.
 
 ```php
-$content = \munee\Dispatcher::run(new \munee\Request(array('files' => '/css/site.css')), array('setHeaders' => false));
+$content = \Munee\Dispatcher::run(new \Munee\Request(array('files' => '/css/site.css')), array('setHeaders' => false));
 ```

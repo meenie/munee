@@ -6,10 +6,10 @@
  * @license http://opensource.org/licenses/mit-license.php
  */
 
-namespace munee;
+namespace Munee;
 
-use munee\ErrorException;
-use munee\asset\Registry;
+use Munee\ErrorException;
+use Munee\asset\Registry;
 
 /**
  * Munee Request Class
@@ -193,7 +193,7 @@ class Request
      *
      * @return string|array
      *
-     * @throws \munee\ErrorException
+     * @throws \Munee\ErrorException
      */
     protected function _getParamValue($param, $paramOptions, $value)
     {

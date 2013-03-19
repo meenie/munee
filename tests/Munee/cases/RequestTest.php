@@ -6,13 +6,13 @@
  * @license http://opensource.org/licenses/mit-license.php
  */
 
-namespace munee\cases;
+namespace Munee\cases;
 
-use munee\Request;
-use munee\Utils;
+use Munee\Request;
+use Munee\Utils;
 
 /**
- * Tests for the \munee\Request Class
+ * Tests for the \Munee\Request Class
  *
  * @author Cody Lundquist
  */
@@ -49,7 +49,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
     {
         $Request = new Request();
 
-        $this->setExpectedException('munee\ErrorException');
+        $this->setExpectedException('Munee\ErrorException');
         $Request->init();
     }
 
@@ -89,7 +89,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
             'files' => '/js/foo.jpg,/js/bar.js'
         );
 
-        $this->setExpectedException('munee\ErrorException');
+        $this->setExpectedException('Munee\ErrorException');
         $Request->init();
     }
 
@@ -219,7 +219,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
             )
         );
 
-        $this->setExpectedException('munee\ErrorException');
+        $this->setExpectedException('Munee\ErrorException');
         $Request->parseParams($allowedParams);
     }
 }

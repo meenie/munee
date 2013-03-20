@@ -6,7 +6,7 @@
  * @license http://opensource.org/licenses/mit-license.php
  */
 
-namespace Munee\asset;
+namespace Munee\Asset;
 
 use Munee\ErrorException;
 use Munee\Request;

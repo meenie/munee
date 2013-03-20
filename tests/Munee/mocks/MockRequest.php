@@ -6,7 +6,7 @@
  * @license http://opensource.org/licenses/mit-license.php
  */
 
-namespace Munee\mocks;
+namespace Munee\Mocks;
 
 use Munee\Request;
 

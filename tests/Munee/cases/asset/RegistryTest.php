@@ -6,11 +6,11 @@
  * @license http://opensource.org/licenses/mit-license.php
  */
 
-namespace Munee\cases\asset;
+namespace Munee\Cases\Asset;
 
-use Munee\asset\Registry;
-use Munee\mocks\MockRequest;
-use Munee\mocks\MockAssetType;
+use Munee\Asset\Registry;
+use Munee\Mocks\MockRequest;
+use Munee\Mocks\MockAssetType;
 
 /**
  * Tests for the \Munee\asset\Registry Class

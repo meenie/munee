@@ -51,7 +51,7 @@ class Dispatcher
             /**
              * Grab the correct AssetType
              */
-            $AssetType = asset\Registry::getClass($Request);
+            $AssetType = Asset\Registry::getClass($Request);
             /**
              * Initialise the AssetType
              */
@@ -71,7 +71,7 @@ class Dispatcher
              * otherwise return the content
              */
             return $Response->notModified ? null : $Response->render();
-        } catch (asset\NotFoundException $e) {
+        } catch (Asset\NotFoundException $e) {
             header("HTTP/1.0 404 Not Found");
             header("Status: 404 Not Found");
             return 'Error: ' . $e->getMessage();

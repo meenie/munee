@@ -6,7 +6,7 @@
  * @license http://opensource.org/licenses/mit-license.php
  */
 
-namespace Munee\cases;
+namespace Munee\Cases;
 
 use Munee\Utils;
 

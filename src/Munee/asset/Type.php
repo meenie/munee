@@ -6,11 +6,11 @@
  * @license http://opensource.org/licenses/mit-license.php
  */
 
-namespace Munee\asset;
+namespace Munee\Asset;
 
 use Munee\Request;
 use Munee\Utils;
-use Munee\asset\NotFoundException;
+use Munee\Asset\NotFoundException;
 
 /**
  * Base Asset Class
@@ -71,7 +71,7 @@ abstract class Type
         $assetShortName = strtolower(preg_replace('%^.*\\\\%','', get_class($this)));
         $allowedParams = array();
         foreach (array_keys($rawParams) as $filterName) {
-            $filterClass = 'Munee\\asset\\filter\\' . $assetShortName . '\\' . ucfirst($filterName);
+            $filterClass = 'Munee\\Asset\\Filter\\' . $assetShortName . '\\' . ucfirst($filterName);
             if (class_exists($filterClass)) {
                 $Filter = new $filterClass();
                 $allowedParams += $Filter->getAllowedParams();

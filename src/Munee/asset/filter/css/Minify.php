@@ -6,9 +6,9 @@
  * @license http://opensource.org/licenses/mit-license.php
  */
 
-namespace Munee\asset\filter\css;
+namespace Munee\Asset\Filter\Css;
 
-use Munee\asset\Filter;
+use Munee\Asset\Filter;
 use Munee\Utils;
 
 /**

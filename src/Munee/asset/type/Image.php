@@ -6,10 +6,10 @@
  * @license http://opensource.org/licenses/mit-license.php
  */
 
-namespace Munee\asset\type;
+namespace Munee\Asset\Type;
 
 use Munee\ErrorException;
-use Munee\asset\Type;
+use Munee\Asset\Type;
 use Munee\Utils;
 
 /**

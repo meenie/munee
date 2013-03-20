@@ -6,9 +6,9 @@
  * @license http://opensource.org/licenses/mit-license.php
  */
 
-namespace Munee\mocks;
+namespace Munee\Mocks;
 
-use Munee\asset\Type;
+use Munee\Asset\Type;
 
 /**
  * Mock Asset Type class for Response Test

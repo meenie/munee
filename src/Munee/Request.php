@@ -9,7 +9,7 @@
 namespace Munee;
 
 use Munee\ErrorException;
-use Munee\asset\Registry;
+use Munee\Asset\Registry;
 
 /**
  * Munee Request Class
@@ -62,7 +62,7 @@ class Request
      * Parses the $_GET global variable and does sanity checks
      *
      * @throws ErrorException
-     * @throws asset\NotFoundException
+     * @throws Asset\NotFoundException
      */
     public function init()
     {

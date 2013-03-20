@@ -6,7 +6,7 @@
  * @license http://opensource.org/licenses/mit-license.php
  */
 
-namespace Munee\Asset\Filter\Javascript;
+namespace Munee\Asset\Filter\JavaScript;
 
 use Munee\Asset\Filter;
 

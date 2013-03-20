@@ -29,7 +29,10 @@ class Image extends Type
         'allowedFiltersTimeLimit' => 300,
         // Should the referrer be checked for security
         'checkReferrer' => true,
-        'placeholders' => false
+        // Use a placeholder for missing images?
+        'placeholders' => false,
+        'maxAllowedResizeWidth' => 1920,
+        'maxAllowedResizeHeight' => 1080
     );
 
     protected $_placeholder = false;
@@ -165,13 +168,14 @@ class Image extends Type
     {
         $ret = false;
         if (! empty($this->_options['placeholders'])) {
-            if (! is_array($this->_options['placeholders'])) {
-                throw new ErrorException('Placeholders option must be an array.');
+            // If it's a string, use the image for all missing images.
+            if (is_string($this->_options['placeholders'])) {
+                $this->_options['placeholders'] = array('*' => $this->_options['placeholders']);
             }
 
             foreach ($this->_options['placeholders'] as $path => $placeholder) {
                 // Setup path for regex
-                $regex = str_replace('*', '.*?', $path) . '$';
+                $regex = '^' . WEBROOT . str_replace(array('*', WEBROOT), array('.*?', ''), $path) . '$';
                 if (preg_match("%{$regex}%", $file)) {
                     if ('http' == substr($placeholder, 0, 4)) {
                         $ret = $this->_getImageByUrl($placeholder);

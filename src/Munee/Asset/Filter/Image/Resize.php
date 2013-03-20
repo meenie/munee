@@ -87,12 +87,13 @@ class Resize extends Filter
      *
      * @param string $originalImage
      * @param array $arguments
+     * @param array $imageOptions
      *
-     * @return string
+     * @return void
      *
      * @throws ErrorException
      */
-    public function doFilter($originalImage, $arguments)
+    public function doFilter($originalImage, $arguments, $imageOptions)
     {
         // Need at least a height or a width
         if (empty($arguments['height']) && empty($arguments['width'])) {
@@ -107,21 +108,27 @@ class Resize extends Filter
         $originalHeight = $size->getHeight();
         $width = $originalWidth;
         $height = $originalHeight;
-        if (! empty($arguments['height']) && ! empty($arguments['width'])) {
-            if ($originalWidth > $arguments['width'] || $arguments['stretch']) {
-                $width = $arguments['width'];
-            }
+
+        if (! empty($arguments['height'])) {
             if ($originalHeight > $arguments['height'] || $arguments['stretch']) {
                 $height = $arguments['height'];
             }
-        } elseif (! empty($arguments['height'])) {
-            if ($originalHeight > $arguments['height'] || $arguments['stretch']) {
-                $height = $arguments['height'];
-            }
-        } elseif (! empty($arguments['width'])) {
+        }
+        if (! empty($arguments['width'])) {
             if ($originalWidth > $arguments['width'] || $arguments['stretch']) {
                 $width = $arguments['width'];
             }
+        }
+
+        /**
+         * Prevent from someone from creating huge images
+         */
+        if ($width > $imageOptions['maxAllowedResizeWidth']) {
+            $width = $imageOptions['maxAllowedResizeWidth'];
+        }
+
+        if ($height > $imageOptions['maxAllowedResizeHeight']) {
+            $height = $imageOptions['maxAllowedResizeHeight'];
         }
 
         $mode = $arguments['exact'] ?
@@ -135,6 +142,17 @@ class Resize extends Filter
             $adjustedSize = $newImage->getSize();
             $canvasWidth = isset($arguments['width']) ? $arguments['width'] : $adjustedSize->getWidth();
             $canvasHeight = isset($arguments['height']) ? $arguments['height'] : $adjustedSize->getHeight();
+            /**
+             * Prevent from someone from creating huge images
+             */
+            if ($canvasWidth > $imageOptions['maxAllowedResizeWidth']) {
+                $canvasWidth = $imageOptions['maxAllowedResizeWidth'];
+            }
+
+            if ($canvasHeight > $imageOptions['maxAllowedResizeHeight']) {
+                $canvasHeight = $imageOptions['maxAllowedResizeHeight'];
+            }
+
             $canvas = $Imagine->create(
                 new Box($canvasWidth, $canvasHeight),
                 new Color($arguments['fillColour'])

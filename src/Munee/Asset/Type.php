@@ -84,11 +84,12 @@ abstract class Type
 
         $this->_cacheDir = MUNEE_CACHE . DS . $assetShortName;
 
+        $optionsKey = strtolower($assetShortName);
         // Set the AssetType options if someone were passed in through the Request Class
-        if (isset($this->_request->options[$assetShortName])) {
+        if (isset($this->_request->options[$optionsKey])) {
             $this->_options = array_merge(
                 $this->_options,
-                $this->_request->options[$assetShortName]
+                $this->_request->options[$optionsKey]
             );
         }
 

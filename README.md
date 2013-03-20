@@ -3,6 +3,9 @@ Munee: Optimising Your Assets
 
 #####PHP 5.3 Asset Optimisation - Smart Caching, On-The-Fly Image Resizing, On-the-fly LESS, SASS, CoffeeScript Compiling, and CSS & JavaScript Combining/Minifying
 
+[![Build Status](https://secure.travis-ci.org/meenie/munee.png?branch=master)](http://travis-ci.org/meenie/munee)
+[![Flatter this](http://api.flattr.com/button/flattr-badge-large.png)](http://flattr.com/thing/1191331/)
+
 ---
 
 Update 1.5.0 Important Note
@@ -210,10 +213,6 @@ CoffeeScript can also be automatically compiled if included in your html.  When 
 ```html
 <script src="/js/libs/jquery-1.8.1.min.js,/js/libs/bootstrap.min.js,/js/site.coffee?minify=true"></script>
 ```
-    
-Build status
-------------
-[![Build Status](https://secure.travis-ci.org/meenie/munee.png?branch=master)](http://travis-ci.org/meenie/munee)
 
 Tips & Tricks
 -------------

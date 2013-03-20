@@ -35,10 +35,11 @@ class Minify extends Filter
      *
      * @param string $file
      * @param array $arguments
+     * @param array $cssOptions
      *
      * @return void
      */
-    public function doFilter($file, $arguments)
+    public function doFilter($file, $arguments, $cssOptions)
     {
         if (! $arguments['minify']) {
             return;

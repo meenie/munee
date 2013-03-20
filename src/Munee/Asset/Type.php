@@ -209,7 +209,7 @@ abstract class Type
             if (! is_array($arguments)) {
                 $arguments = array($filterName => $arguments);
             }
-            $Filter->doFilter($cacheFile, $arguments);
+            $Filter->doFilter($cacheFile, $arguments, $this->_options);
         }
 
         $this->_afterFilter($originalFile, $cacheFile);
@@ -260,10 +260,10 @@ abstract class Type
         $fileHash = md5($file);
         $optionsHash = md5($params . $requestOptions);
 
-        $cacheDir = $this->_cacheDir . DS . substr($fileHash, 0, 2) . DS . substr($optionsHash, 0, 2);
+        $cacheDir = $this->_cacheDir . DS . substr($fileHash, 0, 2);
 
         Utils::createDir($cacheDir);
 
-        return $cacheDir . DS . substr($fileHash, 2) . '-' . substr($optionsHash, 2) . '.' . $ext;
+        return $cacheDir . DS . substr($fileHash, 2) . '-' . $optionsHash . '.' . $ext;
     }
 }

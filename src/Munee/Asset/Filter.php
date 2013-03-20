@@ -33,6 +33,7 @@ abstract class Filter
      *
      * @param string $originalFile
      * @param array $arguments
+     * @param array $typeOptions
      */
-    abstract public function doFilter($originalFile, $arguments);
+    abstract public function doFilter($originalFile, $arguments, $typeOptions);
 }

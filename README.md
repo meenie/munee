@@ -5,6 +5,11 @@ Munee: Optimising Your Assets
 
 ---
 
+Update 1.5.0 Important Note
+---------------------------
+
+I have changed the vendor to be uppercase so you will need to update how you instantiate the Munee library.  Please follow step 2 of the installion instructions.
+
 Update 1.3.0 Important Note
 ---------------------------
 
@@ -74,6 +79,7 @@ Make sure the `cache` folder inside `vendor/meenie/Munee` is writable
 Create a file called `munee.php` that is web accessible and paste in the following
 
 ```php
+<?php
 // Include the composer autoload file
 require 'vendor/autoload.php';
 // Echo out the response
@@ -207,7 +213,7 @@ CoffeeScript can also be automatically compiled if included in your html.  When 
     
 Build status
 ------------
-[![Build Status](https://secure.travis-ci.org/meenie/Munee.png?branch=master)](http://travis-ci.org/meenie/Munee)
+[![Build Status](https://secure.travis-ci.org/meenie/munee.png?branch=master)](http://travis-ci.org/meenie/munee)
 
 Tips & Tricks
 -------------

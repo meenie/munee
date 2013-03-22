@@ -38,7 +38,7 @@ class JavaScript extends Type
     protected function _beforeFilter($originalFile, $cacheFile)
     {
         if ('coffee' == pathinfo($originalFile, PATHINFO_EXTENSION)) {
-            $coffeeScript = CoffeeScript\Compiler::compile(file_get_contents($originalFile));
+            $coffeeScript = CoffeeScript\Compiler::compile(file_get_contents($originalFile), array('header' => false));
             file_put_contents($cacheFile, $coffeeScript);
         }
     }

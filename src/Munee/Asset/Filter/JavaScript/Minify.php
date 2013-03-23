@@ -9,6 +9,7 @@
 namespace Munee\Asset\Filter\JavaScript;
 
 use Munee\Asset\Filter;
+use JShrink\Minifier;
 
 /**
  * Minify Filter for JavaScript
@@ -22,7 +23,6 @@ class Minify extends Filter
      */
     protected $_allowedParams = array(
         'minify' => array(
-            'alias' => 'm',
             'regex' => 'true|false|t|f|yes|no|y|n',
             'default' => 'false',
             'cast' => 'boolean'
@@ -43,6 +43,6 @@ class Minify extends Filter
             return;
         }
 
-        file_put_contents($file, \JShrink\Minifier::minify(file_get_contents($file)));
+        file_put_contents($file, Minifier::minify(file_get_contents($file)));
     }
 }

@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Munee Documentation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+          content="PHP 5.3 Asset Optimisation - Smart Caching, On-The-Fly Image Resizing, On-the-fly LESS, SASS, CoffeeScript Compiling, and CSS & JavaScript Combining/Minifying">
+    <meta name="author" content="Cody Lundquist">
+
+    <!-- Le styles -->
+    <link href="doc_assets/css/bootstrap.css" rel="stylesheet">
+    <link href="doc_assets/js/google-code-prettify/prettify.css" rel="stylesheet">
+    <style type="text/css">
+        body {
+            padding-top: 60px;
+            padding-bottom: 40px;
+        }
+    </style>
+    <link href="doc_assets/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+    <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+</head>
+
+<body data-spy="scroll" id="top">
+
+<!-- Documentation Navbar -->
+
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container">
+            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"> <span class="icon-bar"></span>
+                <span class="icon-bar"></span> <span class="icon-bar"></span> </a>
+            <a class="brand" href="#top">Munee Documentation</a>
+
+            <div class="nav-collapse">
+                <ul class="nav">
+                    <li><a href="#installation">Installation</a></li>
+                    <li><a href="#stylesheets">Stylesheets</a></li>
+                    <li><a href="#javascript">JavaScript</a></li>
+                    <li><a href="#images">Images</a></li>
+                    <li><a href="#tips-and-tricks">Tips &amp; Tricks</a></li>
+                    <li><a href="#contact-us">Contact Me</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End of Navbar -->
+
+<!-- Main Container Beginning -->
+
+<div class="container">
+<section id="installation">
+    <div class="page-header">
+        <h1>Installation
+            <small>Munee can be installed in 3 easy steps with the use of <a href="http://getcomposer.org" target="_blank">Composer</a>.</small>
+        </h1>
+    </div>
+
+    <div class="row">
+        <div class="span3">
+            <h3>Step 1</h3>
+            <p>Use Composer to install the required libraries</p>
+        </div>
+
+        <div class="span9">
+            <p>
+                Add <code>"meenie/Munee": "*"</code> to composer.json
+            </p>
+            <p>If you don't already have a composer.json file, just create a file called <code>composer.json</code>, and insert the following code.</p>
+<pre class="prettyprint">
+{
+    "require": {
+        "meenie/Munee": "*"
+    }
+}
+</pre>
+            <p>If you don't already have Composer installed, run the following command.</p>
+<pre class="prettyprint">
+$ curl -s http://getcomposer.org/installer | php
+</pre>
+            <p>Now to install Munee.</p>
+<pre class="prettyprint">
+$ php composer.phar install
+</pre>
+        </div>
+    </div>
+
+    <hr/>
+
+    <div class="row">
+        <div class="span3">
+            <h3>Step 2</h3>
+
+            <p>Setup the dispatcher</p>
+        </div>
+
+        <div class="span9">
+            <p>Create a file in your webroot called <code>munee.php</code> and insert the following code.</p>
+<pre class="prettyprint linenums">
+&lt;?php
+// Include the composer autoload file
+require 'vendor/autoload.php';
+// Echo out the response
+echo \Munee\Dispatcher::run(new \Munee\Request());
+</pre>
+        </div>
+    </div>
+
+    <hr/>
+
+    <div class="row">
+        <div class="span3">
+            <h3>Step 3* - Optional</h3>
+            <p>Create a <code>RewriteRule</code></p>
+        </div>
+
+        <div class="span9">
+            <p>Open your <code>.htaccess</code> file in webroot and paste the following code.</p>
+<pre class="prettyprint linenums">
+#### Munee .htaccess Code Start ####
+RewriteRule ^(.*\.(?:css|less|scss|js|coffee|jpg|png|gif|jpeg))$ munee.php?files=/$1 [L,QSA]
+#### Munee .htaccess Code End ####
+</pre>
+            <p>If you don't already have a <code>.htaccess</code> file then create one in your webroot and make sure to add <code>RewriteEngine On</code> at the top of the file.</p>
+            <p class="alert alert-info">*This step is actually optional and Munee can run without it.  Using a RewriteRule makes it easier to use though and is recommended.</p>
+        </div>
+    </div>
+</section>
+<!-- Markup -->
+
+
+<section id="stylesheets">
+    <div class="page-header">
+        <h1>Handling Stylesheets
+            <small>Compiling LESS/SCSS, Combining, and Minifying</small>
+        </h1>
+    </div>
+    <div class="alert alert-info"><p>All LESS & SCSS (SASS is not supported!) files are automatically compiled into CSS and cached, there is nothing extra that you need to do. Any changes you make to your CSS, even LESS/SCSS files you have <code>@import</code>ed, will have it's cache automatically recreated, the client side cache invalidated, and the browser will be forced to download the newest version.</p></div>
+    <div class="row">
+        <div class="span3">
+            <h3>One Request For Multiple Stylesheets</h3>
+
+            <p>If you would like to cut down on requests to the server, then you can combine all of your styles in a comma delimited list</p>
+        </div>
+        <div class="span9">
+<pre class="prettyprint linenums">
+&lt;link rel="stylesheet" href="/css/libs/bootstrap.min.css,/css/site.less"&gt;
+</pre>
+        </div>
+    </div>
+    <hr/>
+    <div class="row">
+        <div class="span3">
+            <h3>Minifying CSS</h3>
+            <p>By passing the <code>minify=true</code> option, you can tell Munee to minify all the css by removing all whitespace and putting all the rules on one line.</p>
+        </div>
+
+        <div class="span9">
+<pre class="prettyprint linenums">
+&lt;link rel="stylesheet" href="/css/libs/bootstrap.min.css,/css/site.scss?minify=true"&gt;
+</pre>
+        </div>
+    </div>
+</section>
+<!-- Styles -->
+
+<section id="javascript">
+    <div class="page-header">
+        <h1>JavaScript
+            <small>JavaScript customization and highlights</small>
+        </h1>
+    </div>
+    <div class="row">
+        <div class="span3">
+            <h3>JavaScript Files</h3>
+
+            <p>Vestibulum id ligula porta felis euismod semper. Curabitur blandit tempus porttitor. Vivamus sagittis
+                lacus vel augue laoreet rutrum faucibus dolor auctor.</p>
+        </div>
+        <div class="span9">
+            <table class="table table-bordered table-striped">
+                <thead>
+                <tr>
+                    <th>Tag</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td><code>jquery.js</code></td>
+                    <td>jQuery is a Javascript library that greatly reduces the amount of code that you must write.</td>
+                </tr>
+                <tr>
+                    <td><code>script.js</code></td>
+                    <td>Most of the animation in this site is carried out from the customs scripts. There are a few
+                        functions worth looking over.
+                    </td>
+                </tr>
+                <tr>
+                    <td><code>myPlugin.js</code></td>
+                    <td>In addition to the custom scripts, I implement a few "tried and true" plugins to create the
+                        effects. This plugin is packed, so you won't need to manually edit anything in the file.
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <hr/>
+    <div class="row">
+        <div class="span3">
+            <h3>Customize Slider</h3>
+
+            <p>If you want to change the slider's speed transition, open up the file <code> scripts.js </code> and
+                change the following code: </p>
+        </div>
+        <div class="span9">
+<pre class="prettyprint js linenums:103">
+/* ---------- @ SlidesJS -----------*/
+$(&#x27;#banner&#x27;).slides({
+   preload: true,
+   generateNextPrev: true,
+   autoHeight: true,
+   effect: &quot;slide&quot;,
+   play: 5000
+});
+</pre>
+        </div>
+    </div>
+</section>
+<!-- JavaScript -->
+
+<section id="images">
+    <div class="page-header">
+        <h1>Photoshop Files
+            <small>Photoshop customization and highlights</small>
+        </h1>
+    </div>
+    <p>I've included three psds with this theme:</p>
+    <ul class="thumbnails">
+        <li class="span3">
+            <div class="thumbnail"><img src="http://placehold.it/260x180" alt="">
+
+                <div class="thumb-info">
+                    <h5>Thumbnail label</h5>
+
+                    <p>Thumbnail caption right here...</p>
+                </div>
+            </div>
+        </li>
+        <li class="span3">
+            <div class="thumbnail"><img src="http://placehold.it/260x180" alt="">
+
+                <div class="thumb-info">
+                    <h5>Thumbnail label</h5>
+
+                    <p>Thumbnail caption right here...</p>
+                </div>
+            </div>
+        </li>
+        <li class="span3">
+            <div class="thumbnail"><img src="http://placehold.it/260x180" alt="">
+
+                <div class="thumb-info">
+                    <h5>Thumbnail label</h5>
+
+                    <p>Thumbnail caption right here...</p>
+                </div>
+            </div>
+        </li>
+        <li class="span3">
+            <div class="thumbnail"><img src="http://placehold.it/260x180" alt="">
+
+                <div class="thumb-info">
+                    <h5>Thumbnail label</h5>
+
+                    <p>Thumbnail caption right here...</p>
+                </div>
+            </div>
+        </li>
+    </ul>
+    <p>If you'd like to change the main image in the header, open "header.psd", make the necessary adjustments, and then
+        save the file as "headerBG.png". Do the same for the buttons.</p>
+</section>
+<!-- Photoshop -->
+
+<section id="tips-and-tricks">
+    <div class="page-header">
+        <h1>Installation
+            <small>How to Install the Template</small>
+        </h1>
+    </div>
+    <div class="row">
+        <div class="span3">
+            <h3>1. Install Theme</h3>
+
+            <p>Here's a brief information about how to install your WordPress theme from scratch</p>
+        </div>
+        <!-- / .span3 -->
+        <div class="span9">
+            <div class="accordion" id="accordion2">
+                <div class="accordion-group">
+                    <div class="accordion-heading"><a class="accordion-toggle" data-toggle="collapse"
+                                                      data-parent="#accordion2" href="#collapseOne"> 1.1) Organize Your
+                        Files </a></div>
+                    <div id="collapseOne" class="accordion-body collapse">
+                        <div class="accordion-inner"> Anim pariatur cliche reprehenderit, enim eiusmod high life
+                            accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard
+                            dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt
+                            aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim
+                            keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad
+                            vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim
+                            aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable
+                            VHS.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-group">
+                    <div class="accordion-heading"><a class="accordion-toggle" data-toggle="collapse"
+                                                      data-parent="#accordion2" href="#collapseTwo"> 1.2) Drag Your
+                        Files </a></div>
+                    <div id="collapseTwo" class="accordion-body collapse in">
+                        <div class="accordion-inner"> Anim pariatur cliche reprehenderit, enim eiusmod high life
+                            accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard
+                            dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt
+                            aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim
+                            keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad
+                            vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim
+                            aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable
+                            VHS.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-group">
+                    <div class="accordion-heading"><a class="accordion-toggle" data-toggle="collapse"
+                                                      data-parent="#accordion2" href="#collapseThree"> 1.3) Click
+                        Activate </a></div>
+                    <div id="collapseThree" class="accordion-body collapse in">
+                        <div class="accordion-inner"> Anim pariatur cliche reprehenderit, enim eiusmod high life
+                            accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard
+                            dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt
+                            aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim
+                            keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad
+                            vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim
+                            aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable
+                            VHS.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- accordion .span9 -->
+    </div>
+    <!-- /end row -->
+</section>
+<!-- Installation -->
+
+
+<section id="contact-us">
+    <div class="page-header">
+        <h1>Credits Files
+            <small>Some of your credits and sources</small>
+        </h1>
+    </div>
+    <p>I've used the following images, icons or other files as listed.</p>
+
+    <h3>JavaScript</h3>
+    <ol>
+        <li><a href="#">jQuery</a>
+            <small>&mdash; Nullam quis risus eget urna mollis ornare vel eu leo.</small>
+        </li>
+        <li><a href="#">jCarousel</a>
+            <small>&mdash; Nullam quis risus eget urna mollis ornare vel eu leo.</small>
+        </li>
+        <li><a href="#">CodeCanyon</a>
+            <small>&mdash; Nullam quis risus eget urna mollis ornare vel eu leo.</small>
+        </li>
+    </ol>
+    <h3>CSS</h3>
+    <ol>
+        <li><a href="#">960.gs</a>
+            <small>&mdash; Nullam quis risus eget urna mollis ornare vel eu leo.</small>
+        </li>
+    </ol>
+    <h3>Images</h3>
+    <ol>
+        <li><a href="#">PhotoDune</a>
+            <small>&mdash; Nullam quis risus eget urna mollis ornare vel eu leo.</small>
+        </li>
+    </ol>
+</section>
+<!-- Credits -->
+
+
+<hr/>
+
+<footer>
+    <p>&copy; Cody Lundquist 2013</p>
+</footer>
+
+</div>
+<!-- /container -->
+
+<!-- Le javascript
+    ================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="doc_assets/js/jquery.js"></script>
+<script src="doc_assets/js/scripts.js"></script>
+<script src="doc_assets/js/google-code-prettify/prettify.js"></script>
+<script src="doc_assets/js/bootstrap-transition.js"></script>
+<script src="doc_assets/js/bootstrap-alert.js"></script>
+<script src="doc_assets/js/bootstrap-modal.js"></script>
+<script src="doc_assets/js/bootstrap-dropdown.js"></script>
+<script src="doc_assets/js/bootstrap-scrollspy.js"></script>
+<script src="doc_assets/js/bootstrap-tab.js"></script>
+<script src="doc_assets/js/bootstrap-tooltip.js"></script>
+<script src="doc_assets/js/bootstrap-popover.js"></script>
+<script src="doc_assets/js/bootstrap-button.js"></script>
+<script src="doc_assets/js/bootstrap-collapse.js"></script>
+</body>
+</html>

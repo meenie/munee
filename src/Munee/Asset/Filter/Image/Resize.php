@@ -10,6 +10,7 @@ namespace Munee\Asset\Filter\Image;
 
 use Munee\Asset\Filter;
 use Munee\ErrorException;
+use Imagine\Gd\Imagine;
 use Imagine\Image\ImageInterface;
 use Imagine\Image\Box;
 use Imagine\Image\Color;
@@ -27,10 +28,9 @@ class Resize extends Filter
      */
     protected $_allowedParams = array(
         'resize' => array(
-            'alias' => 'r',
             'arguments' => array(
                 'width' => array(
-                    'alias' => array('w'),
+                    'alias' => 'w',
                     'regex' => '\d+',
                     'cast' => 'integer'
                 ),
@@ -74,7 +74,7 @@ class Resize extends Filter
                         'fill_colour',
                         'fill-colour'
                     ),
-                    'regex' => '[A-Fa-f0-9]{3,6}',
+                    'regex' => '[A-Fa-f0-9]{3}$|^[A-Fa-f0-9]{6}',
                     'default' => 'ffffff',
                     'cast' => 'string'
                 )
@@ -100,7 +100,7 @@ class Resize extends Filter
             throw new ErrorException('You must set at least the height (h) or the width (w)');
         }
 
-        $Imagine = new \Imagine\Gd\Imagine();
+        $Imagine = new Imagine();
         $image = $Imagine->open($originalImage);
 
         $size = $image->getSize();

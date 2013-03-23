@@ -6,23 +6,23 @@
  * @license http://opensource.org/licenses/mit-license.php
  */
 
-namespace Munee\Asset\Filter\JavaScript;
+namespace Munee\Asset\Filter\Image;
 
 use Munee\Asset\Filter;
-use JShrink\Minifier;
+use Imagine\Gd\Imagine;
 
 /**
- * Minify Filter for JavaScript
+ * Grayscale Filter for Images
  *
  * @author Cody Lundquist
  */
-class Minify extends Filter
+class Grayscale extends Filter
 {
     /**
      * @var array
      */
     protected $_allowedParams = array(
-        'minify' => array(
+        'grayscale' => array(
             'regex' => 'true|false|t|f|yes|no|y|n',
             'default' => 'false',
             'cast' => 'boolean'
@@ -30,20 +30,22 @@ class Minify extends Filter
     );
 
     /**
-     * JavaScript Minification
+     * Turn an image Grayscale
      *
      * @param string $file
      * @param array $arguments
-     * @param array $javaScriptOptions
      *
      * @return void
      */
-    public function doFilter($file, $arguments, $javaScriptOptions)
+    public function doFilter($file, $arguments)
     {
-        if (! $arguments['minify']) {
+        if (! $arguments['grayscale']) {
             return;
         }
 
-        file_put_contents($file, Minifier::minify(file_get_contents($file)));
+        $Imagine = new Imagine();
+        $image = $Imagine->open($file);
+        $image->effects()->grayscale();
+        $image->save($file);
     }
 }

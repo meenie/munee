@@ -23,7 +23,6 @@ class Minify extends Filter
      */
     protected $_allowedParams = array(
         'minify' => array(
-            'alias' => 'm',
             'regex' => 'true|false|t|f|yes|no|y|n',
             'default' => 'false',
             'cast' => 'boolean'

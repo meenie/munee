@@ -24,17 +24,6 @@
         "tedivm/jshrink": "*",
         "imagine/Imagine": "*",
         "coffeescript/coffeescript": "*",
-        "joliclic/javascript-packer": "*"
-    },
-    "repositories": [
-        {
-            "type": "package",
-            "package": {
-                "name": "joliclic/javascript-packer",
-                "version": "1.1",
-                "dist": { "url": "http://joliclic.free.fr/php/javascript-packer/telechargement.php?id=2&action=telecharger", "type": "zip" },
-                "autoload": { "classmap": [ "class.JavaScriptPacker.php" ] }
-            }
-        }
-    ]
+        "meenie/javascript-packer": "*"
+    }
 }

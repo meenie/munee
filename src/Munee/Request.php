@@ -47,6 +47,16 @@ class Request
      * @var array
      */
     protected $_allowedParams = array();
+    
+    /**
+     * @var string
+     */
+    protected $file_query;
+    
+    /**
+     * @var string
+     */
+    public $docroot = WEBROOT;
 
     /**
      * Constructor
@@ -56,27 +66,82 @@ class Request
     public function __construct($options = array())
     {
         $this->options = $options;
+
+        $this->file_query = isset($_GET['files'])
+                                ? $_GET['files']
+                                : '';
+        
+        $this->_rawParams = $_GET;
+        
+        if(isset($this->_rawParams['files']))
+            unset($this->_rawParams['files']);
+    }
+    
+    /**
+     * Sets the document root.
+     *
+     * @param string $path
+     * 
+     * @return object
+     */
+    public function setDocroot($path)
+    {
+        $this->docroot = $path;
+        
+        return $this;
+    }
+    
+    /**
+     * Sets either an individual _rawParams key - or overwrites the whole array.
+     *
+     * @param mixed $key
+     * @param mixed $value
+     * 
+     * @return object
+     */
+    public function setRawParam($key, $value = null)
+    {
+        if(is_array($key))
+            $this->_rawParams = $key;
+        else
+            $this->_rawParams[$key] = $value;
+        
+        return $this;
+    }
+    
+    /**
+     * Sets the $file_query.
+     *
+     * @param string $files
+     * 
+     * @return object
+     */
+    public function setFiles($files)
+    {
+        $this->file_query = $files;
+
+        return $this;
     }
 
     /**
-     * Parses the $_GET global variable and does sanity checks
+     * Parses the $file_query and does sanity checks
      *
      * @throws ErrorException
      * @throws Asset\NotFoundException
      */
     public function init()
     {
-        if (empty($_GET['files'])) {
-            throw new ErrorException('Make sure you are using the correct .htaccess rules.');
+        if (empty($this->file_query)) {
+            throw new ErrorException('No file specified; make sure you are using the correct .htaccess rules.');
         }
 
         // Handle legacy code for minifying
-        if (preg_match('%^/minify/%', $_GET['files'])) {
-            $_GET['files'] = substr($_GET['files'], 7);
-            $_GET['minify'] = 'true';
+        if (preg_match('%^/minify/%', $this->file_query)) {
+            $this->file_query = substr($this->file_query, 7);
+            $this->setRawParam('minify', 'true');
         }
 
-        $this->ext = pathinfo($_GET['files'], PATHINFO_EXTENSION);
+        $this->ext = pathinfo($this->file_query, PATHINFO_EXTENSION);
         $supportedExtensions = Registry::getSupportedExtensions($this->ext);
         // Suppressing errors because Exceptions thrown in the callback cause Warnings.
         $this->files = @array_map(function($v) use ($supportedExtensions) {
@@ -94,11 +159,10 @@ class Request
                 }
             }
 
-            return WEBROOT . $v;
-        }, explode(',', $_GET['files']));
+            return $this->docroot . $v;
+        }, explode(',', $this->file_query));
 
-        unset($_GET['files']);
-        $this->_rawParams = $_GET;
+        //unset($_GET['files']);
     }
 
     /**

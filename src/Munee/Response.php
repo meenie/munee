@@ -24,6 +24,11 @@ class Response
      * @var Object
      */
     protected $_assetType;
+    
+    /**
+     * @var object
+     */
+    public $headerController;
 
     /**
      * Constructor
@@ -43,6 +48,10 @@ class Response
         }
 
         $this->_assetType = $AssetType;
+
+        $this->setHeaderController(new Asset\HeaderSetter);
+ 
+        $AssetType->_response = $this;
     }
 
     /**
@@ -59,6 +68,25 @@ class Response
         }
 
         return $ret;
+    }
+    
+    /**
+     * Set controller for setting headers.
+     * 
+     * @param string $header_controller
+     * 
+     * @return onject
+     * 
+     * @throws ErrorException
+     */
+    public function setHeaderController($header_controller)
+    {
+        if(!($header_controller instanceof Asset\HeaderSetter))
+            throw new ErrorException('Header controller must be an instance of HeaderSetter.');
+            
+        $this->headerController = $header_controller;
+
+        return $this;
     }
 
     /**
@@ -79,13 +107,13 @@ class Response
             ($checkModifiedSince && strtotime($checkModifiedSince) == $lastModifiedDate) ||
             $checkETag == $eTag
         ) {
-            header("HTTP/1.1 304 Not Modified");
+            $this->headerController->statusCode('HTTP/1.1', 304, 'Not Modified');
             $this->notModified = true;
         } else {
             // We don't want the browser to handle any cache, Munee will handle that.
-            header('Cache-Control: must-revalidate');
-            header('Last-Modified: ' . gmdate('D, d M Y H:i:s', $lastModifiedDate) . ' GMT');
-            header('ETag: ' . $eTag);
+            $this->headerController->headerField('Cache-Control', 'must-revalidate');
+            $this->headerController->headerField('Last-Modified', gmdate('D, d M Y H:i:s', $lastModifiedDate) . ' GMT');
+            $this->headerController->headerField('ETag', $eTag);
             $this->_assetType->getHeaders();
         }
     }

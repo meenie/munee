@@ -66,12 +66,13 @@ class RequestTest extends \PHPUnit_Framework_TestCase
      * Make sure files are parsed properly and the extension is set
      */
     public function testInit()
-    {
-        $Request = new Request();
-
+    {        
         $_GET = array(
             'files' => '/js/foo.js,/js/bar.js'
         );
+        
+        $Request = new Request();
+
         $Request->init();
 
         $this->assertSame('js', $Request->ext);
@@ -83,11 +84,11 @@ class RequestTest extends \PHPUnit_Framework_TestCase
      */
     public function testExtensionNotSupported()
     {
-        $Request = new Request();
-
         $_GET = array(
             'files' => '/js/foo.jpg,/js/bar.js'
         );
+        
+        $Request = new Request();
 
         $this->setExpectedException('Munee\ErrorException');
         $Request->init();
@@ -98,11 +99,11 @@ class RequestTest extends \PHPUnit_Framework_TestCase
      */
     public function testGoingAboveWebroot()
     {
-        $Request = new Request();
-
         $_GET = array(
             'files' => '/../..././js/bad.js,/js/bar.js'
         );
+
+        $Request = new Request();
 
         $Request->init();
         $this->assertSame(array(WEBROOT . '/js/bad.js', WEBROOT . '/js/bar.js'), $Request->files);
@@ -113,11 +114,11 @@ class RequestTest extends \PHPUnit_Framework_TestCase
      */
     public function testLegacyCode()
     {
-        $Request = new Request();
-
         $_GET = array(
             'files' => '/minify/js/foo.js'
         );
+
+        $Request = new Request();
 
         $Request->init();
 
@@ -130,13 +131,13 @@ class RequestTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetRawParams()
     {
-        $Request = new Request();
-
         $_GET = array(
             'files' => '/js/foo.js,/js/bar.js',
             'minify' => 'true',
             'notAllowedParam' => 'foo'
         );
+
+        $Request = new Request();
 
         $Request->init();
         $rawParams = $Request->getRawParams();
@@ -148,8 +149,6 @@ class RequestTest extends \PHPUnit_Framework_TestCase
      */
     public function testParseParams()
     {
-        $Request = new Request();
-
         $_GET = array(
             'files' => '/js/foo.js,/js/bar.js',
             'foo' => 'true',
@@ -157,6 +156,8 @@ class RequestTest extends \PHPUnit_Framework_TestCase
             'notAllowedParam' => 'foo'
 
         );
+
+        $Request = new Request();
 
         $Request->init();
 
@@ -201,12 +202,12 @@ class RequestTest extends \PHPUnit_Framework_TestCase
      */
     public function testWrongParamValue()
     {
-        $Request = new Request();
-
         $_GET = array(
             'files' => '/js/foo.js',
             'foo' => 'not good'
         );
+
+        $Request = new Request();
 
         $Request->init();
 

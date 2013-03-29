@@ -39,6 +39,13 @@ class Dispatcher
      */
     public static function run(Request $Request, $options = array())
     {
+        /**
+         * Set the header controller.
+         */
+        $header_controller = (isset($options['headerController']) && $options['headerController'] instanceof Asset\HeaderSetter)
+                                ? $options['headerController']
+                                : new Asset\HeaderSetter;
+
         try {
             /**
              * Merge in default options
@@ -64,6 +71,13 @@ class Dispatcher
              * Set the headers if told to do so
              */
             if ($options['setHeaders']) {
+                /**
+                 * Set the header controller for response.
+                 */
+                $Response->setHeaderController($header_controller);
+                /**
+                 * Set the headers.
+                 */
                 $Response->setHeaders();
             }
             /**
@@ -72,8 +86,8 @@ class Dispatcher
              */
             return $Response->notModified ? null : $Response->render();
         } catch (Asset\NotFoundException $e) {
-            header("HTTP/1.0 404 Not Found");
-            header("Status: 404 Not Found");
+            $header_controller->statusCode('HTTP/1.0', 404, 'Not Found');
+            $header_controller->headerField('Status', 404, 'Not Found');
             return 'Error: ' . $e->getMessage();
         } catch (ErrorException $e) {
             return 'Error: ' . $e->getMessage();

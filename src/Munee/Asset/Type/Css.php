@@ -32,7 +32,7 @@ class Css extends Type
      */
     public function getHeaders()
     {
-        header("Content-Type: text/css");
+        $this->_response->headerController->headerField('Content-Type', 'text/css');
     }
 
     /**
@@ -153,7 +153,13 @@ class Css extends Type
         $regEx = '%(background(?:-image)?:.*?url[\\s]*\()[\\s\'"]*(\.\.[^\\)\'"]*)[\\s\'"]*(\\)[\\s]*)%';
 
         $changedContent = preg_replace_callback($regEx, function($match) use ($originalFile) {
-            $basePath = str_replace(WEBROOT, '', dirname($originalFile)) . '/' . trim($match[2]);
+            
+            $basePathPrefix = str_replace($this->_request->docroot, '', dirname($originalFile));
+            
+            if($basePathPrefix)
+                $basePathPrefix .= '/';
+            
+            $basePath = $basePathPrefix . trim($match[2]);
             $count = 1;
             while ($count > 0) {
                 $basePath = preg_replace('%\\w+/\\.\\./%', '', $basePath, -1, $count);

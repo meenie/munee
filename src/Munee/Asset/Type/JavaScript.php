@@ -23,7 +23,7 @@ class JavaScript extends Type
      */
     public function getHeaders()
     {
-        header("Content-Type: text/javascript");
+        $this->_response->headerController->headerField('Content-Type', 'text/javascript');
     }
 
 

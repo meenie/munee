@@ -150,7 +150,7 @@ class Css extends Type
      */
     protected function _fixRelativeImagePaths($content, $originalFile)
     {
-        $regEx = '%(background(?:-image)?:.*?url[\\s]*\()[\\s\'"]*(\.\.[^\\)\'"]*)[\\s\'"]*(\\)[\\s]*)%';
+        $regEx = '%((?:background(?:-image)?|list-style-image):.*?url[\\s]*\()[\\s\'"]*(\.\.[^\\)\'"]*)[\\s\'"]*(\\)[\\s]*)%';
 
         $changedContent = preg_replace_callback($regEx, function($match) use ($originalFile) {
             $basePath = str_replace(WEBROOT, '', dirname($originalFile)) . '/' . trim($match[2]);

@@ -105,13 +105,13 @@ class Image extends Type
         switch ($this->_request->ext) {
             case 'jpg':
             case 'jpeg':
-                header("Content-Type: image/jpg");
+                $this->_response->headerController->headerField('Content-Type', 'image/jpg');
                 break;
             case 'png':
-                header("Content-Type: image/png");
+                $this->_response->headerController->headerField('Content-Type', 'image/png');
                 break;
             case 'gif':
-                header("Content-Type: image/gif");
+                $this->_response->headerController->headerField('Content-Type', 'image/gif');
                 break;
         }
     }
@@ -176,7 +176,7 @@ class Image extends Type
 
             foreach ($this->_options['placeholders'] as $path => $placeholder) {
                 // Setup path for regex
-                $regex = '^' . WEBROOT . str_replace(array('*', WEBROOT), array('.*?', ''), $path) . '$';
+                $regex = '^' . $this->_request->docroot . str_replace(array('*', $this->_request->docroot), array('.*?', ''), $path) . '$';
                 if (preg_match("%{$regex}%", $file)) {
                     if ('http' == substr($placeholder, 0, 4)) {
                         $ret = $this->_getImageByUrl($placeholder);

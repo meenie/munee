@@ -54,6 +54,11 @@ abstract class Type
      * @var object
      */
     protected $_request;
+    
+    /**
+     * @var object
+     */
+    public $_response;
 
     /**
      * Constructor
@@ -182,7 +187,7 @@ abstract class Type
     {
         // Check if the file exists
         if (! file_exists($originalFile)) {
-            throw new NotFoundException('File does not exist: ' . str_replace(WEBROOT, '', $originalFile));
+            throw new NotFoundException('File does not exist: ' . str_replace($this->_request->docroot, '', $originalFile));
         }
 
         // Copy the original file to the cache location

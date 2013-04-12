@@ -33,7 +33,7 @@ class Image extends Type
         'placeholders' => false,
         'maxAllowedResizeWidth' => 1920,
         'maxAllowedResizeHeight' => 1080,
-        'imageProcessor' => "GD"
+        'imageProcessor' => 'GD'
     );
 
     protected $_placeholder = false;

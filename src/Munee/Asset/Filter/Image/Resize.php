@@ -10,7 +10,6 @@ namespace Munee\Asset\Filter\Image;
 
 use Munee\Asset\Filter;
 use Munee\ErrorException;
-use Imagine\Gd\Imagine;
 use Imagine\Image\ImageInterface;
 use Imagine\Image\Box;
 use Imagine\Image\Color;
@@ -99,8 +98,19 @@ class Resize extends Filter
         if (empty($arguments['height']) && empty($arguments['width'])) {
             throw new ErrorException('You must set at least the height (h) or the width (w)');
         }
-
-        $Imagine = new Imagine();
+        switch (strtolower($imageOptions['imageProcessor'])) {
+            case 'gd':
+                $Imagine = new \Imagine\Gd\Imagine();
+                break;
+            case 'imagick':
+                $Imagine = new \Imagine\Imagick\Imagine();
+                break;
+            case 'gmagick':
+                $Imagine = new \Imagine\Gmagick\Imagine();
+                break;
+            default:
+                throw new ErrorException('Unsupported imageProcessor config value: ' . $imageOptions['imageProcessor']);
+        }
         $image = $Imagine->open($originalImage);
 
         $size = $image->getSize();

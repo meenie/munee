@@ -32,7 +32,8 @@ class Image extends Type
         // Use a placeholder for missing images?
         'placeholders' => false,
         'maxAllowedResizeWidth' => 1920,
-        'maxAllowedResizeHeight' => 1080
+        'maxAllowedResizeHeight' => 1080,
+        'imageProcessor' => "GD"
     );
 
     protected $_placeholder = false;

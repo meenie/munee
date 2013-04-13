@@ -150,7 +150,8 @@ class Request
         $this->ext = pathinfo($this->rawFiles, PATHINFO_EXTENSION);
         $supportedExtensions = Registry::getSupportedExtensions($this->ext);
         // Suppressing errors because Exceptions thrown in the callback cause Warnings.
-        $this->files = @array_map(function($v) use ($supportedExtensions) {
+        $webroot = $this->webroot;
+        $this->files = @array_map(function($v) use ($supportedExtensions, $webroot) {
             // Make sure all the file extensions are supported
             if (! in_array(strtolower(pathinfo($v, PATHINFO_EXTENSION)), $supportedExtensions)) {
                 throw new ErrorException('All requested files need to be: ' . implode(', ', $supportedExtensions));
@@ -165,7 +166,7 @@ class Request
                 }
             }
 
-            return $this->webroot . $v;
+            return $webroot . $v;
         }, explode(',', $this->rawFiles));
     }
 

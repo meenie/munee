@@ -66,11 +66,11 @@ class RequestTest extends \PHPUnit_Framework_TestCase
      * Make sure files are parsed properly and the extension is set
      */
     public function testInit()
-    {        
+    {
         $_GET = array(
             'files' => '/js/foo.js,/js/bar.js'
         );
-        
+
         $Request = new Request();
 
         $Request->init();

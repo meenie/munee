@@ -21,7 +21,7 @@ class Minify extends Filter
     /**
      * @var array
      */
-    protected $_allowedParams = array(
+    protected $allowedParams = array(
         'minify' => array(
             'regex' => 'true|false|t|f|yes|no|y|n',
             'default' => 'false',
@@ -46,10 +46,10 @@ class Minify extends Filter
 
         $content = file_get_contents($file);
         if (Utils::isSerialized($content, $content)) {
-            $content['compiled'] = $this->_minify($content['compiled']);
+            $content['compiled'] = $this->minify($content['compiled']);
             $content = serialize($content);
         } else {
-            $content = $this->_minify($content);
+            $content = $this->minify($content);
         }
 
         file_put_contents($file, $content);
@@ -62,7 +62,7 @@ class Minify extends Filter
      *
      * @return string
      */
-    protected function _minify($content)
+    protected function minify($content)
     {
         $regexs = array(
             // Remove Comments

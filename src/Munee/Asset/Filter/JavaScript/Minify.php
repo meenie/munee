@@ -21,7 +21,7 @@ class Minify extends Filter
     /**
      * @var array
      */
-    protected $_allowedParams = array(
+    protected $allowedParams = array(
         'minify' => array(
             'regex' => 'true|false|t|f|yes|no|y|n',
             'default' => 'false',

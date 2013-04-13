@@ -21,7 +21,7 @@ class MockAssetType extends Type
      * Don't want to do any constructing
      */
     public function __construct() {
-        $this->_content = 'foo';
+        $this->content = 'foo';
     }
 
     /**

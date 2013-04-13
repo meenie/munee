@@ -21,7 +21,7 @@ class Negative extends Filter
     /**
      * @var array
      */
-    protected $_allowedParams = array(
+    protected $allowedParams = array(
         'negative' => array(
             'regex' => 'true|false|t|f|yes|no|y|n',
             'cast' => 'string'
@@ -33,10 +33,11 @@ class Negative extends Filter
      *
      * @param string $file
      * @param array $arguments
+     * @param array $typeOptions
      *
      * @return void
      */
-    public function doFilter($file, $arguments)
+    public function doFilter($file, $arguments, $typeOptions)
     {
         $Imagine = new Imagine();
         $image = $Imagine->open($file);

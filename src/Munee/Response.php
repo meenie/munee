@@ -21,14 +21,14 @@ class Response
     public $notModified = false;
 
     /**
-     * @var Object
-     */
-    protected $_assetType;
-    
-    /**
      * @var object
      */
     public $headerController;
+
+    /**
+     * @var Object
+     */
+    protected $assetType;
 
     /**
      * Constructor
@@ -39,7 +39,7 @@ class Response
      */
     public function __construct($AssetType)
     {
-        // Must be a Sub-Class of \Munee\asset\Type
+        // Must be a Sub-Class of \Munee\Asset\Type
         $baseClass = '\\Munee\\asset\\Type';
         if (! is_subclass_of($AssetType, $baseClass)) {
             throw new ErrorException(
@@ -47,57 +47,42 @@ class Response
             );
         }
 
-        $this->_assetType = $AssetType;
-
-        $this->setHeaderController(new Asset\HeaderSetter);
+        $this->assetType = $AssetType;
  
-        $AssetType->_response = $this;
+        $AssetType->setResponse($this);
     }
 
-    /**
-     * Returns the Asset Types content.
-     * It will try and use Gzip to compress the content and save bandwidth
-     *
-     * @return string
-     */
-    public function render()
-    {
-        $content = $this->_assetType->getContent();
-        if (! $ret = ob_gzhandler($content, PHP_OUTPUT_HANDLER_START | PHP_OUTPUT_HANDLER_END)) {
-            $ret = $content;
-        }
-
-        return $ret;
-    }
-    
     /**
      * Set controller for setting headers.
      * 
-     * @param string $header_controller
+     * @param object $headerController
      * 
-     * @return onject
+     * @return self
      * 
      * @throws ErrorException
      */
-    public function setHeaderController($header_controller)
+    public function setHeaderController($headerController)
     {
-        if(!($header_controller instanceof Asset\HeaderSetter))
-            throw new ErrorException('Header controller must be an instance of HeaderSetter.');
-            
-        $this->headerController = $header_controller;
+        if(! $headerController instanceof Asset\HeaderSetter) {
+            throw new ErrorException('Header controller must be an instance of Asset\HeaderSetter.');
+        }
+
+        $this->headerController = $headerController;
 
         return $this;
     }
 
     /**
      * Set Headers for Response
-     * 
+     *
+     * @return self
+     *
      * @throws ErrorException
      */
     public function setHeaders()
     {
-        $lastModifiedDate = $this->_assetType->getLastModifiedDate();
-        $eTag = md5($lastModifiedDate . $this->_assetType->getContent());
+        $lastModifiedDate = $this->assetType->getLastModifiedDate();
+        $eTag = md5($lastModifiedDate . $this->assetType->getContent());
         $checkModifiedSince = isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ?
             $_SERVER['HTTP_IF_MODIFIED_SINCE'] : false;
         $checkETag = isset($_SERVER['HTTP_IF_NONE_MATCH']) ?
@@ -114,7 +99,25 @@ class Response
             $this->headerController->headerField('Cache-Control', 'must-revalidate');
             $this->headerController->headerField('Last-Modified', gmdate('D, d M Y H:i:s', $lastModifiedDate) . ' GMT');
             $this->headerController->headerField('ETag', $eTag);
-            $this->_assetType->getHeaders();
+            $this->assetType->getHeaders();
         }
+
+        return $this;
+    }
+
+    /**
+     * Returns the Asset Types content.
+     * It will try and use Gzip to compress the content and save bandwidth
+     *
+     * @return string
+     */
+    public function render()
+    {
+        $content = $this->assetType->getContent();
+        if (! $ret = ob_gzhandler($content, PHP_OUTPUT_HANDLER_START | PHP_OUTPUT_HANDLER_END)) {
+            $ret = $content;
+        }
+
+        return $ret;
     }
 }

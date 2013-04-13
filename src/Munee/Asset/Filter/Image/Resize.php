@@ -25,7 +25,7 @@ class Resize extends Filter
     /**
      * @var array
      */
-    protected $_allowedParams = array(
+    protected $allowedParams = array(
         'resize' => array(
             'arguments' => array(
                 'width' => array(

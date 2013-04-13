@@ -21,7 +21,7 @@ class Grayscale extends Filter
     /**
      * @var array
      */
-    protected $_allowedParams = array(
+    protected $allowedParams = array(
         'grayscale' => array(
             'regex' => 'true|false|t|f|yes|no|y|n',
             'default' => 'false',
@@ -34,10 +34,11 @@ class Grayscale extends Filter
      *
      * @param string $file
      * @param array $arguments
+     * @param array $typeOptions
      *
      * @return void
      */
-    public function doFilter($file, $arguments)
+    public function doFilter($file, $arguments, $typeOptions)
     {
         if (! $arguments['grayscale']) {
             return;

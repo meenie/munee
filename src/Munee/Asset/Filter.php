@@ -18,14 +18,14 @@ abstract class Filter
     /**
      * @var array
      */
-    protected $_allowedParams = array();
+    protected $allowedParams = array();
 
     /**
      * @return array
      */
     public function getAllowedParams()
     {
-        return $this->_allowedParams;
+        return $this->allowedParams;
     }
 
     /**

@@ -21,6 +21,11 @@ class Request
     /**
      * @var string
      */
+    public $webroot = WEBROOT;
+
+    /**
+     * @var string
+     */
     public $ext;
 
     /**
@@ -41,23 +46,18 @@ class Request
     /**
      * @var array
      */
-    protected $_rawParams = array();
+    protected $rawParams = array();
 
     /**
      * @var array
      */
-    protected $_allowedParams = array();
+    protected $allowedParams = array();
     
     /**
      * @var string
      */
-    protected $file_query;
+    protected $rawFiles;
     
-    /**
-     * @var string
-     */
-    public $docroot = WEBROOT;
-
     /**
      * Constructor
      *
@@ -66,15 +66,10 @@ class Request
     public function __construct($options = array())
     {
         $this->options = $options;
+        $this->rawFiles = isset($_GET['files']) ? $_GET['files'] : '';
+        unset($_GET['files']);
 
-        $this->file_query = isset($_GET['files'])
-                                ? $_GET['files']
-                                : '';
-        
-        $this->_rawParams = $_GET;
-        
-        if(isset($this->_rawParams['files']))
-            unset($this->_rawParams['files']);
+        $this->rawParams = $_GET;
     }
     
     /**
@@ -84,9 +79,9 @@ class Request
      * 
      * @return object
      */
-    public function setDocroot($path)
+    public function setWebroot($path)
     {
-        $this->docroot = $path;
+        $this->webroot = $path;
         
         return $this;
     }
@@ -101,16 +96,27 @@ class Request
      */
     public function setRawParam($key, $value = null)
     {
-        if(is_array($key))
-            $this->_rawParams = $key;
-        else
-            $this->_rawParams[$key] = $value;
-        
+        if (is_array($key)) {
+            $this->rawParams = $key;
+        } else {
+            $this->rawParams[$key] = $value;
+        }
+
         return $this;
+    }
+
+    /**
+     * Returns the pre-parsed raw params
+     *
+     * @return array
+     */
+    public function getRawParams()
+    {
+        return $this->rawParams;
     }
     
     /**
-     * Sets the $file_query.
+     * Sets the $rawFiles.
      *
      * @param string $files
      * 
@@ -118,30 +124,30 @@ class Request
      */
     public function setFiles($files)
     {
-        $this->file_query = $files;
+        $this->rawFiles = $files;
 
         return $this;
     }
 
     /**
-     * Parses the $file_query and does sanity checks
+     * Parses the $rawFiles and does sanity checks
      *
      * @throws ErrorException
      * @throws Asset\NotFoundException
      */
     public function init()
     {
-        if (empty($this->file_query)) {
+        if (empty($this->rawFiles)) {
             throw new ErrorException('No file specified; make sure you are using the correct .htaccess rules.');
         }
 
         // Handle legacy code for minifying
-        if (preg_match('%^/minify/%', $this->file_query)) {
-            $this->file_query = substr($this->file_query, 7);
+        if (preg_match('%^/minify/%', $this->rawFiles)) {
+            $this->rawFiles = substr($this->rawFiles, 7);
             $this->setRawParam('minify', 'true');
         }
 
-        $this->ext = pathinfo($this->file_query, PATHINFO_EXTENSION);
+        $this->ext = pathinfo($this->rawFiles, PATHINFO_EXTENSION);
         $supportedExtensions = Registry::getSupportedExtensions($this->ext);
         // Suppressing errors because Exceptions thrown in the callback cause Warnings.
         $this->files = @array_map(function($v) use ($supportedExtensions) {
@@ -159,20 +165,8 @@ class Request
                 }
             }
 
-            return $this->docroot . $v;
-        }, explode(',', $this->file_query));
-
-        //unset($_GET['files']);
-    }
-
-    /**
-     * Returns the pre-parsed raw params
-     *
-     * @return array
-     */
-    public function getRawParams()
-    {
-        return $this->_rawParams;
+            return $this->webroot . $v;
+        }, explode(',', $this->rawFiles));
     }
 
     /**
@@ -182,18 +176,18 @@ class Request
      */
     public function parseParams($allowedParams)
     {
-        $this->_allowedParams = $allowedParams;
-        $this->_setDefaultParams();
+        $this->allowedParams = $allowedParams;
+        $this->setDefaultParams();
 
-        foreach ($this->_rawParams as $checkParam => $value) {
-            if (! $paramOptions = $this->_getParamOptions($checkParam)) {
+        foreach ($this->rawParams as $checkParam => $value) {
+            if (! $paramOptions = $this->getParamOptions($checkParam)) {
                 continue;
             }
 
             $param = $paramOptions['param'];
             $options = $paramOptions['options'];
 
-            $paramValue = $this->_getParamValue($param, $options, $value);
+            $paramValue = $this->getParamValue($param, $options, $value);
             if (isset($this->params[$param]) && is_array($this->params[$param])) {
                 $this->params[$param] = array_merge($this->params[$param], $paramValue);
             } else {
@@ -205,21 +199,21 @@ class Request
     /**
      * Setup the default values for the allowed parameters
      */
-    protected function _setDefaultParams()
+    protected function setDefaultParams()
     {
-        foreach ($this->_allowedParams as $param => $options) {
+        foreach ($this->allowedParams as $param => $options) {
             $this->params[$param] = null;
             if (! empty($options['arguments'])) {
                 $this->params[$param] = array();
                 foreach ($options['arguments'] as $arg => $opts) {
                     if (! empty($opts['default'])) {
                         $cast = ! empty($opts['cast']) ? $opts['cast'] : 'string';
-                        $this->params[$param][$arg] = $this->_castValue($cast, $opts['default']);
+                        $this->params[$param][$arg] = $this->castValue($cast, $opts['default']);
                     }
                 }
             } elseif (! empty($options['default'])) {
                 $cast = ! empty($options['cast']) ? $options['cast'] : 'string';
-                $this->params[$param] = $this->_castValue($cast, $options['default']);
+                $this->params[$param] = $this->castValue($cast, $options['default']);
             }
         }
     }
@@ -232,12 +226,12 @@ class Request
      *
      * @return bool|array
      */
-    protected function _getParamOptions($checkParam)
+    protected function getParamOptions($checkParam)
     {
-        if (isset($this->_allowedParams[$checkParam])) {
-            return array('param' => $checkParam, 'options' => $this->_allowedParams[$checkParam]);
+        if (isset($this->allowedParams[$checkParam])) {
+            return array('param' => $checkParam, 'options' => $this->allowedParams[$checkParam]);
         } else {
-            foreach ($this->_allowedParams as $param => $options) {
+            foreach ($this->allowedParams as $param => $options) {
                 if (! empty($options['alias']) && in_array($checkParam, (array) $options['alias'])) {
                     return compact('param', 'options');
                 }
@@ -259,7 +253,7 @@ class Request
      *
      * @throws \Munee\ErrorException
      */
-    protected function _getParamValue($param, $paramOptions, $value)
+    protected function getParamValue($param, $paramOptions, $value)
     {
         if (! empty($paramOptions['arguments'])) {
             $ret = array();
@@ -271,7 +265,7 @@ class Request
                 }
                 $regex = "(\\b{$p})\\[(.*?)\\]";
                 if (preg_match("%{$regex}%", $value, $match)) {
-                    $ret[$arg] = $this->_getParamValue($arg, $opts, $match[2]);
+                    $ret[$arg] = $this->getParamValue($arg, $opts, $match[2]);
                 }
             }
 
@@ -286,7 +280,7 @@ class Request
 
             $cast = ! empty($paramOptions['cast']) ? $paramOptions['cast'] : 'string';
 
-            return $this->_castValue($cast, $value);
+            return $this->castValue($cast, $value);
         }
     }
 
@@ -299,7 +293,7 @@ class Request
      *
      * @return bool|int|string
      */
-    protected function _castValue($cast, $value)
+    protected function castValue($cast, $value)
     {
         switch ($cast) {
             case 'integer';

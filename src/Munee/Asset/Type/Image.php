@@ -22,7 +22,7 @@ class Image extends Type
     /**
      * @var array
      */
-    protected $_options = array(
+    protected $options = array(
         // How many filters can be done within the `allowedFiltersTimeLimit`
         'numberOfAllowedFilters' => 3,
         // Number of seconds - default is 5 minutes
@@ -33,10 +33,16 @@ class Image extends Type
         'placeholders' => false,
         'maxAllowedResizeWidth' => 1920,
         'maxAllowedResizeHeight' => 1080,
+        /**
+         * Can easily change which image processor to use. Values can be:
+         * GD - Default
+         * Imagick
+         * Gmagick
+         */
         'imageProcessor' => 'GD'
     );
 
-    protected $_placeholder = false;
+    protected $placeholder = false;
 
     /**
      * Checks to see if cache exists and is the latest, if it does, return it
@@ -48,30 +54,30 @@ class Image extends Type
      *
      * @return bool|string
      */
-    protected function _checkCache($originalFile, $cacheFile)
+    protected function checkCache($originalFile, $cacheFile)
     {
-        if (! $return = parent::_checkCache($originalFile, $cacheFile)) {
+        if (! $return = parent::checkCache($originalFile, $cacheFile)) {
             /**
              * If using the placeholder when the original file doesn't exist
              * and it has already been cached, return the cached contents.
              * Also make sure the placeholder hasn't been modified since being cached.
              */
-            $this->_placeholder = $this->_parsePlaceholders($originalFile);
+            $this->placeholder = $this->parsePlaceholders($originalFile);
             if (
                 ! file_exists($originalFile) &&
-                $this->_placeholder &&
-                file_exists($this->_placeholder) &&
+                $this->placeholder &&
+                file_exists($this->placeholder) &&
                 file_exists($cacheFile) &&
-                filemtime($cacheFile) > filemtime($this->_placeholder)
+                filemtime($cacheFile) > filemtime($this->placeholder)
             ) {
                 return file_get_contents($cacheFile);
             }
 
-            if ($this->_options['checkReferrer']) {
-                $this->_checkReferrer();
+            if ($this->options['checkReferrer']) {
+                $this->checkReferrer();
             }
 
-            $this->_checkNumberOfAllowedFilters($cacheFile);
+            $this->checkNumberOfAllowedFilters($cacheFile);
         }
 
         return $return;
@@ -84,16 +90,16 @@ class Image extends Type
      * @param string $originalFile
      * @param string $cacheFile
      */
-    protected function _setupFile($originalFile, $cacheFile)
+    protected function setupFile($originalFile, $cacheFile)
     {
         if (! file_exists($originalFile)) {
             // If we are using a placeholder and that exists, use it!
-            if ($this->_placeholder && file_exists($this->_placeholder)) {
-                $originalFile = $this->_placeholder;
+            if ($this->placeholder && file_exists($this->placeholder)) {
+                $originalFile = $this->placeholder;
             }
         }
 
-        parent::_setupFile($originalFile, $cacheFile);
+        parent::setupFile($originalFile, $cacheFile);
 
     }
 
@@ -102,16 +108,16 @@ class Image extends Type
      */
     public function getHeaders()
     {
-        switch ($this->_request->ext) {
+        switch ($this->request->ext) {
             case 'jpg':
             case 'jpeg':
-                $this->_response->headerController->headerField('Content-Type', 'image/jpg');
+                $this->response->headerController->headerField('Content-Type', 'image/jpg');
                 break;
             case 'png':
-                $this->_response->headerController->headerField('Content-Type', 'image/png');
+                $this->response->headerController->headerField('Content-Type', 'image/png');
                 break;
             case 'gif':
-                $this->_response->headerController->headerField('Content-Type', 'image/gif');
+                $this->response->headerController->headerField('Content-Type', 'image/gif');
                 break;
         }
     }
@@ -121,7 +127,7 @@ class Image extends Type
      *
      * @throws ErrorException
      */
-    protected function _checkReferrer()
+    protected function checkReferrer()
     {
         if (! isset($_SERVER['HTTP_REFERER'])) {
             throw new ErrorException('Direct image manipulation is not allowed.');
@@ -140,7 +146,7 @@ class Image extends Type
      *
      * @throws ErrorException
      */
-    protected function _checkNumberOfAllowedFilters($checkImage)
+    protected function checkNumberOfAllowedFilters($checkImage)
     {
         $pathInfo = pathinfo($checkImage);
         $fileNameHash = preg_replace('%-.*$%', '', $pathInfo['filename']);
@@ -148,12 +154,12 @@ class Image extends Type
         $cachedImages = glob($pathInfo['dirname'] . DS . $fileNameHash . '*');
         // Loop through and remove the ones that are older than the time limit
         foreach ($cachedImages as $k => $image) {
-            if (filemtime($image) < time() - $this->_options['allowedFiltersTimeLimit']) {
+            if (filemtime($image) < time() - $this->options['allowedFiltersTimeLimit']) {
                 unset($cachedImages[$k]);
             }
         }
         // Check and see if we've reached the maximum allowed resizes within the current time limit.
-        if (count($cachedImages) >= $this->_options['numberOfAllowedFilters']) {
+        if (count($cachedImages) >= $this->options['numberOfAllowedFilters']) {
             throw new ErrorException('You cannot create anymore resizes/manipulations at this time.');
         }
     }
@@ -165,21 +171,21 @@ class Image extends Type
      *
      * @throws ErrorException
      */
-    protected function _parsePlaceholders($file)
+    protected function parsePlaceholders($file)
     {
         $ret = false;
-        if (! empty($this->_options['placeholders'])) {
+        if (! empty($this->options['placeholders'])) {
             // If it's a string, use the image for all missing images.
-            if (is_string($this->_options['placeholders'])) {
-                $this->_options['placeholders'] = array('*' => $this->_options['placeholders']);
+            if (is_string($this->options['placeholders'])) {
+                $this->options['placeholders'] = array('*' => $this->options['placeholders']);
             }
 
-            foreach ($this->_options['placeholders'] as $path => $placeholder) {
+            foreach ($this->options['placeholders'] as $path => $placeholder) {
                 // Setup path for regex
-                $regex = '^' . $this->_request->docroot . str_replace(array('*', $this->_request->docroot), array('.*?', ''), $path) . '$';
+                $regex = '^' . $this->request->webroot . str_replace(array('*', $this->request->webroot), array('.*?', ''), $path) . '$';
                 if (preg_match("%{$regex}%", $file)) {
                     if ('http' == substr($placeholder, 0, 4)) {
-                        $ret = $this->_getImageByUrl($placeholder);
+                        $ret = $this->getImageByUrl($placeholder);
                     } else {
                         $ret = $placeholder;
                     }
@@ -198,12 +204,12 @@ class Image extends Type
      *
      * @return string
      */
-    protected function _getImageByUrl($url)
+    protected function getImageByUrl($url)
     {
         $cacheFolder = MUNEE_CACHE . DS . 'placeholders';
         Utils::createDir($cacheFolder);
-        $requestOptions = serialize($this->_request->options);
-        $originalFile = array_shift($this->_request->files);
+        $requestOptions = serialize($this->request->options);
+        $originalFile = array_shift($this->request->files);
 
         $fileName = $cacheFolder . DS . md5($url) . '-' . md5($requestOptions . $originalFile);
         if (! file_exists($fileName)) {

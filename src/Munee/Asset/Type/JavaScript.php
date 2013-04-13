@@ -23,7 +23,7 @@ class JavaScript extends Type
      */
     public function getHeaders()
     {
-        $this->_response->headerController->headerField('Content-Type', 'text/javascript');
+        $this->response->headerController->headerField('Content-Type', 'text/javascript');
     }
 
 
@@ -35,7 +35,7 @@ class JavaScript extends Type
      * @param string $originalFile
      * @param string $cacheFile
      */
-    protected function _beforeFilter($originalFile, $cacheFile)
+    protected function beforeFilter($originalFile, $cacheFile)
     {
         if ('coffee' == pathinfo($originalFile, PATHINFO_EXTENSION)) {
             $coffeeScript = CoffeeScript\Compiler::compile(file_get_contents($originalFile), array('header' => false));

@@ -8,7 +8,9 @@
 
 namespace Munee\Asset;
 
+use Munee\ErrorException;
 use Munee\Request;
+use Munee\Response;
 use Munee\Utils;
 use Munee\Asset\NotFoundException;
 
@@ -23,42 +25,47 @@ abstract class Type
     /**
      * @var array
      */
-    protected $_options = array();
+    protected $options = array();
 
     /**
      * @var array
      */
-    protected $_params = array();
+    protected $params = array();
 
     /**
      * @var array
      */
-    protected $_filters = array();
+    protected $filters = array();
 
     /**
      * @var string
      */
-    protected $_cacheDir;
+    protected $cacheDir;
 
     /**
      * @var integer
      */
-    protected $_lastModifiedDate = 0;
+    protected $lastModifiedDate = 0;
 
     /**
      * @var string
      */
-    protected $_content;
+    protected $content;
 
     /**
-     * @var object
+     * @var \Munee\Request
      */
-    protected $_request;
+    protected $request;
     
     /**
-     * @var object
+     * @var \Munee\Response
      */
-    public $_response;
+    protected $response;
+
+    /**
+     * All Type Sub-Classes must create this method to set their additional headers
+     */
+    abstract public function getHeaders();
 
     /**
      * Constructor
@@ -69,7 +76,7 @@ abstract class Type
      */
     public function __construct(Request $Request)
     {
-        $this->_request = $Request;
+        $this->request = $Request;
 
         // Pull in filters based on the raw params that were passed in
         $rawParams = $Request->getRawParams();
@@ -80,26 +87,26 @@ abstract class Type
             if (class_exists($filterClass)) {
                 $Filter = new $filterClass();
                 $allowedParams += $Filter->getAllowedParams();
-                $this->_filters[$filterName] = $Filter;
+                $this->filters[$filterName] = $Filter;
             }
         }
 
         // Parse the raw params based on a map of allowedParams for those filters
-        $this->_request->parseParams($allowedParams);
+        $this->request->parseParams($allowedParams);
 
-        $this->_cacheDir = MUNEE_CACHE . DS . $assetShortName;
+        $this->cacheDir = MUNEE_CACHE . DS . $assetShortName;
 
         $optionsKey = strtolower($assetShortName);
         // Set the AssetType options if someone were passed in through the Request Class
-        if (isset($this->_request->options[$optionsKey])) {
-            $this->_options = array_merge(
-                $this->_options,
-                $this->_request->options[$optionsKey]
+        if (isset($this->request->options[$optionsKey])) {
+            $this->options = array_merge(
+                $this->options,
+                $this->request->options[$optionsKey]
             );
         }
 
         // Create cache dir if needed
-        Utils::createDir($this->_cacheDir);
+        Utils::createDir($this->cacheDir);
     }
 
     /**
@@ -108,18 +115,34 @@ abstract class Type
     public function init()
     {
         $content = array();
-        foreach ($this->_request->files as $file) {
-            $cacheFile = $this->_generateCacheFile($file);
+        foreach ($this->request->files as $file) {
+            $cacheFile = $this->generateCacheFile($file);
 
-            if (! $fileContent = $this->_checkCache($file, $cacheFile)) {
-                $this->_setupFile($file, $cacheFile);
-                $fileContent = $this->_getFileContent($file, $cacheFile);
+            if (! $fileContent = $this->checkCache($file, $cacheFile)) {
+                $this->setupFile($file, $cacheFile);
+                $fileContent = $this->getFileContent($file, $cacheFile);
             }
 
-            $content[] = $this->_afterGetFileContent($fileContent);
+            $content[] = $this->afterGetFileContent($fileContent);
         }
 
-        $this->_content = implode("\n", $content);
+        $this->content = implode("\n", $content);
+    }
+
+    /**
+     * Sets the Munee\Response class to the AssetType
+     *
+     * @param $Response
+     *
+     * @throws \Munee\ErrorException
+     */
+    public function setResponse($Response)
+    {
+        if (! $Response instanceof Response) {
+            throw new ErrorException('Response class must be an instance of Munee\Response');
+        }
+
+        $this->response = $Response;
     }
 
     /**
@@ -129,13 +152,8 @@ abstract class Type
      */
     public function getContent()
     {
-        return $this->_content;
+        return $this->content;
     }
-
-    /**
-     * All Type Sub-Classes must create this method to set their additional headers
-     */
-    abstract public function getHeaders();
 
     /**
      * Return a this requests Last Modified Date.
@@ -144,7 +162,7 @@ abstract class Type
      */
     public function getLastModifiedDate()
     {
-        return $this->_lastModifiedDate;
+        return $this->lastModifiedDate;
     }
 
     /**
@@ -153,7 +171,7 @@ abstract class Type
      * @param string $originalFile
      * @param string $cacheFile
      */
-    protected function _beforeFilter($originalFile, $cacheFile) {}
+    protected function beforeFilter($originalFile, $cacheFile) {}
 
     /**
      * Callback function called after filters are run
@@ -161,7 +179,7 @@ abstract class Type
      * @param string $originalFile
      * @param string $cacheFile
      */
-    protected function _afterFilter($originalFile, $cacheFile) {}
+    protected function afterFilter($originalFile, $cacheFile) {}
 
     /**
      * Callback function called after _getFileContent() is called
@@ -170,7 +188,7 @@ abstract class Type
      *
      * @return string
      */
-    protected function _afterGetFileContent($content)
+    protected function afterGetFileContent($content)
     {
         return $content;
     }
@@ -183,11 +201,11 @@ abstract class Type
      *
      * @throws NotFoundException
      */
-    protected function _setupFile($originalFile, $cacheFile)
+    protected function setupFile($originalFile, $cacheFile)
     {
         // Check if the file exists
         if (! file_exists($originalFile)) {
-            throw new NotFoundException('File does not exist: ' . str_replace($this->_request->docroot, '', $originalFile));
+            throw new NotFoundException('File does not exist: ' . str_replace($this->request->webroot, '', $originalFile));
         }
 
         // Copy the original file to the cache location
@@ -204,21 +222,21 @@ abstract class Type
      *
      * @throws NotFoundException
      */
-    protected function _getFileContent($originalFile, $cacheFile)
+    protected function getFileContent($originalFile, $cacheFile)
     {
-        $this->_beforeFilter($originalFile, $cacheFile);
+        $this->beforeFilter($originalFile, $cacheFile);
         // Run through each filter
-        foreach ($this->_filters as $filterName => $Filter) {
-            $arguments = isset($this->_request->params[$filterName]) ?
-                $this->_request->params[$filterName] : array();
+        foreach ($this->filters as $filterName => $Filter) {
+            $arguments = isset($this->request->params[$filterName]) ?
+                $this->request->params[$filterName] : array();
             if (! is_array($arguments)) {
                 $arguments = array($filterName => $arguments);
             }
-            $Filter->doFilter($cacheFile, $arguments, $this->_options);
+            $Filter->doFilter($cacheFile, $arguments, $this->options);
         }
 
-        $this->_afterFilter($originalFile, $cacheFile);
-        $this->_lastModifiedDate = time();
+        $this->afterFilter($originalFile, $cacheFile);
+        $this->lastModifiedDate = time();
 
         return file_get_contents($cacheFile);
     }
@@ -231,7 +249,7 @@ abstract class Type
      *
      * @return bool|string
      */
-    protected function _checkCache($originalFile, $cacheFile)
+    protected function checkCache($originalFile, $cacheFile)
     {
         if (! file_exists($cacheFile) || ! file_exists($originalFile)) {
             return false;
@@ -242,8 +260,8 @@ abstract class Type
             return false;
         }
 
-        if ($this->_lastModifiedDate < $cacheFileLastModified) {
-            $this->_lastModifiedDate = $cacheFileLastModified;
+        if ($this->lastModifiedDate < $cacheFileLastModified) {
+            $this->lastModifiedDate = $cacheFileLastModified;
         }
 
         return file_get_contents($cacheFile);
@@ -256,16 +274,16 @@ abstract class Type
      *
      * @return string
      */
-    protected function _generateCacheFile($file)
+    protected function generateCacheFile($file)
     {
-        $requestOptions = serialize($this->_request->options);
-        $params = serialize($this->_request->params);
+        $requestOptions = serialize($this->request->options);
+        $params = serialize($this->request->params);
         $ext = pathinfo($file, PATHINFO_EXTENSION);
 
         $fileHash = md5($file);
         $optionsHash = md5($params . $requestOptions);
 
-        $cacheDir = $this->_cacheDir . DS . substr($fileHash, 0, 2);
+        $cacheDir = $this->cacheDir . DS . substr($fileHash, 0, 2);
 
         Utils::createDir($cacheDir);
 

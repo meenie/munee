@@ -21,7 +21,7 @@ class Packer extends Filter
     /**
      * @var array
      */
-    protected $_allowedParams = array(
+    protected $allowedParams = array(
         'packer' => array(
             'regex' => 'true|false|t|f|yes|no|y|n',
             'default' => 'false',

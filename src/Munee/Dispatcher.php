@@ -9,7 +9,7 @@
 namespace Munee;
 
 /**
- * The outermost layer of Munee that wraps everything in a Try/Catch block and also instantiates the Render Class
+ * The outermost layer of Munee that wraps everything in a Try/Catch block
  *
  * @author Cody Lundquist
  */
@@ -20,7 +20,7 @@ class Dispatcher
      *
      * @var array
      */
-    static $_defaultOptions = array('setHeaders' => true);
+    static $defaultOptions = array('setHeaders' => true);
 
     /**
      * 1) Initialise the Request
@@ -39,18 +39,11 @@ class Dispatcher
      */
     public static function run(Request $Request, $options = array())
     {
-        /**
-         * Set the header controller.
-         */
-        $header_controller = (isset($options['headerController']) && $options['headerController'] instanceof Asset\HeaderSetter)
-                                ? $options['headerController']
-                                : new Asset\HeaderSetter;
-
         try {
             /**
              * Merge in default options
              */
-            $options = array_merge(self::$_defaultOptions, $options);
+            $options = array_merge(self::$defaultOptions, $options);
             /**
              * Initialise the Request
              */
@@ -68,13 +61,21 @@ class Dispatcher
              */
             $Response = new Response($AssetType);
             /**
+             * Set the header controller. Can be overwritten by the dispatcher options
+             */
+            if (
+                isset($options['headerController']) &&
+                $options['headerController'] instanceof Asset\HeaderSetter
+            ) {
+                $headerController = $options['headerController'];
+            } else {
+                $headerController = new Asset\HeaderSetter;
+            }
+            $Response->setHeaderController($headerController);
+            /**
              * Set the headers if told to do so
              */
             if ($options['setHeaders']) {
-                /**
-                 * Set the header controller for response.
-                 */
-                $Response->setHeaderController($header_controller);
                 /**
                  * Set the headers.
                  */
@@ -86,8 +87,8 @@ class Dispatcher
              */
             return $Response->notModified ? null : $Response->render();
         } catch (Asset\NotFoundException $e) {
-            $header_controller->statusCode('HTTP/1.0', 404, 'Not Found');
-            $header_controller->headerField('Status', 404, 'Not Found');
+            $headerController->statusCode('HTTP/1.0', 404, 'Not Found');
+            $headerController->headerField('Status', '404 Not Found');
             return 'Error: ' . $e->getMessage();
         } catch (ErrorException $e) {
             return 'Error: ' . $e->getMessage();

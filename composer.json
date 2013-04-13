@@ -25,5 +25,8 @@
         "imagine/Imagine": "*",
         "coffeescript/coffeescript": "*",
         "meenie/javascript-packer": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "3.7.*"
     }
 }

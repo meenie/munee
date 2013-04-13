@@ -8,6 +8,7 @@
 
 namespace Munee\Cases;
 
+use Munee\Asset\HeaderSetter;
 use Munee\Response;
 use Munee\Mocks\MockAssetType;
 
@@ -21,7 +22,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
     /**
      * @var int
      */
-    protected $_lastModifiedTime = 123456789;
+    protected $lastModifiedTime = 123456789;
 
     /**
      * Make sure the constructor is getting the correct Object passed to it.
@@ -40,16 +41,17 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
     public function testNonCachedResponse()
     {
         $Response = new Response(new MockAssetType());
+        $Response->setHeaderController(new HeaderSetter());
         $Response->setHeaders();
 
         $checkHeaders = array();
         $checkHeaders['Cache-Control'] = 'must-revalidate';
         $checkHeaders['Content-Type'] = 'text/test';
-        $checkHeaders['Last-Modified'] = gmdate('D, d M Y H:i:s', $this->_lastModifiedTime) . ' GMT';
+        $checkHeaders['Last-Modified'] = gmdate('D, d M Y H:i:s', $this->lastModifiedTime) . ' GMT';
         // ETag is MD5 Hash of the content + last modified date
         $checkHeaders['ETag'] = '00403b660c8f869d9f50c429f6dceb72';
 
-        $setHeaders = $this->_getHeaders();
+        $setHeaders = $this->getHeaders();
 
         $this->assertSame($checkHeaders['Cache-Control'], $setHeaders['Cache-Control']);
         unset($setHeaders['Cache-Control']);
@@ -79,14 +81,15 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function testCachedResponse()
     {
-        $_SERVER['HTTP_IF_MODIFIED_SINCE'] = gmdate('D, d M Y H:i:s', $this->_lastModifiedTime) . ' GMT';
+        $_SERVER['HTTP_IF_MODIFIED_SINCE'] = gmdate('D, d M Y H:i:s', $this->lastModifiedTime) . ' GMT';
         $_SERVER['HTTP_IF_NONE_MATCH'] = '00403b660c8f869d9f50c429f6dceb72';
 
         $Response = new Response(new MockAssetType());
+        $Response->setHeaderController(new HeaderSetter());
         $Response->setHeaders();
 
         $checkHeaders = array();
-        $setHeaders = $this->_getHeaders();
+        $setHeaders = $this->getHeaders();
 
         $this->assertSame($checkHeaders, $setHeaders);
 
@@ -105,21 +108,22 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function testExpiredRequestResponse()
     {
-        $expiredTime = $this->_lastModifiedTime - 100; // removing 100 seconds
+        $expiredTime = $this->lastModifiedTime - 100; // removing 100 seconds
         $_SERVER['HTTP_IF_MODIFIED_SINCE'] = gmdate('D, d M Y H:i:s', $expiredTime) . ' GMT';
         $_SERVER['HTTP_IF_NONE_MATCH'] = '00000000000000000000000000000000';
 
         $Response = new Response(new MockAssetType());
+        $Response->setHeaderController(new HeaderSetter());
         $Response->setHeaders();
 
         $checkHeaders = array();
         $checkHeaders['Cache-Control'] = 'must-revalidate';
         $checkHeaders['Content-Type'] = 'text/test';
-        $checkHeaders['Last-Modified'] = gmdate('D, d M Y H:i:s', $this->_lastModifiedTime) . ' GMT';
+        $checkHeaders['Last-Modified'] = gmdate('D, d M Y H:i:s', $this->lastModifiedTime) . ' GMT';
         // ETag is MD5 Hash of the content + last modified date
         $checkHeaders['ETag'] = '00403b660c8f869d9f50c429f6dceb72';
 
-        $setHeaders = $this->_getHeaders();
+        $setHeaders = $this->getHeaders();
 
         $this->assertSame($checkHeaders['Cache-Control'], $setHeaders['Cache-Control']);
         unset($setHeaders['Cache-Control']);
@@ -155,7 +159,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
      *
      * @return array
      */
-    protected function _getHeaders()
+    protected function getHeaders()
     {
         $rawHeaders = xdebug_get_headers();
         $ret = array();

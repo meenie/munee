@@ -22,7 +22,7 @@ class Colorize extends Filter
     /**
      * @var array
      */
-    protected $_allowedParams = array(
+    protected $allowedParams = array(
         'colorize' => array(
             'regex' => '[A-Fa-f0-9]{3}$|^[A-Fa-f0-9]{6}',
             'cast' => 'string'
@@ -34,10 +34,11 @@ class Colorize extends Filter
      *
      * @param string $file
      * @param array $arguments
+     * @param array $typeOptions
      *
      * @return void
      */
-    public function doFilter($file, $arguments)
+    public function doFilter($file, $arguments, $typeOptions)
     {
         $Imagine = new Imagine();
         $image = $Imagine->open($file);

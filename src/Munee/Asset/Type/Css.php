@@ -22,7 +22,7 @@ class Css extends Type
     /**
      * @var array
      */
-    protected $_options = array(
+    protected $options = array(
         'lessifyAllCss' => false,
         'scssifyAllCss' => false
     );
@@ -32,7 +32,7 @@ class Css extends Type
      */
     public function getHeaders()
     {
-        $this->_response->headerController->headerField('Content-Type', 'text/css');
+        $this->response->headerController->headerField('Content-Type', 'text/css');
     }
 
     /**
@@ -44,9 +44,9 @@ class Css extends Type
      *
      * @return bool|string|array
      */
-    protected function _checkCache($originalFile, $cacheFile)
+    protected function checkCache($originalFile, $cacheFile)
     {
-        if (! $ret = parent::_checkCache($originalFile, $cacheFile)) {
+        if (! $ret = parent::checkCache($originalFile, $cacheFile)) {
             return false;
         }
 
@@ -73,14 +73,14 @@ class Css extends Type
      * @param string $originalFile
      * @param string $cacheFile
      */
-    protected function _beforeFilter($originalFile, $cacheFile)
+    protected function beforeFilter($originalFile, $cacheFile)
     {
-        if ($this->_isLess($originalFile)) {
+        if ($this->isLess($originalFile)) {
             $less = new lessc();
             $compiledLess = $less->cachedCompile($originalFile);
-            $compiledLess['compiled'] = $this->_fixRelativeImagePaths($compiledLess['compiled'], $originalFile);
+            $compiledLess['compiled'] = $this->fixRelativeImagePaths($compiledLess['compiled'], $originalFile);
             file_put_contents($cacheFile, serialize($compiledLess));
-        } elseif ($this->_isScss($originalFile)) {
+        } elseif ($this->isScss($originalFile)) {
             $scss = new \scssc();
             $scss->addImportPath(pathinfo($originalFile, PATHINFO_DIRNAME));
             $compiled = $scss->compile(file_get_contents($originalFile));
@@ -94,7 +94,7 @@ class Css extends Type
             file_put_contents($cacheFile, serialize($content));
         } else {
             $content = file_get_contents($originalFile);
-            file_put_contents($cacheFile, $this->_fixRelativeImagePaths($content, $originalFile));
+            file_put_contents($cacheFile, $this->fixRelativeImagePaths($content, $originalFile));
         }
     }
 
@@ -107,7 +107,7 @@ class Css extends Type
      *
      * @return string
      */
-    protected function _afterGetFileContent($content)
+    protected function afterGetFileContent($content)
     {
         if (Utils::isSerialized($content, $content)) {
             $content = $content['compiled'];
@@ -123,9 +123,9 @@ class Css extends Type
      *
      * @return boolean
      */
-    protected function _isLess($file)
+    protected function isLess($file)
     {
-        return 'less' == pathinfo($file, PATHINFO_EXTENSION) || $this->_options['lessifyAllCss'];
+        return 'less' == pathinfo($file, PATHINFO_EXTENSION) || $this->options['lessifyAllCss'];
     }
 
     /**
@@ -135,9 +135,9 @@ class Css extends Type
      *
      * @return boolean
      */
-    protected function _isScss($file)
+    protected function isScss($file)
     {
-        return 'scss' == pathinfo($file, PATHINFO_EXTENSION) || $this->_options['scssifyAllCss'];
+        return 'scss' == pathinfo($file, PATHINFO_EXTENSION) || $this->options['scssifyAllCss'];
     }
 
     /**
@@ -148,17 +148,18 @@ class Css extends Type
      *
      * @return string
      */
-    protected function _fixRelativeImagePaths($content, $originalFile)
+    protected function fixRelativeImagePaths($content, $originalFile)
     {
         $regEx = '%((?:background(?:-image)?|list-style-image):.*?url[\\s]*\()[\\s\'"]*(\.\.[^\\)\'"]*)[\\s\'"]*(\\)[\\s]*)%';
 
-        $changedContent = preg_replace_callback($regEx, function($match) use ($originalFile) {
-            
-            $basePathPrefix = str_replace($this->_request->docroot, '', dirname($originalFile));
-            
-            if($basePathPrefix)
+        $changedContent = preg_replace_callback($regEx, function ($match) use ($originalFile) {
+
+            $basePathPrefix = str_replace($this->request->webroot, '', dirname($originalFile));
+
+            if (! empty($basePathPrefix)) {
                 $basePathPrefix .= '/';
-            
+            }
+
             $basePath = $basePathPrefix . trim($match[2]);
             $count = 1;
             while ($count > 0) {

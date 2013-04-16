@@ -152,9 +152,10 @@ class Css extends Type
     {
         $regEx = '%((?:background(?:-image)?|list-style-image):.*?url[\\s]*\()[\\s\'"]*(\.\.[^\\)\'"]*)[\\s\'"]*(\\)[\\s]*)%';
 
-        $changedContent = preg_replace_callback($regEx, function ($match) use ($originalFile) {
+        $webroot = $this->request->webroot;
+        $changedContent = preg_replace_callback($regEx, function ($match) use ($originalFile, $webroot) {
 
-            $basePathPrefix = str_replace($this->request->webroot, '', dirname($originalFile));
+            $basePathPrefix = str_replace($webroot, '', dirname($originalFile));
 
             if (! empty($basePathPrefix)) {
                 $basePathPrefix .= '/';

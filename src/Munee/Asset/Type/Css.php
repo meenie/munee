@@ -8,9 +8,11 @@
 
 namespace Munee\Asset\Type;
 
+use Munee\ErrorException;
 use Munee\Utils;
 use Munee\Asset\Type;
 use lessc;
+use scssc;
 
 /**
  * Handles CSS
@@ -72,18 +74,33 @@ class Css extends Type
      *
      * @param string $originalFile
      * @param string $cacheFile
+     *
+     * @throws ErrorException
      */
     protected function beforeFilter($originalFile, $cacheFile)
     {
         if ($this->isLess($originalFile)) {
             $less = new lessc();
-            $compiledLess = $less->cachedCompile($originalFile);
+            try {
+                $compiledLess = $less->cachedCompile($originalFile);
+            } catch (\Exception $e) {
+                // Remove the Cache File because it hasn't been properly compiled yet
+                unlink($cacheFile);
+                throw new ErrorException('Error in LESS Compiler', 0, $e);
+            }
             $compiledLess['compiled'] = $this->fixRelativeImagePaths($compiledLess['compiled'], $originalFile);
             file_put_contents($cacheFile, serialize($compiledLess));
         } elseif ($this->isScss($originalFile)) {
-            $scss = new \scssc();
+            $scss = new scssc();
             $scss->addImportPath(pathinfo($originalFile, PATHINFO_DIRNAME));
-            $compiled = $scss->compile(file_get_contents($originalFile));
+            try {
+                $compiled = $scss->compile(file_get_contents($originalFile));
+            } catch (\Exception $e) {
+                // Remove the Cache File because it hasn't been properly compiled yet
+                unlink($cacheFile);
+                throw new ErrorException('Error in SCSS Compiler', 0, $e);
+            }
+
             $content = compact('compiled');
             $parsedFiles = $scss->getParsedFiles();
             $parsedFiles[] = $originalFile;

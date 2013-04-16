@@ -91,7 +91,12 @@ class Dispatcher
             $headerController->headerField('Status', '404 Not Found');
             return 'Error: ' . $e->getMessage();
         } catch (ErrorException $e) {
-            return 'Error: ' . $e->getMessage();
+            $errors = 'Error: ' . $e->getMessage();
+            while ($e = $e->getPrevious()) {
+                $errors .= "<br>" . $e->getMessage();
+            }
+
+            return $errors;
         }
     }
 }

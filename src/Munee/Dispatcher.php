@@ -45,6 +45,17 @@ class Dispatcher
              */
             $options = array_merge(self::$defaultOptions, $options);
             /**
+             * Set the header controller. Can be overwritten by the dispatcher options
+             */
+            if (
+                isset($options['headerController']) &&
+                $options['headerController'] instanceof Asset\HeaderSetter
+            ) {
+                $headerController = $options['headerController'];
+            } else {
+                $headerController = new Asset\HeaderSetter;
+            }
+            /**
              * Initialise the Request
              */
             $Request->init();
@@ -60,17 +71,6 @@ class Dispatcher
              * Create a response
              */
             $Response = new Response($AssetType);
-            /**
-             * Set the header controller. Can be overwritten by the dispatcher options
-             */
-            if (
-                isset($options['headerController']) &&
-                $options['headerController'] instanceof Asset\HeaderSetter
-            ) {
-                $headerController = $options['headerController'];
-            } else {
-                $headerController = new Asset\HeaderSetter;
-            }
             $Response->setHeaderController($headerController);
             /**
              * Set the headers if told to do so

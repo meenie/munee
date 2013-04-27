@@ -97,7 +97,7 @@ Open the `.htaccess` file in your webroot and paste in the following:
 
 ```bash
 #### Munee .htaccess Code Start ####
-RewriteRule ^(.*\.(?:css|less|scss|js|coffee|jpg|png|gif|jpeg))$ munee.php?files=/$1 [L,QSA]
+RewriteRule ^(.*\.(?:css|less|scss|js|coffee|jpg|png|gif|jpeg))$ munee.php?files=/$1 [L,QSA,NC]
 #### Munee .htaccess Code End ####
 ```
 

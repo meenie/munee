@@ -147,7 +147,7 @@ class Request
             $this->setRawParam('minify', 'true');
         }
 
-        $this->ext = pathinfo($this->rawFiles, PATHINFO_EXTENSION);
+        $this->ext = strtolower(pathinfo($this->rawFiles, PATHINFO_EXTENSION));
         $supportedExtensions = Registry::getSupportedExtensions($this->ext);
         // Suppressing errors because Exceptions thrown in the callback cause Warnings.
         $webroot = $this->webroot;

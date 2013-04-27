@@ -254,3 +254,8 @@ If for some reason you would like to prevent Munee from setting any headers, you
 ```php
 $content = \Munee\Dispatcher::run(new \Munee\Request(array('files' => '/css/site.css')), array('setHeaders' => false));
 ```
+
+Known Issues
+------------
+
+Munee will *not* work with PHP 5.3.1 as there is an issue with running procted methods in the wrong context.  Please update your version of PHP as I will not be fixing this. - [Read More](https://github.com/meenie/munee/issues/15)

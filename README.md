@@ -1,22 +1,12 @@
-Munee: Optimising Your Assets
-=============================
+Munee: Standalone PHP 5.3 Asset Optimisation &amp; Manipulation
+===============================================================
 
-#####PHP 5.3 Asset Optimisation - Smart Caching, On-The-Fly Image Resizing, On-the-fly LESS, SASS, CoffeeScript Compiling, and CSS & JavaScript Combining/Minifying
+#####On-The-Fly Image Resizing, On-the-fly LESS, SASS, CoffeeScript Compiling, CSS &amp; JavaScript Combining/Minifying, and Smart Client Side and Server Side Caching
 
 [![Build Status](https://secure.travis-ci.org/meenie/munee.png?branch=master)](http://travis-ci.org/meenie/munee)
 [![Flatter this](http://api.flattr.com/button/flattr-badge-large.png)](http://flattr.com/thing/1191331/)
 
 ---
-
-Update 1.5.0 Important Note
----------------------------
-
-I have changed the vendor to be uppercase so you will need to update how you instantiate the Munee library.  Please follow step 2 of the installion instructions.
-
-Update 1.3.0 Important Note
----------------------------
-
-In this and future versions of Munee, the way CSS is run through the LESS compiler has changed.  By default, only `.less` files will be compiled and you will have to set a special parameter to have all CSS (`.css`) files run through the compiler as well. [See here](#handling-css) for more instructions. The reason behind this change is technically `.less` files should have only valid LESS in them and `.css` should only have valid CSS in them.
 
 Features
 --------
@@ -213,6 +203,16 @@ CoffeeScript can also be automatically compiled if included in your html.  When 
 ```html
 <script src="/js/libs/jquery-1.8.1.min.js,/js/libs/bootstrap.min.js,/js/site.coffee?minify=true"></script>
 ```
+
+Update 1.5.0 Important Note
+---------------------------
+
+I have changed the vendor to be uppercase so you will need to update how you instantiate the Munee library.  Please follow step 2 of the installion instructions.
+
+Update 1.3.0 Important Note
+---------------------------
+
+In this and future versions of Munee, the way CSS is run through the LESS compiler has changed.  By default, only `.less` files will be compiled and you will have to set a special parameter to have all CSS (`.css`) files run through the compiler as well. [See here](#handling-css) for more instructions. The reason behind this change is technically `.less` files should have only valid LESS in them and `.css` should only have valid CSS in them.
 
 Tips & Tricks
 -------------

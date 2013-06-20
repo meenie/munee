@@ -114,7 +114,11 @@ class Response
     public function render()
     {
         $content = $this->assetType->getContent();
-        if (! $ret = ob_gzhandler($content, PHP_OUTPUT_HANDLER_START | PHP_OUTPUT_HANDLER_END)) {
+        
+        if (@ini_get('zlib.output_compression')) {
+            $ret = $content;
+        }
+        else if (! $ret = ob_gzhandler($content, PHP_OUTPUT_HANDLER_START | PHP_OUTPUT_HANDLER_END)) {
             $ret = $content;
         }
 

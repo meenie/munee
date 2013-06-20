@@ -232,7 +232,7 @@ abstract class Type
             if (! is_array($arguments)) {
                 $arguments = array($filterName => $arguments);
             }
-            if(strpos($originalFile, '.min') !== FALSE) {
+            if(strpos($originalFile, '.min.') !== FALSE) {
                 $arguments['minify'] = false;
             }
             $Filter->doFilter($cacheFile, $arguments, $this->options);

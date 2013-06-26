@@ -232,6 +232,7 @@ abstract class Type
             if (! is_array($arguments)) {
                 $arguments = array($filterName => $arguments);
             }
+            // Do not minify if .min. is in the filename as it has already been minified
             if(strpos($originalFile, '.min.') !== FALSE) {
                 $arguments['minify'] = false;
             }

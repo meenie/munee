@@ -5,6 +5,7 @@ Munee: Standalone PHP 5.3 Asset Optimisation &amp; Manipulation
 
 [![Build Status](https://secure.travis-ci.org/meenie/munee.png?branch=master)](http://travis-ci.org/meenie/munee)
 [![Flatter this](http://api.flattr.com/button/flattr-badge-large.png)](http://flattr.com/thing/1191331/)
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/meenie/munee/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 
 ---
 
@@ -259,7 +260,4 @@ Known Issues
 ------------
 
 Munee will *not* work with PHP 5.3.1 as there is an issue with running protected methods in the wrong context.  Please update your version of PHP as I will not be fixing this. - [Read More](https://github.com/meenie/munee/issues/15)
-
-
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/meenie/munee/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 

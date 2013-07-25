@@ -19,6 +19,8 @@ use \JavaScriptPacker;
 class Packer extends Filter
 {
     /**
+     * List of allowed params for this particular filter
+     *
      * @var array
      */
     protected $allowedParams = array(
@@ -30,9 +32,11 @@ class Packer extends Filter
     );
 
     /**
+     * Default options for the Packer library
+     *
      * @var array
      */
-    protected $_defaultOptions = array(
+    protected $_defaultPackerOptions = array(
         'encoding' => 62,
         'fastDecode' => true,
         'specialChars' => false
@@ -50,7 +54,7 @@ class Packer extends Filter
     public function doFilter($file, $arguments, $javaScriptOptions)
     {
         $userOptions = isset($javaScriptOptions['packer']) ? $javaScriptOptions['packer'] : array();
-        $options = array_merge($this->_defaultOptions, $userOptions);
+        $options = array_merge($this->_defaultPackerOptions, $userOptions);
 
         if (! $arguments['packer']) {
             return;

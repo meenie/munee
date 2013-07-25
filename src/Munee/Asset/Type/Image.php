@@ -20,6 +20,8 @@ use Munee\Utils;
 class Image extends Type
 {
     /**
+     * Stores the Request options for this Asset Type
+     *
      * @var array
      */
     protected $options = array(
@@ -42,6 +44,11 @@ class Image extends Type
         'imageProcessor' => 'GD'
     );
 
+    /**
+     * Stores the specific placeholder that will be used for this requested asset, if any.
+     *
+     * @var bool
+     */
     protected $placeholder = false;
 
     /**
@@ -165,6 +172,9 @@ class Image extends Type
     }
 
     /**
+     * Checks the 'placeholders' Request Option to see if placeholders should be used for missing images
+     * It uses a wildcard syntax (*) to see which placeholder should be used for a particular set of images.
+     *
      * @param string $file
      *
      * @return boolean|string

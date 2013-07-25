@@ -16,11 +16,15 @@ namespace Munee\Asset;
 abstract class Filter
 {
     /**
+     * List of allowed params for a particular filter
+     *
      * @var array
      */
     protected $allowedParams = array();
 
     /**
+     * Getter for $allowedParams
+     *
      * @return array
      */
     public function getAllowedParams()

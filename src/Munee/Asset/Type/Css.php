@@ -22,6 +22,8 @@ use scssc;
 class Css extends Type
 {
     /**
+     * Stores the Request options for this Asset Type
+     *
      * @var array
      */
     protected $options = array(

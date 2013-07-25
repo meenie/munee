@@ -19,6 +19,8 @@ use Imagine\Gd\Imagine;
 class Grayscale extends Filter
 {
     /**
+     * List of allowed params for this particular filter
+     *
      * @var array
      */
     protected $allowedParams = array(

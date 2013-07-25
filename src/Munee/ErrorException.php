@@ -8,4 +8,9 @@
 
 namespace Munee;
 
+/**
+ * Class ErrorException
+ *
+ * @author Cody Lundquist
+ */
 class ErrorException extends \Exception {}

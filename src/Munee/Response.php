@@ -16,17 +16,23 @@ namespace Munee;
 class Response
 {
     /**
+     * Used to check if the request is Not Modified so Munee can return 304 if that is the case
+     *
      * @var boolean
      */
     public $notModified = false;
 
     /**
-     * @var object
+     * Instance of a Asset\HeaderSetter class
+     *
+     * @var Asset\HeaderSetter
      */
     public $headerController;
 
     /**
-     * @var Object
+     * Instance of a Asset\Type dynamically instantiated in the Constructor
+     *
+     * @var Asset\Type
      */
     protected $assetType;
 

@@ -19,41 +19,57 @@ use Munee\Asset\Registry;
 class Request
 {
     /**
+     * Stores the path to Webroot
+     *
      * @var string
      */
     public $webroot = WEBROOT;
 
     /**
+     * Stores the file extension of the current request
+     *
      * @var string
      */
     public $ext;
 
     /**
+     * Stores the array of passed in parameters
+     *
      * @var array
      */
     public $params = array();
 
     /**
+     * Stores the array of files passed in
+     *
      * @var array
      */
     public $files = array();
 
     /**
+     * Stores the array of Request Options
+     *
      * @var array
      */
     public $options = array();
 
     /**
+     * Stores the array of Raw $_GET parameters
+     *
      * @var array
      */
     protected $rawParams = array();
 
     /**
+     * Stores the array of allowed parameters for the particular asset being processed
+     *
      * @var array
      */
     protected $allowedParams = array();
     
     /**
+     * Stores the string of raw files passed in from $_GET
+     *
      * @var string
      */
     protected $rawFiles;

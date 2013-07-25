@@ -10,4 +10,9 @@ namespace Munee\Asset;
 
 use Munee\ErrorException;
 
+/**
+ * Class NotFoundException
+ *
+ * @author Cody Lundquist
+ */
 class NotFoundException extends ErrorException {}

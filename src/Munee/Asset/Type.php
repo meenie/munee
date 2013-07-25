@@ -23,41 +23,50 @@ use Munee\Asset\NotFoundException;
 abstract class Type
 {
     /**
+     * Stores the Request Options for the Asset Type
+     *
      * @var array
      */
     protected $options = array();
 
     /**
-     * @var array
-     */
-    protected $params = array();
-
-    /**
+     * Stores the list of filters that will be applied to the requested asset.
+     *
      * @var array
      */
     protected $filters = array();
 
     /**
+     * Stores the path to the cache directory
+     *
      * @var string
      */
     protected $cacheDir;
 
     /**
+     * Stores the last modified date (Epoch) for the requested asset
+     *
      * @var integer
      */
     protected $lastModifiedDate = 0;
 
     /**
+     * Stores the content of the asset
+     *
      * @var string
      */
     protected $content;
 
     /**
+     * Reference to the \Munee\Request class
+     *
      * @var \Munee\Request
      */
     protected $request;
     
     /**
+     * Reference to the \Munee\Response class
+     *
      * @var \Munee\Response
      */
     protected $response;

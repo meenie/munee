@@ -23,6 +23,8 @@ use Imagine\Image\Point;
 class Resize extends Filter
 {
     /**
+     * List of allowed params for this particular filter
+     *
      * @var array
      */
     protected $allowedParams = array(

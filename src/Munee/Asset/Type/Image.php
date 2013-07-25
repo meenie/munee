@@ -80,7 +80,7 @@ class Image extends Type
                 return file_get_contents($cacheFile);
             }
 
-            if ($this->options['checkReferrer']) {
+            if (count($this->filters) > 0 && $this->options['checkReferrer']) {
                 $this->checkReferrer();
             }
 

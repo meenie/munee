@@ -32,7 +32,7 @@ class Colorize extends Filter
     );
 
     /**
-     * Turn an image Grayscale
+     * Colorize an image
      *
      * @param string $file
      * @param array $arguments

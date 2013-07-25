@@ -31,7 +31,7 @@ class Negative extends Filter
     );
 
     /**
-     * Turn an image Grayscale
+     * Turn an image Negative
      *
      * @param string $file
      * @param array $arguments

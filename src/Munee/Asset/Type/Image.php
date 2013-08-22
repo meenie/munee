@@ -70,21 +70,9 @@ class Image extends Type
              * Also make sure the placeholder hasn't been modified since being cached.
              */
             $this->placeholder = $this->parsePlaceholders($originalFile);
-            if (
-                ! file_exists($originalFile) &&
-                $this->placeholder &&
-                file_exists($this->placeholder) &&
-                file_exists($cacheFile) &&
-                filemtime($cacheFile) > filemtime($this->placeholder)
-            ) {
-                return file_get_contents($cacheFile);
+            if (! file_exists($originalFile) && $this->placeholder) {
+                return parent::checkCache($this->placeholder, $cacheFile);
             }
-
-            if (count($this->filters) > 0 && $this->options['checkReferrer']) {
-                $this->checkReferrer();
-            }
-
-            $this->checkNumberOfAllowedFilters($cacheFile);
         }
 
         return $return;
@@ -99,6 +87,13 @@ class Image extends Type
      */
     protected function setupFile($originalFile, $cacheFile)
     {
+        if (count($this->filters) > 0) {
+            $this->checkNumberOfAllowedFilters($cacheFile);
+            if ($this->options['checkReferrer']) {
+                $this->checkReferrer();
+            }
+        }
+
         if (! file_exists($originalFile)) {
             // If we are using a placeholder and that exists, use it!
             if ($this->placeholder && file_exists($this->placeholder)) {
@@ -107,7 +102,6 @@ class Image extends Type
         }
 
         parent::setupFile($originalFile, $cacheFile);
-
     }
 
     /**
@@ -149,22 +143,28 @@ class Image extends Type
     /**
      * Check number of allowed resizes within a set time limit
      *
-     * @param string $checkImage
+     * @param string $cacheFile
      *
      * @throws ErrorException
      */
-    protected function checkNumberOfAllowedFilters($checkImage)
+    protected function checkNumberOfAllowedFilters($cacheFile)
     {
-        $pathInfo = pathinfo($checkImage);
+        $pathInfo = pathinfo($cacheFile);
         $fileNameHash = preg_replace('%-.*$%', '', $pathInfo['filename']);
         // Grab all the similar files
         $cachedImages = glob($pathInfo['dirname'] . DS . $fileNameHash . '*');
+
+        if (! is_array($cachedImages)) {
+            $cachedImages = array();
+        }
+
         // Loop through and remove the ones that are older than the time limit
         foreach ($cachedImages as $k => $image) {
             if (filemtime($image) < time() - $this->options['allowedFiltersTimeLimit']) {
                 unset($cachedImages[$k]);
             }
         }
+
         // Check and see if we've reached the maximum allowed resizes within the current time limit.
         if (count($cachedImages) >= $this->options['numberOfAllowedFilters']) {
             throw new ErrorException('You cannot create anymore resizes/manipulations at this time.');

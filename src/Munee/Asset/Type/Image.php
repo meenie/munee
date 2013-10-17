@@ -192,7 +192,8 @@ class Image extends Type
 
             foreach ($this->options['placeholders'] as $path => $placeholder) {
                 // Setup path for regex
-                $regex = '^' . $this->request->webroot . str_replace(array('*', $this->request->webroot), array('.*?', ''), $path) . '$';
+                $escapedWebroot = preg_quote($this->request->webroot);
+                $regex = '^' . $escapedWebroot . str_replace(array('*', $this->request->webroot), array('.*?', ''), $path) . '$';
                 if (preg_match("%{$regex}%", $file)) {
                     if ('http' == substr($placeholder, 0, 4)) {
                         $ret = $this->getImageByUrl($placeholder);

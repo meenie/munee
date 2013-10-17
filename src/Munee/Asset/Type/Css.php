@@ -169,21 +169,25 @@ class Css extends Type
      */
     protected function fixRelativeImagePaths($content, $originalFile)
     {
-        $regEx = '%((?:background(?:-image)?|list-style-image):.*?url[\\s]*\()[\\s\'"]*(\.\.[^\\)\'"]*)[\\s\'"]*(\\)[\\s]*)%';
+        $regEx = '%(url[\\s]*\\()[\\s\'"]*([^\\)\'"]*)[\\s\'"]*(\\))%';
 
         $webroot = $this->request->webroot;
         $changedContent = preg_replace_callback($regEx, function ($match) use ($originalFile, $webroot) {
+            $basePath = trim($match[2]);
+            // Skip conversion if the first character is a '/' since it's already an absolute path;
+            if ($basePath[0] !== '/') {
+                $basePathPrefix = str_replace($webroot, '', dirname($originalFile));
+                if (! empty($basePathPrefix)) {
+                    $basePathPrefix .= '/';
+                }
 
-            $basePathPrefix = str_replace($webroot, '', dirname($originalFile));
+                $basePath = $basePathPrefix . $basePath;
 
-            if (! empty($basePathPrefix)) {
-                $basePathPrefix .= '/';
-            }
-
-            $basePath = $basePathPrefix . trim($match[2]);
-            $count = 1;
-            while ($count > 0) {
-                $basePath = preg_replace('%\\w+/\\.\\./%', '', $basePath, -1, $count);
+                // Lets remove the relative path markers (../../) and the directory above them.
+                $count = 1;
+                while ($count > 0) {
+                    $basePath = preg_replace('%([^/]+/\\.\\./|\\./)%', '', $basePath, -1, $count);
+                }
             }
 
             return $match[1] . $basePath . $match[3];

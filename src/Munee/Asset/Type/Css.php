@@ -8,7 +8,6 @@
 
 namespace Munee\Asset\Type;
 
-use Munee\ErrorException;
 use Munee\Utils;
 use Munee\Asset\Type;
 use lessc;
@@ -77,7 +76,7 @@ class Css extends Type
      * @param string $originalFile
      * @param string $cacheFile
      *
-     * @throws ErrorException
+     * @throws CompilationException
      */
     protected function beforeFilter($originalFile, $cacheFile)
     {
@@ -86,9 +85,7 @@ class Css extends Type
             try {
                 $compiledLess = $less->cachedCompile($originalFile);
             } catch (\Exception $e) {
-                // Remove the Cache File because it hasn't been properly compiled yet
-                unlink($cacheFile);
-                throw new ErrorException('Error in LESS Compiler', 0, $e);
+                throw new CompilationException('Error in LESS Compiler', 0, $e);
             }
             $compiledLess['compiled'] = $this->fixRelativeImagePaths($compiledLess['compiled'], $originalFile);
             file_put_contents($cacheFile, serialize($compiledLess));
@@ -98,9 +95,7 @@ class Css extends Type
             try {
                 $compiled = $scss->compile(file_get_contents($originalFile));
             } catch (\Exception $e) {
-                // Remove the Cache File because it hasn't been properly compiled yet
-                unlink($cacheFile);
-                throw new ErrorException('Error in SCSS Compiler', 0, $e);
+                throw new CompilationException('Error in SCSS Compiler', 0, $e);
             }
 
             $content = compact('compiled');
@@ -166,6 +161,8 @@ class Css extends Type
      * @param $originalFile
      *
      * @return string
+     *
+     * @throws CompilationException
      */
     protected function fixRelativeImagePaths($content, $originalFile)
     {
@@ -173,24 +170,32 @@ class Css extends Type
 
         $webroot = $this->request->webroot;
         $changedContent = preg_replace_callback($regEx, function ($match) use ($originalFile, $webroot) {
-            $basePath = trim($match[2]);
-            // Skip conversion if the first character is a '/' since it's already an absolute path;
-            if ($basePath[0] !== '/') {
-                $basePathPrefix = str_replace($webroot, '', dirname($originalFile));
-                if (! empty($basePathPrefix)) {
-                    $basePathPrefix .= '/';
+            $filePath = trim($match[2]);
+            // Skip conversion if the first character is a '/' since it's already an absolute path
+            if ($filePath[0] !== '/') {
+                $basePath = str_replace($webroot, '', dirname($originalFile));
+                $basePathParts = array_reverse(array_filter(explode('/', $basePath)));
+                $numOfRecursiveDirs = substr_count($filePath, '../');
+                if ($numOfRecursiveDirs > count($basePathParts)) {
+                    throw new CompilationException(
+                        'Error in stylesheet <strong>' . $originalFile .
+                        '</strong>. The following URL goes above webroot: <strong>' . $filePath .
+                        '</strong>'
+                    );
                 }
 
-                $basePath = $basePathPrefix . $basePath;
+                $basePathParts = array_slice($basePathParts, $numOfRecursiveDirs);
+                $basePath = implode('/', array_reverse($basePathParts));
 
-                // Lets remove the relative path markers (../../) and the directory above them.
-                $count = 1;
-                while ($count > 0) {
-                    $basePath = preg_replace('%([^/]+/\\.\\./|\\./)%', '', $basePath, -1, $count);
+                if (! empty($basePath) && $basePath[0] != '/') {
+                    $basePath = '/' . $basePath;
                 }
+
+                $filePath = $basePath . '/' . $filePath;
+                $filePath = str_replace(array('../', './'), '', $filePath);
             }
 
-            return $match[1] . $basePath . $match[3];
+            return $match[1] . $filePath . $match[3];
         }, $content);
 
         if (null !== $changedContent) {

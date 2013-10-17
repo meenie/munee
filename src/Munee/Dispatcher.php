@@ -87,16 +87,36 @@ class Dispatcher
              */
             return $Response->notModified ? null : $Response->render();
         } catch (Asset\NotFoundException $e) {
-            $headerController->statusCode('HTTP/1.0', 404, 'Not Found');
-            $headerController->headerField('Status', '404 Not Found');
-            return 'Error: ' . $e->getMessage();
-        } catch (ErrorException $e) {
-            $errors = 'Error: ' . $e->getMessage();
-            while ($e = $e->getPrevious()) {
-                $errors .= "<br>" . $e->getMessage();
+            if (isset($headerController) && $headerController instanceof Asset\HeaderSetter) {
+                $headerController->statusCode('HTTP/1.0', 404, 'Not Found');
+                $headerController->headerField('Status', '404 Not Found');
             }
 
-            return $errors;
+            return 'Not Found Error: ' . static::getErrors($e);
+        } catch (Asset\Type\CompilationException $e) {
+            if (isset($AssetType) &&  $AssetType instanceof Asset\Type) {
+                $AssetType->cleanUpAfterError();
+            }
+
+            return 'Compilation Error: ' . static::getErrors($e);
+        } catch (ErrorException $e) {
+            return 'Error: ' . static::getErrors($e);
         }
+    }
+
+    /**
+     * Grabs all of the Exception messages in a chain
+     *
+     * @param \Exception $e
+     *
+     * @return string
+     */
+    protected static function getErrors (\Exception $e) {
+        $errors = $e->getMessage();
+        while ($e = $e->getPrevious()) {
+            $errors .= "<br>" . $e->getMessage();
+        }
+
+        return $errors;
     }
 }

@@ -175,6 +175,18 @@ abstract class Type
     }
 
     /**
+     * If an exception is handled this function will fire and clean up any files
+     * that have been cached as they have not properly compiled.
+     */
+    public function cleanUpAfterError()
+    {
+        foreach ($this->request->files as $file) {
+            $cacheFile = $this->generateCacheFile($file);
+            unlink($cacheFile);
+        }
+    }
+
+    /**
      * Callback method called before filters are run
      *
      * @param string $originalFile

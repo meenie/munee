@@ -182,6 +182,9 @@ class Request
                 }
             }
 
+            // Remove sub-folder if in the path, it shouldn't be there.
+            $v = str_replace(SUB_FOLDER, '', $v);
+
             return $webroot . $v;
         }, explode(',', $this->rawFiles));
     }

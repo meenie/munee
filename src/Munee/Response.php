@@ -54,7 +54,7 @@ class Response
         }
 
         $this->assetType = $AssetType;
- 
+
         $AssetType->setResponse($this);
     }
 
@@ -81,11 +81,13 @@ class Response
     /**
      * Set Headers for Response
      *
+     * @param integer $maxAge - Used with the cache-control to tell the browser how long it should wait before revalidating
+     *
      * @return self
      *
      * @throws ErrorException
      */
-    public function setHeaders()
+    public function setHeaders($maxAge)
     {
         $lastModifiedDate = $this->assetType->getLastModifiedDate();
         $eTag = md5($lastModifiedDate . $this->assetType->getContent());
@@ -102,7 +104,7 @@ class Response
             $this->notModified = true;
         } else {
             // We don't want the browser to handle any cache, Munee will handle that.
-            $this->headerController->headerField('Cache-Control', 'must-revalidate');
+            $this->headerController->headerField('Cache-Control', 'max-age=' . $maxAge . ', must-revalidate');
             $this->headerController->headerField('Last-Modified', gmdate('D, d M Y H:i:s', $lastModifiedDate) . ' GMT');
             $this->headerController->headerField('ETag', $eTag);
             $this->assetType->getHeaders();

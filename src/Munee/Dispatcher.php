@@ -20,7 +20,10 @@ class Dispatcher
      *
      * @var array
      */
-    static $defaultOptions = array('setHeaders' => true);
+    static $defaultOptions = array(
+        'setHeaders' => true,
+        'maxAge' => 0
+    );
 
     /**
      * 1) Initialise the Request
@@ -79,7 +82,7 @@ class Dispatcher
                 /**
                  * Set the headers.
                  */
-                $Response->setHeaders();
+                $Response->setHeaders($options['maxAge']);
             }
             /**
              * If the content hasn't been modified return null so only headers are sent

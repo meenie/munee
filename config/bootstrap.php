@@ -1,11 +1,13 @@
 <?php
 
 use Munee\Asset\Registry;
-
 // DIRECTORY_SEPARATOR alias
 defined('DS') || define('DS' , DIRECTORY_SEPARATOR);
+// Define Sub-Folder the Munee Dispatcher file is in
+$subFolder = dirname($_SERVER['SCRIPT_NAME']);
+defined('SUB_FOLDER') || define('SUB_FOLDER', '/' === $subFolder ? '' : $subFolder);
 // Define Webroot if hasn't already been defined
-defined('WEBROOT') || define('WEBROOT', str_replace($_SERVER['SCRIPT_NAME'], '', $_SERVER['SCRIPT_FILENAME']));
+defined('WEBROOT') || define('WEBROOT', str_replace($_SERVER['SCRIPT_NAME'], '', $_SERVER['SCRIPT_FILENAME']) . SUB_FOLDER);
 // Folder where Munee is located
 defined('MUNEE_FOLDER') || define('MUNEE_FOLDER', dirname(__DIR__));
 // Define the cache path

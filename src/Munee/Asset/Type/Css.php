@@ -173,7 +173,7 @@ class Css extends Type
             $filePath = trim($match[2]);
             // Skip conversion if the first character is a '/' since it's already an absolute path
             if ($filePath[0] !== '/') {
-                $basePath = str_replace($webroot, '', dirname($originalFile));
+                $basePath = SUB_FOLDER  . str_replace($webroot, '', dirname($originalFile));
                 $basePathParts = array_reverse(array_filter(explode('/', $basePath)));
                 $numOfRecursiveDirs = substr_count($filePath, '../');
                 if ($numOfRecursiveDirs > count($basePathParts)) {

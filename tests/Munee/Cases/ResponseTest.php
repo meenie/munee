@@ -42,10 +42,10 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
     {
         $Response = new Response(new MockAssetType());
         $Response->setHeaderController(new HeaderSetter());
-        $Response->setHeaders();
+        $Response->setHeaders(0);
 
         $checkHeaders = array();
-        $checkHeaders['Cache-Control'] = 'must-revalidate';
+        $checkHeaders['Cache-Control'] = 'max-age=0, must-revalidate';
         $checkHeaders['Content-Type'] = 'text/test';
         $checkHeaders['Last-Modified'] = gmdate('D, d M Y H:i:s', $this->lastModifiedTime) . ' GMT';
         // ETag is MD5 Hash of the content + last modified date
@@ -86,7 +86,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
 
         $Response = new Response(new MockAssetType());
         $Response->setHeaderController(new HeaderSetter());
-        $Response->setHeaders();
+        $Response->setHeaders(0);
 
         $checkHeaders = array();
         $setHeaders = $this->getHeaders();
@@ -114,10 +114,10 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
 
         $Response = new Response(new MockAssetType());
         $Response->setHeaderController(new HeaderSetter());
-        $Response->setHeaders();
+        $Response->setHeaders(0);
 
         $checkHeaders = array();
-        $checkHeaders['Cache-Control'] = 'must-revalidate';
+        $checkHeaders['Cache-Control'] = 'max-age=0, must-revalidate';
         $checkHeaders['Content-Type'] = 'text/test';
         $checkHeaders['Last-Modified'] = gmdate('D, d M Y H:i:s', $this->lastModifiedTime) . ' GMT';
         // ETag is MD5 Hash of the content + last modified date

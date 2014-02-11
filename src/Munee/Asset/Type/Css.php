@@ -166,7 +166,7 @@ class Css extends Type
      */
     protected function fixRelativeImagePaths($content, $originalFile)
     {
-        $regEx = '%(url[\\s]*\\()[\\s\'"]*([^\\)\'"]*)[\\s\'"]*(\\))%';
+          $regEx = '%(url[\\s]*\\()(?!data:image)[\\s\'"]*([^\\)\'"]*)[\\s\'"]*(\\))%';
 
         $webroot = $this->request->webroot;
         $changedContent = preg_replace_callback($regEx, function ($match) use ($originalFile, $webroot) {

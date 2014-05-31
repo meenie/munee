@@ -171,8 +171,9 @@ class Css extends Type
         $webroot = $this->request->webroot;
         $changedContent = preg_replace_callback($regEx, function ($match) use ($originalFile, $webroot) {
             $filePath = trim($match[2]);
+            $pos = strpos($match[2], 'data:image');
             // Skip conversion if the first character is a '/' since it's already an absolute path
-            if ($filePath[0] !== '/') {
+            if ($filePath[0] !== '/' && $pos === false) {
                 $basePath = SUB_FOLDER  . str_replace($webroot, '', dirname($originalFile));
                 $basePathParts = array_reverse(array_filter(explode('/', $basePath)));
                 $numOfRecursiveDirs = substr_count($filePath, '../');

@@ -40,7 +40,7 @@ class Resize extends Filter
                     'regex' => '\d+',
                     'cast' => 'integer'
                 ),
-                'quality' => array(
+                'jpeg_quality' => array(
                     'alias' => array('q', 'qlty'),
                     'regex' => '\d{1,2}(?!\d)|100',
                     'default' => 75,

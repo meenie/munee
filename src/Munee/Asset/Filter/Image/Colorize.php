@@ -10,7 +10,7 @@ namespace Munee\Asset\Filter\Image;
 
 use Munee\Asset\Filter;
 use Imagine\Gd\Imagine;
-use Imagine\Image\Color;
+use Imagine\Image\Palette\RGB as Color;
 
 /**
  * Colorize Filter for Images
@@ -44,7 +44,8 @@ class Colorize extends Filter
     {
         $Imagine = new Imagine();
         $image = $Imagine->open($file);
-        $colour = new Color('#' . $arguments['colorize']);
+        $colour = new Color();
+        $colour = $colour->color('#' . $arguments['colorize']);
         $image->effects()->colorize($colour);
         $image->save($file);
     }

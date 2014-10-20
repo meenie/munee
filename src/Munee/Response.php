@@ -126,7 +126,7 @@ class Response
          * Do not use ob_gzhandler() if zlib.output_compression ini option is set
          * This will gzip the output twice and the text will be garbled
          */
-        if (@ini_get('zlib.output_compression')) {
+        if (@ini_get('zlib.output_compression') || defined('HHVM_VERSION')) {
             $ret = $content;
         } else if (! $ret = ob_gzhandler($content, PHP_OUTPUT_HANDLER_START | PHP_OUTPUT_HANDLER_END)) {
             $ret = $content;

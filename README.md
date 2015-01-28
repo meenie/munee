@@ -1,6 +1,8 @@
 Munee: Standalone PHP 5.3 Asset Optimisation &amp; Manipulation
 ===============================================================
 
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/meenie/munee?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 #####On-The-Fly Image Resizing, On-the-fly LESS, SCSS, CoffeeScript Compiling, CSS &amp; JavaScript Combining/Minifying, and Smart Client Side and Server Side Caching
 
 [![Build Status](https://secure.travis-ci.org/meenie/munee.png?branch=master)](http://travis-ci.org/meenie/munee)

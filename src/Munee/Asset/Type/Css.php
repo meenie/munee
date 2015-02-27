@@ -49,6 +49,7 @@ class Css extends Type
      */
     protected function checkCache($originalFile, $cacheFile)
     {
+return false;
         if (! $ret = parent::checkCache($originalFile, $cacheFile)) {
             return false;
         }
@@ -108,6 +109,30 @@ class Css extends Type
             file_put_contents($cacheFile, serialize($content));
         } else {
             $content = file_get_contents($originalFile);
+
+$content_orig = $content;
+$fh = fopen(MUNEE_CACHE.'/stat.txt','a');
+$start = microtime(true);
+            $content = self::expandCssImports($content_orig,$originalFile);
+$end = microtime(true);
+$time = $end - $start;
+fwrite($fh,"
+expandCssImports Stats
+START: $start
+END:   $end
+DIFF:  $time\n");
+
+$content = $content_orig;
+$start = microtime(true);
+            $content = self::parseImports($content,$originalFile);
+$end = microtime(true);
+$time = $end - $start;
+fwrite($fh,"
+parseImports Stats
+START: $start
+END:   $end
+DIFF:  $time\n");
+fclose($fh);
             file_put_contents($cacheFile, $this->fixRelativeImagePaths($content, $originalFile));
         }
     }
@@ -204,4 +229,80 @@ class Css extends Type
 
         return $content;
     }
+
+    private static function parseImports($content,$origFile)
+    {
+        $dir   = dirname($origFile);
+        // matches any type of import rule
+        preg_match_all("/(@import[^;].+?);/im",$content,$imports,PREG_PATTERN_ORDER);
+        if(count($imports))
+        {
+            foreach($imports[1] as $i => $item)
+            {
+                if( false !== ($start = strpos($item,'url')))
+                {
+                    $paren1  = strpos($item,'(',$start)+1;
+                    $paren2  = strpos($item,')',$paren1);
+                    $url     = substr($item,$paren1,$paren2-$paren1);
+                    $url     = str_replace(array('"',"'"),'',$url);
+                    $rest    = substr($item,$paren2+1);
+
+                    if(strlen($rest)>1) $media = $rest;
+                    else                $media = NULL;
+
+                    // get the file
+                    $file = $dir.'/'.$url;
+                    if (is_file($file))
+                    {
+                        $string = file_get_contents($file);
+                        $newDir = dirname($file);
+                        // replace imports in current file
+                        $string = self::parseImports($string,$file);
+                        // replace urls
+                        if ($newDir !== $dir) {
+                            $tmp = $dir.'/';
+                            if (substr($newDir, 0, strlen($tmp)) === $tmp) {
+                                $string = preg_replace('#\burl\(["\']?(?=[.\w])(?!\w+:)#', '$0' . substr($newDir, strlen($tmp)) . '/', $string);
+                            }
+                        }
+                        if($media)
+                        {
+                            $string = '@media '.trim($media).' {'
+                                    . $string
+                                    . '}';
+                        }
+                        $content = str_replace($imports[0][$i],$string,$content);
+                    }
+                }
+            }
+        }
+        return $content;
+    }
+
+    private static function expandCssImports($content,$origFile)
+    {
+        $dir = dirname($origFile);
+        return
+            preg_replace_callback(
+                '#@import\s+(?:url)?[(\'"]+(.+)[)\'"]+;#U',
+                function($m) use ($dir) {
+                    $file = $dir.'/'.$m[1];
+                    if (!is_file($file)) { return $m[0]; } // no such file
+                    $string = file_get_contents($file);
+                    $newDir = dirname($file);
+                    $s = self::expandCssImports($string,$file);
+                    if ($newDir !== $dir) {
+                        $tmp = $dir.'/';
+                        if (substr($newDir, 0, strlen($tmp)) === $tmp) {
+                            $string = preg_replace('#\burl\(["\']?(?=[.\w])(?!\w+:)#', '$0' . substr($newDir, strlen($tmp)) . '/', $string);
+                        } elseif (strpos($string, 'url(') !== FALSE) {
+                            return $m[0];
+                        }
+                    }
+                    return $string;
+                },
+                $content
+            );
+    }   // end function expandCssImports()
+
 }

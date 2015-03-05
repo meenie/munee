@@ -206,38 +206,53 @@ class Css extends Type
         return $content;
     }
 
-    private static function parseImports($content,$origFile)
+    /**
+     * Parses $origFile for @imports and reads the contents of the imported
+     * file(s) if possible. Does recursion to resolve @imports in imported 
+     * files as well. Wraps imported contents into @media ... { ... } markup
+     * if needed.
+     *
+     * Example:
+     *
+     *    @import url(reset.css) screen, projection;
+     *
+     * Result:
+     *
+     *    @media screen, projection { ... }
+     *
+     * @access protected
+     *
+     * @param  string    $content
+     * @param  string    $origFile
+     *
+     * @return string
+     **/
+    protected function parseImports($content, $origFile)
     {
-        $dir   = dirname($origFile);
+        $dir = dirname($origFile);
         // matches any type of import rule
-        preg_match_all('~@import\s*(?:url)?(?:\(?\'?\"?)?([^\'\"\)\(]*)(?:\'?\"?)?\)?\s?([^;]*);~im',$content,$imports,PREG_SET_ORDER);
-        if(count($imports))
-        {
-            foreach($imports as $i => $item)
-            {
-                $file  = $dir.'/'.$item[1];
-                $media = $item[2];
-                    if (is_file($file))
-                    {
-                        $string = file_get_contents($file);
-                        $newDir = dirname($file);
-                        // replace imports in current file
-                        $string = self::parseImports($string,$file);
-                        // replace urls
-                        if ($newDir !== $dir) {
-                            $tmp = $dir.'/';
-                            if (substr($newDir, 0, strlen($tmp)) === $tmp) {
-                                $string = preg_replace('#\burl\(["\']?(?=[.\w])(?!\w+:)#', '$0' . substr($newDir, strlen($tmp)) . '/', $string);
-                            }
-                        }
-                    if($media && $media != '')
-                        {
-                            $string = '@media '.trim($media).' {'
-                                    . $string
-                                    . '}';
-                        }
-                    $content = str_replace($imports[$i][0],$string,$content);
+        preg_match_all('~@import\s*(?:url)?(?:\(?\'?\"?)?([^\'\"\)\(]*)(?:\'?\"?)?\)?\s?([^;]*);~im', $content, $imports, PREG_SET_ORDER);
+        foreach($imports as $i => $item) {
+            $file  = $dir.'/'.$item[1];
+            $media = $item[2];
+            if (is_file($file)) {
+                $string = file_get_contents($file);
+                $newDir = dirname($file);
+                // replace imports in current file
+                $string = $this->parseImports($string, $file);
+                // replace urls
+                if ($newDir !== $dir) {
+                    $tmp = $dir.'/';
+                    if (substr($newDir, 0, strlen($tmp)) === $tmp) {
+                        $string = preg_replace('#\burl\(["\']?(?=[.\w])(?!\w+:)#', '$0' . substr($newDir, strlen($tmp)) . '/', $string);
+                    }
                 }
+                if (! empty($media)) {
+                    $string = '@media '.trim($media).' {'
+                            . $string
+                            . '}';
+                }
+                $content = str_replace($imports[$i][0],$string,$content);
             }
         }
         return $content;

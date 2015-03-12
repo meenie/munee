@@ -48,10 +48,10 @@ class Minify extends Filter
 
         $content = file_get_contents($file);
         if (Utils::isSerialized($content, $content)) {
-            $content['compiled'] = $this->minify($content['compiled']);
+            $content['compiled'] = $this->minifyHelper($content['compiled']);
             $content = serialize($content);
         } else {
-            $content = $this->minify($content);
+            $content = $this->minifyHelper($content);
         }
 
         file_put_contents($file, $content);
@@ -64,7 +64,7 @@ class Minify extends Filter
      *
      * @return string
      */
-    protected function minify($content)
+    protected function minifyHelper($content)
     {
         $regexs = array(
             // Remove Comments

@@ -68,7 +68,7 @@ class Minify extends Filter
     {
         $regexs = array(
             // Remove Comments
-            '%/\*[^*]*\*+([^/][^*]*\*+)*/%',
+            '%/\*[^*!]*\*+([^/][^*]*\*+)*/%',
             // Fixing extra spacing between classes so there is only one space
             '%(\w)\s{2,}\.%',
         );

@@ -11,7 +11,7 @@ namespace Munee\Asset\Type;
 use Munee\Utils;
 use Munee\Asset\Type;
 use lessc;
-use scssc;
+use Leafo\ScssPhp\Compiler as ScssCompiler;
 
 /**
  * Handles CSS
@@ -70,7 +70,7 @@ class Css extends Type
     /**
      * Callback method called before filters are run
      *
-     * Overriding to run the file through LESS if need be.
+     * Overriding to run the file through LESS/SCSS if need be.
      * Also want to fix any relative paths for images.
      *
      * @param string $originalFile
@@ -90,7 +90,7 @@ class Css extends Type
             $compiledLess['compiled'] = $this->fixRelativeImagePaths($compiledLess['compiled'], $originalFile);
             file_put_contents($cacheFile, serialize($compiledLess));
         } elseif ($this->isScss($originalFile)) {
-            $scss = new scssc();
+            $scss = new ScssCompiler();
             $scss->addImportPath(pathinfo($originalFile, PATHINFO_DIRNAME));
             try {
                 $compiled = $scss->compile(file_get_contents($originalFile));
@@ -105,6 +105,7 @@ class Css extends Type
                 $content['files'][$file] = filemtime($file);
             }
 
+            $content['compiled'] = $this->fixRelativeImagePaths($content['compiled'], $originalFile);
             file_put_contents($cacheFile, serialize($content));
         } else {
             $content = file_get_contents($originalFile);

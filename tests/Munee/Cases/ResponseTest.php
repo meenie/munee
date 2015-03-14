@@ -55,7 +55,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame($checkHeaders['Cache-Control'], $setHeaders['Cache-Control']);
         unset($setHeaders['Cache-Control']);
-        $this->assertSame($checkHeaders['Content-Type'], $setHeaders['Content-Type']);
+        $this->assertContains($checkHeaders['Content-Type'], $setHeaders['Content-Type']);
         unset($setHeaders['Content-Type']);
         $this->assertSame($checkHeaders['Last-Modified'], $setHeaders['Last-Modified']);
         unset($setHeaders['Last-Modified']);
@@ -127,7 +127,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame($checkHeaders['Cache-Control'], $setHeaders['Cache-Control']);
         unset($setHeaders['Cache-Control']);
-        $this->assertSame($checkHeaders['Content-Type'], $setHeaders['Content-Type']);
+        $this->assertContains($checkHeaders['Content-Type'], $setHeaders['Content-Type']);
         unset($setHeaders['Content-Type']);
         $this->assertSame($checkHeaders['Last-Modified'], $setHeaders['Last-Modified']);
         unset($setHeaders['Last-Modified']);
@@ -166,6 +166,10 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
         foreach ($rawHeaders as $header) {
             $headerParts = explode(':', $header, 2);
             if (2 == count($headerParts)) {
+                if ($headerParts[0] === 'Content-type') {
+                    // xdebug incompatible naming
+                    $headerParts[0] = 'Content-Type';
+                }
                 $ret[$headerParts[0]] = trim($headerParts[1]);
             } elseif (isset($ret[$headerParts[0]])) {
                 // If a header param is empty, make sure others with the same name are not set as well

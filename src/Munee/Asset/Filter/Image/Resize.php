@@ -12,7 +12,7 @@ use Munee\Asset\Filter;
 use Munee\ErrorException;
 use Imagine\Image\ImageInterface;
 use Imagine\Image\Box;
-use Imagine\Image\Color;
+use Imagine\Image\Palette\RGB;
 use Imagine\Image\Point;
 
 /**
@@ -41,7 +41,7 @@ class Resize extends Filter
                     'cast' => 'integer'
                 ),
                 'quality' => array(
-                    'alias' => array('q', 'qlty'),
+                    'alias' => array('q', 'qlty', 'jpeg_quality'),
                     'regex' => '\d{1,2}(?!\d)|100',
                     'default' => 75,
                     'cast' => 'integer'
@@ -165,9 +165,10 @@ class Resize extends Filter
                 $canvasHeight = $imageOptions['maxAllowedResizeHeight'];
             }
 
+            $palette = new RGB();
             $canvas = $Imagine->create(
                 new Box($canvasWidth, $canvasHeight),
-                new Color($arguments['fillColour'])
+                $palette->color($arguments['fillColour'])
             );
 
             // Put image in the middle of the canvas
@@ -177,6 +178,6 @@ class Resize extends Filter
             ));
         }
 
-        $newImage->save($originalImage, array('quality' => $arguments['quality']));
+        $newImage->save($originalImage, array('jpeg_quality' => $arguments['quality']));
     }
 }

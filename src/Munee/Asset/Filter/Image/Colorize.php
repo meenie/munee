@@ -44,7 +44,7 @@ class Colorize extends Filter
     {
         $Imagine = new Imagine();
         $image = $Imagine->open($file);
-        $colour = new Color('#' . $arguments['colorize']);
+        $colour = $image->palette()->color('#' . $arguments['colorize']);
         $image->effects()->colorize($colour);
         $image->save($file);
     }

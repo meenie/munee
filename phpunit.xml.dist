@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<phpunit bootstrap="tests/bootstrap.php">
+<phpunit
+	bootstrap="tests/bootstrap.php"
+	colors="true"
+>
     <testsuites>
         <testsuite name="Munee Test Suite">
             <directory>./tests/Munee/</directory>

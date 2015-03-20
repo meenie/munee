@@ -14,6 +14,11 @@ defined('MUNEE_FOLDER') || define('MUNEE_FOLDER', dirname(__DIR__));
 defined('MUNEE_CACHE') || define('MUNEE_CACHE', MUNEE_FOLDER . DS . 'cache');
 // Define default character encoding
 defined('MUNEE_CHARACTER_ENCODING') || define('MUNEE_CHARACTER_ENCODING', 'UTF-8');
+// Are we using Munee with URL Rewrite (.htaccess file)?
+$requestUri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
+defined('MUNEE_USING_URL_REWRITE') || define('MUNEE_USING_URL_REWRITE', strpos($requestUri, 'files=') === false);
+// Munee dispatcher file if not using URL Rewrite
+defined('MUNEE_DISPATCHER_FILE') || define('MUNEE_DISPATCHER_FILE', ! MUNEE_USING_URL_REWRITE ? $_SERVER['SCRIPT_NAME'] : '');
 
 // If mbstring is installed, set the encoding default
 if (function_exists('mb_internal_encoding')) {
@@ -21,7 +26,7 @@ if (function_exists('mb_internal_encoding')) {
 }
 
 /**
- * Register the CSS Asset Class with the extensions .css and .less
+ * Register the CSS Asset Class with the extensions .css, .less, and .scss
  */
 Registry::register(array('css', 'less', 'scss'), function (\Munee\Request $Request) {
     return new \Munee\Asset\Type\Css($Request);

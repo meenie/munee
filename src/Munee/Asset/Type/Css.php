@@ -12,6 +12,9 @@ use Munee\Utils;
 use Munee\Asset\Type;
 use lessc;
 use Leafo\ScssPhp\Compiler as ScssCompiler;
+use Sabberworm\CSS\Parser as CssParser;
+use Sabberworm\CSS\Property\Import;
+use Sabberworm\CSS\Value\URL;
 
 /**
  * Handles CSS
@@ -87,7 +90,7 @@ class Css extends Type
             } catch (\Exception $e) {
                 throw new CompilationException('Error in LESS Compiler', 0, $e);
             }
-            $compiledLess['compiled'] = $this->fixRelativeImagePaths($compiledLess['compiled'], $originalFile);
+            $compiledLess['compiled'] = $this->fixRelativePaths($compiledLess['compiled'], $originalFile);
             file_put_contents($cacheFile, serialize($compiledLess));
         } elseif ($this->isScss($originalFile)) {
             $scss = new ScssCompiler();
@@ -105,12 +108,11 @@ class Css extends Type
                 $content['files'][$file] = filemtime($file);
             }
 
-            $content['compiled'] = $this->fixRelativeImagePaths($content['compiled'], $originalFile);
+            $content['compiled'] = $this->fixRelativePaths($content['compiled'], $originalFile);
             file_put_contents($cacheFile, serialize($content));
         } else {
             $content = file_get_contents($originalFile);
-            $content = self::parseImports($content,$originalFile);
-            file_put_contents($cacheFile, $this->fixRelativeImagePaths($content, $originalFile));
+            file_put_contents($cacheFile, $this->fixRelativePaths($content, $originalFile));
         }
     }
 
@@ -157,107 +159,105 @@ class Css extends Type
     }
 
     /**
-     * Fixes relative paths to absolute paths
+     * Use CssParser to go through and convert all relative paths to absolute
      *
-     * @param $content
-     * @param $originalFile
+     * @param string $content
+     * @param string $originalFile
      *
      * @return string
-     *
-     * @throws CompilationException
      */
-    protected function fixRelativeImagePaths($content, $originalFile)
+    protected function fixRelativePaths($content, $originalFile)
     {
-        $regEx = '%(url[\\s]*\\()(?!data:image)[\\s\'"]*([^\\)\'"]*)[\\s\'"]*(\\))%';
+        $cssParser = new CssParser($content);
+        $cssDocument = $cssParser->parse();
 
-        $webroot = $this->request->webroot;
-        $changedContent = preg_replace_callback($regEx, function ($match) use ($originalFile, $webroot) {
-            $filePath = trim($match[2]);
-            // Skip conversion if the first character is a '/' since it's already an absolute path
-            // Also skip conversion if the string has an protocol in url
-            if ($filePath[0] !== '/' && strpos($filePath, '://') === false) {
-                $basePath = SUB_FOLDER  . str_replace($webroot, '', dirname($originalFile));
-                $basePathParts = array_reverse(array_filter(explode('/', $basePath)));
-                $numOfRecursiveDirs = substr_count($filePath, '../');
-                if ($numOfRecursiveDirs > count($basePathParts)) {
-                    throw new CompilationException(
-                        'Error in stylesheet <strong>' . $originalFile .
-                        '</strong>. The following URL goes above webroot: <strong>' . $filePath .
-                        '</strong>'
-                    );
-                }
+        $cssBlocks = $cssDocument->getAllValues();
 
-                $basePathParts = array_slice($basePathParts, $numOfRecursiveDirs);
-                $basePath = implode('/', array_reverse($basePathParts));
+        $this->fixUrls($cssBlocks, $originalFile);
 
-                if (! empty($basePath) && $basePath[0] != '/') {
-                    $basePath = '/' . $basePath;
-                }
-
-                $filePath = $basePath . '/' . $filePath;
-                $filePath = str_replace(array('../', './'), '', $filePath);
-            }
-
-            return $match[1] . $filePath . $match[3];
-        }, $content);
-
-        if (null !== $changedContent) {
-            $content = $changedContent;
-        }
-
-        return $content;
+        return $cssDocument->render();
     }
 
     /**
-     * Parses $origFile for @imports and reads the contents of the imported
-     * file(s) if possible. Does recursion to resolve @imports in imported 
-     * files as well. Wraps imported contents into @media ... { ... } markup
-     * if needed.
+     * Recursively go through the CSS Blocks and update relative links to absolute
      *
-     * Example:
-     *
-     *    @import url(reset.css) screen, projection;
-     *
-     * Result:
-     *
-     *    @media screen, projection { ... }
-     *
-     * @access protected
-     *
-     * @param  string    $content
-     * @param  string    $origFile
-     *
-     * @return string
-     **/
-    protected function parseImports($content, $origFile)
-    {
-        $dir = dirname($origFile);
-        // matches any type of import rule
-        preg_match_all('~@import\s*(?:url)?(?:\(?\'?\"?)?([^\'\"\)\(]*)(?:\'?\"?)?\)?\s?([^;]*);~im', $content, $imports, PREG_SET_ORDER);
-        foreach($imports as $i => $item) {
-            $file  = $dir.'/'.$item[1];
-            $media = $item[2];
-            if (is_file($file)) {
-                $string = file_get_contents($file);
-                $newDir = dirname($file);
-                // replace imports in current file
-                $string = $this->parseImports($string, $file);
-                // replace urls
-                if ($newDir !== $dir) {
-                    $tmp = $dir.'/';
-                    if (substr($newDir, 0, strlen($tmp)) === $tmp) {
-                        $string = preg_replace('#\burl\(["\']?(?=[.\w])(?!\w+:)#', '$0' . substr($newDir, strlen($tmp)) . '/', $string);
-                    }
+     * @param $cssBlocks
+     * @param $originalFile
+     * @throws CompilationException
+     */
+    protected function fixUrls($cssBlocks, $originalFile) {
+        foreach ($cssBlocks as $cssBlock) {
+            if ($cssBlock instanceof Import) {
+                $this->fixUrls($cssBlock->atRuleArgs(), $originalFile);
+            } else {
+                if (! $cssBlock instanceof URL) {
+                    continue;
                 }
-                if (! empty($media)) {
-                    $string = '@media '.trim($media).' {'
-                            . $string
-                            . '}';
-                }
-                $content = str_replace($imports[$i][0],$string,$content);
+
+                $originalUrl = $cssBlock->getURL()->getString();
+                $url = $this->relativeToAbsolute($originalUrl, $originalFile);
+                $cssBlock->getURL()->setString($url);
             }
         }
-        return $content;
     }
 
+    /**
+     * Convert the passed in url from relative to absolute taking care not to convert urls that are already
+     * absolute, point to a different domain/protocol, or are base64 encoded "data:image" strings.
+     * It will also prefix a url with the munee dispatcher file URL if *not* using URL Rewrites (.htaccess).
+     *
+     * @param $originalUrl
+     * @param $originalFile
+     *
+     * @return string
+     * @throws CompilationException
+     */
+    protected function relativeToAbsolute($originalUrl, $originalFile)
+    {
+        $webroot = $this->request->webroot;
+        $url = $originalUrl;
+        if (
+            $originalUrl[0] !== '/' &&
+            strpos($originalUrl, '://') === false &&
+            strpos($originalUrl, 'data:image') === false
+        ) {
+            $basePath = SUB_FOLDER  . str_replace($webroot, '', dirname($originalFile));
+            $basePathParts = array_reverse(array_filter(explode('/', $basePath)));
+            $numOfRecursiveDirs = substr_count($originalUrl, '../');
+            if ($numOfRecursiveDirs > count($basePathParts)) {
+                throw new CompilationException(
+                    'Error in stylesheet <strong>' . $originalFile .
+                    '</strong>. The following URL goes above webroot: <strong>' . $url . '</strong>'
+                );
+            }
+
+            $basePathParts = array_slice($basePathParts, $numOfRecursiveDirs);
+            $basePath = implode('/', array_reverse($basePathParts));
+
+            if (! empty($basePath) && $basePath[0] != '/') {
+                $basePath = '/' . $basePath;
+            }
+
+            $url = $basePath . '/' . $originalUrl;
+            $url = str_replace(array('../', './'), '', $url);
+        }
+
+        // If not using URL Rewrite
+        if (! MUNEE_USING_URL_REWRITE) {
+            $dispatcherUrl = MUNEE_DISPATCHER_FILE . '?files=';
+            // If url is not already pointing to munee dispatcher file,
+            // isn't pointing to another domain/protocol,
+            // and isn't using data:image
+            if (
+                strpos($url, $dispatcherUrl) !== 0 &&
+                strpos($originalUrl, '://') === false &&
+                strpos($originalUrl, 'data:image') === false
+            ) {
+                $url = str_replace('?', '&', $url);
+                $url = $dispatcherUrl . $url;
+            }
+        }
+
+        return $url;
+    }
 }

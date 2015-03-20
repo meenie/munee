@@ -301,12 +301,16 @@ abstract class Type
      */
     protected function generateCacheFile($file)
     {
-        $requestOptions = serialize($this->request->options);
+        $cacheSalt = serialize(array(
+            $this->request->options,
+            MUNEE_USING_URL_REWRITE,
+            MUNEE_DISPATCHER_FILE
+        ));
         $params = serialize($this->request->params);
         $ext = pathinfo($file, PATHINFO_EXTENSION);
 
         $fileHash = md5($file);
-        $optionsHash = md5($params . $requestOptions);
+        $optionsHash = md5($params . $cacheSalt);
 
         $cacheDir = $this->cacheDir . DS . substr($fileHash, 0, 2);
 

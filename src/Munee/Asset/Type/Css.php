@@ -8,10 +8,11 @@
 
 namespace Munee\Asset\Type;
 
-use Munee\Utils;
+use Munee\Utils;f
 use Munee\Asset\Type;
 use lessc;
 use Leafo\ScssPhp\Compiler as ScssCompiler;
+use Sabberworm\CSS\Settings as CssSettings;
 use Sabberworm\CSS\Parser as CssParser;
 use Sabberworm\CSS\Property\Import;
 use Sabberworm\CSS\Value\URL;
@@ -168,7 +169,8 @@ class Css extends Type
      */
     protected function fixRelativePaths($content, $originalFile)
     {
-        $cssParser = new CssParser($content);
+        $oSettings = CssSettings::create()->withMultibyteSupport(false);
+        $cssParser = new CssParser($content, $oSettings);
         $cssDocument = $cssParser->parse();
 
         $cssBlocks = $cssDocument->getAllValues();

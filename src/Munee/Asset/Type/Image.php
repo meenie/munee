@@ -135,7 +135,7 @@ class Image extends Type
         }
 
         $referrer = preg_replace('%^https?://%', '', $_SERVER['HTTP_REFERER']);
-        if (! preg_match("%^{$_SERVER['SERVER_NAME']}%", $referrer)) {
+        if (! preg_match("%^{$_SERVER['HTTP_HOST']}%", $referrer)) {
             throw new ErrorException('Referrer does not match the correct domain.');
         }
     }

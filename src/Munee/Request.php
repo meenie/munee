@@ -183,7 +183,7 @@ class Request
             }
 
             // Remove sub-folder if in the path, it shouldn't be there.
-            $v = str_replace(SUB_FOLDER, '', $v);
+            $v = preg_replace('@^' . preg_quote(str_replace('\\', '/', SUB_FOLDER), '@') . '@', DS, $v);
 
             return $webroot . $v;
         }, explode(',', $this->rawFiles));

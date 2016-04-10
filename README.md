@@ -9,6 +9,6 @@ Munee: Standalone PHP 5.3 Asset Optimisation &amp; Manipulation
 
 ---
 
-#### [Official Website](http://mun.ee)
-#### [Documentation](http://mun.ee/Introducing_Munee)
-#### [API](http://mun.ee/api/index.html)
+#### [Official Website](http://munee.herokuapp.com)
+#### [Documentation](http://munee.herokuapp.com/Introducing_Munee)
+#### [API](http://munee.herokuapp.com/api/index.html)

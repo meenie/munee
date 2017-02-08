@@ -105,7 +105,8 @@ class Css extends Type
             $content = compact('compiled');
             $parsedFiles = $scss->getParsedFiles();
             $parsedFiles[] = $originalFile;
-            foreach ($parsedFiles as $file) {
+            foreach ($parsedFiles as $file_key => $file_val) {
+                $file = !is_int($file_key) ? $file_key : $file_val;
                 $content['files'][$file] = filemtime($file);
             }
 

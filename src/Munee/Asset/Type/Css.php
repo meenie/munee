@@ -205,7 +205,7 @@ class Css extends Type
 
     /**
      * Convert the passed in url from relative to absolute taking care not to convert urls that are already
-     * absolute, point to a different domain/protocol, or are base64 encoded "data:image" strings.
+     * absolute, point to a different domain/protocol, or are base64 encoded "data:image" and "data:font" strings.
      * It will also prefix a url with the munee dispatcher file URL if *not* using URL Rewrites (.htaccess).
      *
      * @param $originalUrl
@@ -221,7 +221,8 @@ class Css extends Type
         if (
             $originalUrl[0] !== '/' &&
             strpos($originalUrl, '://') === false &&
-            strpos($originalUrl, 'data:image') === false
+            strpos($originalUrl, 'data:image') === false &&
+            strpos($originalUrl, 'data:font') === false
         ) {
             $basePath = SUB_FOLDER  . str_replace($webroot, '', dirname($originalFile));
             $basePathParts = array_reverse(array_filter(explode('/', $basePath)));
@@ -249,11 +250,12 @@ class Css extends Type
             $dispatcherUrl = MUNEE_DISPATCHER_FILE . '?files=';
             // If url is not already pointing to munee dispatcher file,
             // isn't pointing to another domain/protocol,
-            // and isn't using data:image
+            // and isn't using data:image and data:font
             if (
                 strpos($url, $dispatcherUrl) !== 0 &&
                 strpos($originalUrl, '://') === false &&
-                strpos($originalUrl, 'data:image') === false
+                strpos($originalUrl, 'data:image') === false &&
+                strpos($originalUrl, 'data:font') === false
             ) {
                 $url = str_replace('?', '&', $url);
                 $url = $dispatcherUrl . $url;

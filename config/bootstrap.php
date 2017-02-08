@@ -45,3 +45,10 @@ Registry::register(array('js', 'coffee'), function (\Munee\Request $Request) {
 Registry::register(array('jpg', 'jpeg', 'gif', 'png'), function (\Munee\Request $Request) {
     return new \Munee\Asset\Type\Image($Request);
 });
+
+/**
+ * Register the Font Asset Class with the extensions .ttf, .otf, .woff, .woff2 and .eot
+ */
+Registry::register(array('ttf', 'otf', 'woff', 'woff2', 'eot'), function (\Munee\Request $Request) {
+    return new \Munee\Asset\Type\Font($Request);
+});

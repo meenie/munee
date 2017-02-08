@@ -112,7 +112,7 @@ class Image extends Type
         switch ($this->request->ext) {
             case 'jpg':
             case 'jpeg':
-                $this->response->headerController->headerField('Content-Type', 'image/jpg');
+                $this->response->headerController->headerField('Content-Type', 'image/jpeg');
                 break;
             case 'png':
                 $this->response->headerController->headerField('Content-Type', 'image/png');
